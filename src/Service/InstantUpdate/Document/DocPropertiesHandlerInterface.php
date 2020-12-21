@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\InstantUpdate\Document;
 
-use Boxalino\DataIntegration\Service\InstantUpdate\Util\InstantUpdateConfigurationElement;
+use Boxalino\DataIntegration\Service\Util\ConfigurationDataObject;
 
 /**
  * Interface DocPropertiesHandlerInterface
@@ -22,14 +22,14 @@ interface DocPropertiesHandlerInterface
     public function setIds(array $ids) : DocPropertiesHandlerInterface;
 
     /**
-     * @return InstantUpdateConfigurationElement
+     * @return ConfigurationDataObject
      */
-    public function getConfiguration() : InstantUpdateConfigurationElement;
+    public function getConfiguration() : ConfigurationDataObject;
 
     /**
-     * @param InstantUpdateConfigurationElement $configuration
+     * @param ConfigurationDataObject $configuration
      * @return DocPropertiesHandlerInterface
      */
-    public function setConfiguration(InstantUpdateConfigurationElement $configuration) : DocPropertiesHandlerInterface;
+    public function setConfiguration(ConfigurationDataObject $configuration) : DocPropertiesHandlerInterface;
 
 }

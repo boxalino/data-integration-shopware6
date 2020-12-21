@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Service\InstantUpdate\Document\Util;
+namespace Boxalino\DataIntegration\Service\Util\Document;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;

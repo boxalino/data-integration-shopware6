@@ -1,5 +1,5 @@
 <?php
-namespace Boxalino\DataIntegration\Service\InstantUpdate\Util;
+namespace Boxalino\DataIntegration\Service\Util;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
@@ -13,20 +13,22 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Boxalino\DataIntegration\Service\Util\ShopwareConfigurationTrait;
+use Boxalino\DataIntegration\Service\Util\ConfigurationDataObject;
 
 
 /**
- * Class InstantUpdateConfiguration
+ * Class Configuration
  * Accesses the configurations from cache
  *
  * @package Boxalino\DataIntegration\Service\Util
  */
-class InstantUpdateConfiguration
+class Configuration
 {
 
     use ShopwareConfigurationTrait;
 
-    const BOXALINO_EXPORTER_CONFIGURATION_CACHE_KEY = "boxalino_instant_update_cache";
+    const BOXALINO_DI_INSTANT_CACHE_KEY = "boxalino_instant_update_cache";
+    const BOXALINO_DI_FULL_CACHE_KEY = "boxalino_di_full_cache";
 
     /**
      * @var TagAwareAdapterInterface
@@ -80,9 +82,9 @@ class InstantUpdateConfiguration
      * @throws \Psr\Cache\CacheException
      * @throws \Psr\Cache\InvalidArgumentException
      */
-    public function getConfigurationFromCache() : array
+    public function getInstantUpdateConfigurationFromCache() : array
     {
-        $item = $this->cache->getItem(self::BOXALINO_EXPORTER_CONFIGURATION_CACHE_KEY);
+        $item = $this->cache->getItem(self::BOXALINO_DI_INSTANT_CACHE_KEY);
         if ($item->isHit() && $item->get()) {
             return $item->get();
         }
@@ -101,7 +103,7 @@ class InstantUpdateConfiguration
             $languagesCodeMap = array_combine(explode(",", $configuration['sales_channel_languages_locale']), explode(",", $configuration['sales_channel_languages_code']));
             $languagesMap = array_combine(explode(",", $configuration['sales_channel_languages_id']), explode(",", $configuration['sales_channel_languages_locale']));
             $currenciesMap = array_combine(explode(",", $configuration['sales_channel_currencies_id']), explode(",", $configuration['sales_channel_currencies_code']));
-            $instantUpdateConfigurations[] = new InstantUpdateConfigurationElement([
+            $instantUpdateConfigurations[] = new ConfigurationDataObject([
                 "allowInstantUpdateRequests" => (bool) $configuration['instantUpdateStatus'],
                 "account" => $configuration['account'],
                 "isDev" => (bool) $configuration['devIndex'],

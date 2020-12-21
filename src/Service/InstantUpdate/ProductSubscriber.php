@@ -3,24 +3,24 @@ namespace Boxalino\DataIntegration\Service\InstantUpdate;
 
 use Shopware\Core\Content\Product\Events\ProductIndexerEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Boxalino\DataIntegration\Service\InstantUpdate\UpdateOnSaveHandlerInterface;
+use Boxalino\DataIntegration\Service\InstantUpdateHandlerInterface;
 
 /**
- * Class UpdateOnSaveProductSubscriber
+ * Class ProductSubscriber
  * Event to trigger real-time data index for the component (product)
  *
  * It is integrated & defined in the integration layer of a Boxalino project setup
  *
  * @package Boxalino\DataIntegration\Service\InstantUpdate
  */
-class UpdateOnSaveProductSubscriber implements EventSubscriberInterface
+class ProductSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var UpdateOnSaveHandlerInterface
+     * @var InstantUpdateHandlerInterface
      */
     private $handler;
 
-    public function __construct(UpdateOnSaveHandlerInterface $handler)
+    public function __construct(InstantUpdateHandlerInterface $handler)
     {
         $this->handler = $handler;
     }

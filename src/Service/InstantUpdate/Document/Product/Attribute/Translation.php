@@ -2,7 +2,7 @@
 namespace Boxalino\DataIntegration\Service\InstantUpdate\Document\Product\Attribute;
 
 use Boxalino\DataIntegration\Service\InstantUpdate\Document\Product\AttributeHandler;
-use Boxalino\DataIntegration\Service\InstantUpdate\Document\Util\StringLocalized;
+use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
 use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Localized;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;

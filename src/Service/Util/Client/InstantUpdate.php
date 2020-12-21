@@ -1,10 +1,11 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Service\InstantUpdate\Util;
+namespace Boxalino\DataIntegration\Service\Util\Client;
 
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
+use Boxalino\DataIntegration\Service\Util\Configuration;
 
-class InstantUpdateClient
+class InstantUpdate
 {
     /**
      * @var Client
@@ -12,7 +13,7 @@ class InstantUpdateClient
     protected $client;
 
     /**
-     * @var InstantUpdateConfiguration
+     * @var Configuration
      */
     protected $configurator;
 
@@ -27,11 +28,11 @@ class InstantUpdateClient
     protected $environment = "dev";
 
     /**
-     * InstantUpdateClient constructor.
+     * Instant Update client constructor.
      *
-     * @param InstantUpdateConfiguration $configurator
+     * @param Configuration $configurator
      */
-    public function __construct(InstantUpdateConfiguration $configurator, LoggerInterface $logger, string $environment)
+    public function __construct(Configuration $configurator, LoggerInterface $logger, string $environment)
     {
         $this->configurator = $configurator;
         $this->logger = $logger;
@@ -48,9 +49,9 @@ class InstantUpdateClient
     }
 
     /**
-     * @return InstantUpdateConfiguration
+     * @return Configuration
      */
-    public function getConfigurator() : InstantUpdateConfiguration
+    public function getConfigurator() : Configuration
     {
         return $this->configurator;
     }

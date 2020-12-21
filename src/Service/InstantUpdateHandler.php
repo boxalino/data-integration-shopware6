@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Service\InstantUpdate;
+namespace Boxalino\DataIntegration\Service;
 
-use Boxalino\DataIntegration\Service\InstantUpdate\Util\InstantUpdateClient;
+use Boxalino\DataIntegration\Service\Util\Client\InstantUpdate;
 use Boxalino\DataIntegrationDoc\Service\Integration\IntegrationHandlerInterface;
 use GuzzleHttp\Psr7\Request;
 use Psr\Log\LoggerInterface;
@@ -15,11 +15,11 @@ use Psr\Log\LoggerInterface;
  *
  * @package Boxalini\Exporter\Service\InstantUpdate
  */
-class UpdateOnSaveHandler implements UpdateOnSaveHandlerInterface
+class InstantUpdateHandler implements InstantUpdateHandlerInterface
 {
 
     /**
-     * @var InstantUpdateClient
+     * @var InstantUpdate
      */
     protected $client;
 
@@ -41,7 +41,7 @@ class UpdateOnSaveHandler implements UpdateOnSaveHandlerInterface
      */
     public function handle(array $ids): void
     {
-        foreach($this->client->getConfigurator()->getConfigurationFromCache() as $configuration)
+        foreach($this->client->getConfigurator()->getInstantUpdateConfigurationFromCache() as $configuration)
         {
             if($configuration->getAllowInstantUpdateRequests())
             {

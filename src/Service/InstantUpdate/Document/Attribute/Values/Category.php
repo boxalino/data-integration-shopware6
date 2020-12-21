@@ -14,7 +14,7 @@ use Doctrine\DBAL\Query\QueryBuilder;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Category as CategorySchema;
-use Boxalino\DataIntegration\Service\InstantUpdate\Document\Util\StringLocalized;
+use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
 
 /**
  * Class Category
