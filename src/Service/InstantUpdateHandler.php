@@ -29,7 +29,7 @@ class InstantUpdateHandler implements InstantUpdateHandlerInterface
     protected $integrationHandler;
 
     public function __construct(
-        InstantUpdateClient $client,
+        InstantUpdate $client,
         IntegrationHandlerInterface $integrationHandler
     ){
         $this->client = $client;
@@ -53,7 +53,7 @@ class InstantUpdateHandler implements InstantUpdateHandlerInterface
                     foreach($documents as $type => $document)
                     {
                         $this->client->log($document);
-                        
+
                         $this->client->getClient()->send(
                             new Request(
                                 'POST',
@@ -72,7 +72,7 @@ class InstantUpdateHandler implements InstantUpdateHandlerInterface
                                 'tm' => $tm
                             ]
                         );
-                         
+
                     }
                 } catch (\Throwable $exception)
                 {

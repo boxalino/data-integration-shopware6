@@ -38,7 +38,7 @@ class Configuration
     /**
      * @var array
      */
-    protected $configurations;
+    protected $configurations = [];
 
     /**
      * @var SalesChannelContextServiceInterface
@@ -65,7 +65,7 @@ class Configuration
         foreach($this->getChannelConfigurationList() as $shopData)
         {
             $pluginConfig = $this->getPluginConfigByChannelId($shopData['sales_channel_id']);
-            if(!$pluginConfig['export'] || empty($pluginConfig['account']) || empty($pluginConfig['password']))
+            if(!$pluginConfig['export'] || empty($pluginConfig['account']))
             {
                 continue;
             }
