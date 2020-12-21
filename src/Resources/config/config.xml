@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/shopware/platform/master/src/Core/System/SystemConfig/Schema/config.xsd">
+    <card>
+        <title>General Configuration</title>
+        <title lang="de-DE">Minimale Konfiguration</title>
+        <input-field type="bool">
+            <name>export</name>
+            <defaultValue>0</defaultValue>
+            <label>Active</label>
+        </input-field>
+        <input-field type="text">
+            <name>account</name>
+            <label>Account</label>
+            <helpText>Please request your account with credentials by contacting support@boxalino.com.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>devIndex</name>
+            <defaultValue>0</defaultValue>
+            <label>Use development data index</label>
+        </input-field>
+        <input-field type="bool">
+            <name>instantUpdateStatus</name>
+            <defaultValue>0</defaultValue>
+            <label>Enable Instant Update</label>
+            <helpText>Activate / Disable the Instant Update Integration (delta replacement)</helpText>
+        </input-field>
+        <input-field type="text">
+            <name>instantUpdateAccessKey</name>
+            <label>Instant Update Access Key</label>
+            <helpText>Access Key for the Instant Update requests</helpText>
+        </input-field>
+        <input-field type="text">
+            <name>instantUpdateEndpoint</name>
+            <label>Instant Update Endpoint</label>
+            <helpText>Endpoint for Instant Update requests</helpText>
+        </input-field>
+    </card>
+</config>
