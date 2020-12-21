@@ -18,6 +18,26 @@
 
     <services>
 
+        <!-- A: configuration cache handler (loads instant-update configurations in a key) -->
+        <service id="boxalino.di.configurator" class="Boxalino\DataIntegration\Service\Util\Configuration">
+            <argument type="service" id="Shopware\Core\System\SystemConfig\SystemConfigService"/>
+            <argument type="service" id="cache.object"/>
+            <argument type="service" id="Shopware\Core\System\SalesChannel\Context\SalesChannelContextService"/>
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
+
+        <!-- B: client (logs & accesses the configurations) -->
+        <service id="boxalino.di.client.instant" class="Boxalino\DataIntegration\Service\Util\Client\InstantUpdate">
+            <argument type="service" id="boxalino.di.configurator"/>
+            <argument type="service" id="monolog.logger.boxalino-di"/>
+            <argument>%kernel.environment%</argument>
+        </service>
+
+        <!-- C: helper to access localized content (translations) -->
+        <service id="boxalino.di.util.localized" class="Boxalino\DataIntegration\Service\Util\Document\StringLocalized">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
+
     </services>
 
 </container>
