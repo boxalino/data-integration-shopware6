@@ -59,17 +59,17 @@ class InstantUpdateHandler implements InstantUpdateHandlerInterface
                                 'POST',
                                 $configuration->getEndpoint(),
                                 [
-                                    'Content-Type' => 'application/json'
+                                    'Content-Type' => 'application/json',
+                                    'client' => $configuration->getAccount(),
+                                    'doc' => $type,
+                                    'type'=> "D",
+                                    'dev' => $configuration->getIsDev(),
+                                    'tm' => $tm
                                 ],
                                 $document
                             ),
                             [
-                                'auth' => [$configuration->getAccount(), $configuration->getApiKey(), 'basic'],
-                                'client' => $configuration->getAccount(),
-                                'doc' => $type,
-                                'type'=> "D",
-                                'dev' => $configuration->getIsDev(),
-                                'tm' => $tm
+                                'auth' => [$configuration->getAccount(), $configuration->getApiKey(), 'basic']
                             ]
                         );
 
