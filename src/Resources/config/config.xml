@@ -19,6 +19,11 @@
             <label>Use development data index</label>
         </input-field>
         <input-field type="bool">
+            <name>isTest</name>
+            <defaultValue>0</defaultValue>
+            <label>Test mode (log document content)</label>
+        </input-field>
+        <input-field type="bool">
             <name>instantUpdateStatus</name>
             <defaultValue>0</defaultValue>
             <label>Enable Instant Update</label>

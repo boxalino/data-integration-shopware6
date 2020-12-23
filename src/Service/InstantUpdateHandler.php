@@ -1,8 +1,12 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service;
 
-use Boxalino\DataIntegration\Service\Util\Client\InstantUpdate;
+use Boxalino\DataIntegration\Service\Util\Configuration;
+use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailDocLoadException;
+use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailSyncException;
+use Boxalino\DataIntegrationDoc\Service\GcpClientInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\IntegrationHandlerInterface;
+use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 use GuzzleHttp\Psr7\Request;
 use Psr\Log\LoggerInterface;
 
@@ -19,7 +23,7 @@ class InstantUpdateHandler implements InstantUpdateHandlerInterface
 {
 
     /**
-     * @var InstantUpdate
+     * @var GcpClientInterface
      */
     protected $client;
 
@@ -28,10 +32,17 @@ class InstantUpdateHandler implements InstantUpdateHandlerInterface
      */
     protected $integrationHandler;
 
+    /**
+     * @var Configuration 
+     */
+    protected $configurationManager;
+
     public function __construct(
-        InstantUpdate $client,
+        Configuration $configurationManager,
+        GcpClientInterface $client,
         IntegrationHandlerInterface $integrationHandler
     ){
+        $this->configurationManager = $configurationManager;
         $this->client = $client;
         $this->integrationHandler = $integrationHandler;
     }
@@ -41,39 +52,23 @@ class InstantUpdateHandler implements InstantUpdateHandlerInterface
      */
     public function handle(array $ids): void
     {
-        foreach($this->client->getConfigurator()->getInstantUpdateConfigurationFromCache() as $configuration)
+        /** @var ConfigurationDataObject $configuration */
+        foreach($this->configurationManager->getInstantUpdateConfigurations() as $configuration)
         {
             if($configuration->getAllowInstantUpdateRequests())
             {
                 try {
                     $this->integrationHandler->setIds($ids)->setConfiguration($configuration);
-                    $documents = $this->integrationHandler->getDocs();
-
-                    $tm = date("YmDHis");
-                    foreach($documents as $type => $document)
-                    {
-                        $this->client->log($document);
-
-                        $this->client->getClient()->send(
-                            new Request(
-                                'POST',
-                                $configuration->getEndpoint(),
-                                [
-                                    'Content-Type' => 'application/json',
-                                    'client' => $configuration->getAccount(),
-                                    'doc' => $type,
-                                    'type'=> "D",
-                                    'dev' => $configuration->getIsDev(),
-                                    'tm' => $tm
-                                ],
-                                $document
-                            ),
-                            [
-                                'auth' => [$configuration->getAccount(), $configuration->getApiKey(), 'basic']
-                            ]
-                        );
-
-                    }
+                    $documents = $this->integrationHandler->getDocs();                    
+                    $this->client->send($configuration, $documents, GcpClientInterface::GCP_MODE_INSTANT_UPDATE);
+                } catch (FailDocLoadException $exception)
+                {
+                    //maybe a fallback to save the content of the documents and try again later or have the integration team review
+                    $this->client->logOrThrowException($exception);
+                } catch (FailSyncException $exception)
+                {
+                    //save that the product id was not synced (relevant for full error data sync alerts)
+                    $this->client->logOrThrowException($exception);
                 } catch (\Throwable $exception)
                 {
                     $this->client->logOrThrowException($exception);

@@ -27,8 +27,7 @@
         </service>
 
         <!-- B: client (logs & accesses the configurations) -->
-        <service id="boxalino.di.client.instant" class="Boxalino\DataIntegration\Service\Util\Client\InstantUpdate">
-            <argument type="service" id="boxalino.di.configurator"/>
+        <service id="Boxalino\DataIntegrationDoc\Service\GcpClientInterface" class="Boxalino\DataIntegration\Service\Util\Connector">
             <argument type="service" id="monolog.logger.boxalino-di"/>
             <argument>%kernel.environment%</argument>
         </service>

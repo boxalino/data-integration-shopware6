@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\InstantUpdate\Document;
 
-use Boxalino\DataIntegration\Service\Util\ConfigurationDataObject;
+use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 
 /**
  * Interface DocPropertiesHandlerInterface

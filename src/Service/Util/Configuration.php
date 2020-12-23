@@ -13,7 +13,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Boxalino\DataIntegration\Service\Util\ShopwareConfigurationTrait;
-use Boxalino\DataIntegration\Service\Util\ConfigurationDataObject;
+use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 
 
 /**
@@ -82,7 +82,7 @@ class Configuration
      * @throws \Psr\Cache\CacheException
      * @throws \Psr\Cache\InvalidArgumentException
      */
-    public function getInstantUpdateConfigurationFromCache() : array
+    public function getInstantUpdateConfigurations() : array
     {
         $item = $this->cache->getItem(self::BOXALINO_DI_INSTANT_CACHE_KEY);
         if ($item->isHit() && $item->get()) {
@@ -107,6 +107,7 @@ class Configuration
                 "allowInstantUpdateRequests" => (bool) $configuration['instantUpdateStatus'],
                 "account" => $configuration['account'],
                 "isDev" => (bool) $configuration['devIndex'],
+                "isTest" => (bool) $configuration['isTest'],
                 "apiKey" => $configuration["instantUpdateAccessKey"],
                 "endpoint" => $configuration["instantUpdateEndpoint"],
                 "salesChannelId" => $configuration['sales_channel_id'],
