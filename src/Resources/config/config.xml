@@ -35,6 +35,11 @@
             <helpText>Access Key for the Instant Update requests</helpText>
         </input-field>
         <input-field type="text">
+            <name>instantUpdateAccessSecret</name>
+            <label>Instant Update Access Secret</label>
+            <helpText>Access Secret for the Instant Update requests</helpText>
+        </input-field>
+        <input-field type="text">
             <name>instantUpdateEndpoint</name>
             <label>Instant Update Endpoint</label>
             <helpText>Endpoint for Instant Update requests</helpText>

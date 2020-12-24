@@ -109,6 +109,7 @@ class Configuration
                 "isDev" => (bool) $configuration['devIndex'],
                 "isTest" => (bool) $configuration['isTest'],
                 "apiKey" => $configuration["instantUpdateAccessKey"],
+                "apiSecret" => $configuration["instantUpdateAccessSecret"],
                 "endpoint" => $configuration["instantUpdateEndpoint"],
                 "salesChannelId" => $configuration['sales_channel_id'],
                 "salesChannelTaxState" => $salesChannelContext->getTaxState(),
