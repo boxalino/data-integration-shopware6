@@ -7,7 +7,7 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Class InstantUpdate
- * 
+ *
  * @package Boxalino\DataIntegration\Service\Util\Client
  */
 class Connector extends GcpClient
@@ -15,6 +15,8 @@ class Connector extends GcpClient
 {
 
     /**
+     * Do not throw exception, the product update must not be blocked if the SOLR SYNC update does not work
+     * 
      * @param \Throwable $exception
      * @return bool
      * @throws \Throwable
@@ -23,7 +25,6 @@ class Connector extends GcpClient
     {
         if ($this->environment === 'dev') {
             $this->logger->info("Boxalino API InstantUpdate error: " . $exception->getMessage());
-            throw $exception;
         }
         if ($this->environment === 'prod') {
             $this->logger->warning("Boxalino API InstantUpdate error: " . $exception->getMessage());
