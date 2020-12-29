@@ -26,15 +26,15 @@
             <argument type="service" id="Doctrine\DBAL\Connection"/>
         </service>
 
-        <!-- B: client (logs & accesses the configurations) -->
+        <!-- B: helper to access localized content (translations) -->
+        <service id="boxalino.di.util.localized" class="Boxalino\DataIntegration\Service\Util\Document\StringLocalized">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
+
+        <!-- C: client (logs & accesses the configurations) (optional: set 3rd param - the timeout (default is 3 sec)) -->
         <service id="Boxalino\DataIntegrationDoc\Service\GcpClientInterface" class="Boxalino\DataIntegration\Service\Util\Connector">
             <argument type="service" id="monolog.logger.boxalino-di"/>
             <argument>%kernel.environment%</argument>
-        </service>
-
-        <!-- C: helper to access localized content (translations) -->
-        <service id="boxalino.di.util.localized" class="Boxalino\DataIntegration\Service\Util\Document\StringLocalized">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
         </service>
 
     </services>
