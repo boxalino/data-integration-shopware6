@@ -4,7 +4,7 @@ namespace Boxalino\DataIntegration\Service\InstantUpdate\Document\Attribute\Valu
 use Boxalino\DataIntegration\Service\InstantUpdate\Document\DocHandlerTrait;
 use Boxalino\DataIntegration\Service\InstantUpdate\Document\DocPropertiesHandlerInterface;
 use Boxalino\DataIntegration\Service\InstantUpdate\Document\Product\AttributeHandler;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Hierarchical;
+use Boxalino\DataIntegrationDoc\Service\Doc\AttributeValues\Hierarchical;
 use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Localized;
 use Boxalino\DataIntegrationDoc\Service\DocPropertiesTrait;
 use Boxalino\DataIntegrationDoc\Service\Integration\DocProduct\AttributeHandlerInterface;
