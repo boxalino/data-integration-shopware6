@@ -20,7 +20,7 @@ use Doctrine\DBAL\Query\QueryBuilder;
 /**
  * Class Entity
  * Access the product_groups & sku informatio from the product table
- * 
+ *
  * @package Boxalino\DataIntegration\Service\InstantUpdate\Document\Product\Attribute
  */
 class Entity extends AttributeHandler
@@ -45,6 +45,12 @@ class Entity extends AttributeHandler
                 if($this->handlerHasProperty($propertyName))
                 {
                     $docAttributeName = $this->properties[$propertyName];
+                    if(in_array($docAttributeName, $this->getBooleanSchemaTypes()))
+                    {
+                        $content[$item[$this->getInstantUpdateIdField()]][$docAttributeName] = (bool)$value;
+                        continue;
+                    }
+
                     if(in_array($docAttributeName, $this->getSingleValueSchemaTypes()))
                     {
                         $content[$item[$this->getInstantUpdateIdField()]][$docAttributeName] = $value;
@@ -131,11 +137,13 @@ class Entity extends AttributeHandler
         $query = $this->connection->createQueryBuilder();
         $query->select($this->getProperties())
             ->from('product')
-            ->andWhere('version_id = :live')
-            ->andWhere("id IN (:ids)")
+            ->leftJoin("product", 'product', 'parent',
+                'product.parent_id = parent.id AND product.parent_version_id = parent.version_id')
+            ->andWhere('product.version_id = :live')
+            ->andWhere("product.id IN (:ids)")
             # connect to the product IDs that belong to the channel linked to the Boxalino account/data index
-            ->andWhere("JSON_SEARCH(category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
-            ->orderBy("created_at", "DESC")
+            ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
+            ->orderBy("product.created_at", "DESC")
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
             ->setParameter('channelRootCategoryId', $this->getConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY);
@@ -152,21 +160,19 @@ class Entity extends AttributeHandler
     {
         return [
             /** process-required properties (for mapping) */
-            "IF(parent_id IS NULL, '" . DocProductHandlerInterface::DOC_PRODUCT_LEVEL_GROUP . "', '" .  DocProductHandlerInterface::DOC_PRODUCT_LEVEL_SKU . "') AS " . Attribute::INSTANT_UPDATE_DOC_TYPE_FIELD,
-            "LOWER(HEX(parent_id)) AS " . Attribute::INSTANT_UPDATE_PARENT_ID_FIELD,
-            "LOWER(HEX(id)) AS " . Attribute::INSTANT_UPDATE_ID_FIELD,
+            "IF(product.parent_id IS NULL, '" . DocProductHandlerInterface::DOC_PRODUCT_LEVEL_GROUP . "', '" .  DocProductHandlerInterface::DOC_PRODUCT_LEVEL_SKU . "') AS " . Attribute::INSTANT_UPDATE_DOC_TYPE_FIELD,
+            "LOWER(HEX(product.parent_id)) AS " . Attribute::INSTANT_UPDATE_PARENT_ID_FIELD,
+            "LOWER(HEX(product.id)) AS " . Attribute::INSTANT_UPDATE_ID_FIELD,
             /** entity-specific properties */
-            "LOWER(HEX(id)) AS " . AttributeHandlerInterface::ATTRIBUTE_TYPE_INTERNAL_ID,
-            "product_number AS " . AttributeHandlerInterface::ATTRIBUTE_TYPE_SKU,
-            "created_at AS " . AttributeHandlerInterface::ATTRIBUTE_TYPE_CREATION,
-            "updated_at AS " . AttributeHandlerInterface::ATTRIBUTE_TYPE_UPDATE,
-            "active AS " . AttributeHandlerInterface::ATTRIBUTE_TYPE_STATUS,
-            "ean AS " . AttributeHandlerInterface::ATTRIBUTE_TYPE_EAN,
-            "rating_average AS rating_average", #numeric
-            "shipping_free AS shipping_free", #numeric
-            "is_closeout AS is_closeout", #numeric
-            "mark_as_topseller AS mark_as_topseller", #numeric
-            "release_date AS release_date" #datetime
+            "LOWER(HEX(product.id)) AS " . AttributeHandlerInterface::ATTRIBUTE_TYPE_INTERNAL_ID,
+            "product.product_number AS " . AttributeHandlerInterface::ATTRIBUTE_TYPE_SKU,
+            "product.created_at AS " . AttributeHandlerInterface::ATTRIBUTE_TYPE_CREATION,
+            "product.updated_at AS " . AttributeHandlerInterface::ATTRIBUTE_TYPE_UPDATE,
+            "IF(product.active IS NULL, parent.active, product.active) AS " . AttributeHandlerInterface::ATTRIBUTE_TYPE_STATUS,
+            "IF(product.ean IS NULL, parent.ean, product.ean) AS " . AttributeHandlerInterface::ATTRIBUTE_TYPE_EAN,
+            "IF(product.is_closeout IS NULL, IF(parent.is_closeout = '1', 0, 1), IF(product.is_closeout = '1', 0, 1)) AS " . AttributeHandlerInterface::ATTRIBUTE_TYPE_SHOW_OUT_OF_STOCK, #bool
+            'IF(product.parent_id IS NULL, product.rating_average, parent.rating_average) AS rating_average',                   #numeric
+            'IF(product.mark_as_topseller IS NULL, parent.mark_as_topseller, product.mark_as_topseller) AS mark_as_topseller'  #string
         ];
     }
 

@@ -48,7 +48,7 @@ class Stock extends AttributeHandler
     public function getQuery(string $propertyName): QueryBuilder
     {
         $query = $this->connection->createQueryBuilder();
-        $query->select(["LOWER(HEX(id)) AS {$this->getInstantUpdateIdField()}", "stock AS value", "available_stock AS availability"])
+        $query->select(["LOWER(HEX(id)) AS {$this->getInstantUpdateIdField()}", "available_stock AS value", "NULL as availability"])
             ->from("product")
             ->andWhere('version_id = :live')
             ->andWhere("JSON_SEARCH(category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
