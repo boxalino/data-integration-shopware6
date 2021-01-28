@@ -58,6 +58,7 @@ class InstantUpdateHandler implements InstantUpdateHandlerInterface
             if($configuration->getAllowInstantUpdateRequests())
             {
                 try {
+                    $configuration->setData("type", GcpClientInterface::GCP_TYPE_PRODUCT);
                     $this->integrationHandler->setIds($ids)->setConfiguration($configuration);
                     $documents = $this->integrationHandler->getDocs();                    
                     $this->client->send($configuration, $documents, GcpClientInterface::GCP_MODE_INSTANT_UPDATE);
