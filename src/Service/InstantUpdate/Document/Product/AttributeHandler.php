@@ -51,7 +51,7 @@ class AttributeHandler extends Attribute
      */
     public function getInstantUpdateIdField() : string
     {
-        return self::INSTANT_UPDATE_ID_FIELD;
+        return self::DI_ID_FIELD;
     }
 
 }

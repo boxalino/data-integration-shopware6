@@ -92,8 +92,8 @@ class DocHandler extends DocProduct
         foreach($this->getDocProductData() as $productId => $productData)
         {
             try{
-                $schema = $this->getDocPropertySchema($productData[DocProduct\Attribute::INSTANT_UPDATE_DOC_TYPE_FIELD], $productData);
-                $parentId = $productData[DocProduct\Attribute::INSTANT_UPDATE_PARENT_ID_FIELD];
+                $schema = $this->getDocPropertySchema($productData[DocProduct\Attribute::DI_DOC_TYPE_FIELD], $productData);
+                $parentId = $productData[DocProduct\Attribute::DI_PARENT_ID_FIELD];
                 if(is_null($parentId))
                 {
                     $sku = $this->docTypePropDiffDuplicate(

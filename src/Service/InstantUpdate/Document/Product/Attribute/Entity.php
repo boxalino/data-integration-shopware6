@@ -160,9 +160,9 @@ class Entity extends AttributeHandler
     {
         return [
             /** process-required properties (for mapping) */
-            "IF(product.parent_id IS NULL, '" . DocProductHandlerInterface::DOC_PRODUCT_LEVEL_GROUP . "', '" .  DocProductHandlerInterface::DOC_PRODUCT_LEVEL_SKU . "') AS " . Attribute::INSTANT_UPDATE_DOC_TYPE_FIELD,
-            "LOWER(HEX(product.parent_id)) AS " . Attribute::INSTANT_UPDATE_PARENT_ID_FIELD,
-            "LOWER(HEX(product.id)) AS " . Attribute::INSTANT_UPDATE_ID_FIELD,
+            "IF(product.parent_id IS NULL, '" . DocProductHandlerInterface::DOC_PRODUCT_LEVEL_GROUP . "', '" .  DocProductHandlerInterface::DOC_PRODUCT_LEVEL_SKU . "') AS " . Attribute::DI_DOC_TYPE_FIELD,
+            "LOWER(HEX(product.parent_id)) AS " . Attribute::DI_PARENT_ID_FIELD,
+            "LOWER(HEX(product.id)) AS " . Attribute::DI_ID_FIELD,
             /** entity-specific properties */
             "LOWER(HEX(product.id)) AS " . AttributeHandlerInterface::ATTRIBUTE_TYPE_INTERNAL_ID,
             "product.product_number AS " . AttributeHandlerInterface::ATTRIBUTE_TYPE_SKU,
