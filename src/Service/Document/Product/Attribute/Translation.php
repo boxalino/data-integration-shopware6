@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Service\InstantUpdate\Document\Product\Attribute;
+namespace Boxalino\DataIntegration\Service\Document\Product\Attribute;
 
-use Boxalino\DataIntegration\Service\InstantUpdate\Document\Product\AttributeHandler;
+use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
 use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
 use Boxalino\DataIntegration\Service\Util\ShopwareLocalizedTrait;
 use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Localized;
@@ -16,9 +16,9 @@ use Shopware\Core\Framework\Uuid\Uuid;
  * Exports attributes such as title, description, short_description, meta informations, etc
  * (content available in the Shopware6 "translation" table)
  *
- * @package Boxalino\DataIntegration\Service\InstantUpdate\Document\Product\Attribute
+ * @package Boxalino\DataIntegration\Service\Document\Product\Attribute
  */
-class Translation extends AttributeHandler
+class Translation extends IntegrationSchemaPropertyHandler
 {
     use ShopwareLocalizedTrait;
 
@@ -36,6 +36,7 @@ class Translation extends AttributeHandler
     public function getValues() : array
     {
         $content = [];
+        $languages = $this->getConfiguration()->getLanguages();
         foreach($this->getProperties() as $propertyName => $docAttributeName)
         {
             foreach ($this->getData($propertyName) as $item)
@@ -44,12 +45,8 @@ class Translation extends AttributeHandler
                 {
                     $content[$item[$this->getDiIdField()]][$docAttributeName] = [];
                 }
-                foreach($this->getConfiguration()->getLanguages() as $language)
-                {
-                    $localized = new Localized();
-                    $localized->setLanguage($language)->setValue($item[$language]);
-                    $content[$item[$this->getDiIdField()]][$docAttributeName][] = $localized;
-                }
+
+                $content[$item[$this->getDiIdField()]][$docAttributeName] = $this->getLocalizedSchema($item, $languages);
             }
         }
 
@@ -61,19 +58,20 @@ class Translation extends AttributeHandler
      * @return QueryBuilder
      * @throws \Shopware\Core\Framework\Uuid\Exception\InvalidUuidException
      */
-    public function getQuery(?string $propertyName) : QueryBuilder
+    public function getQuery(?string $propertyName = null) : QueryBuilder
     {
-        $this->setPrefix("translation");
         $query = $this->connection->createQueryBuilder();
         $query->select($this->getFields())
             ->from("product")
             ->leftJoin('product', '( ' . $this->getLocalizedFieldsQuery($propertyName)->__toString() . ') ',
-                'translation', 'translation.product_id = product.id AND product.version_id = translation.product_version_id')
+                $this->getPrefix(), "$this->prefix.product_id = product.id AND product.version_id = $this->prefix.product_version_id")
             ->andWhere('product.version_id = :live')
             ->andWhere($this->getLanguageHeaderConditional())
-            ->andWhere('product.id IN (:ids)')
+            ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
+            #->andWhere('product.id IN (:ids)')
             ->addGroupBy('product.id')
-            ->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
+            #->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
+            ->setParameter('channelRootCategoryId', $this->getConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 
         return $query;

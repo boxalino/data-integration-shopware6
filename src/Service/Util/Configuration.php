@@ -29,6 +29,7 @@ class Configuration
 
     const BOXALINO_DI_INSTANT_CACHE_KEY = "boxalino_instant_update_cache";
     const BOXALINO_DI_FULL_CACHE_KEY = "boxalino_di_full_cache";
+    const BOXALINO_DI_DELTA_CACHE_KEY = "boxalino_di_delta_cache";
 
     /**
      * @var TagAwareAdapterInterface
@@ -89,7 +90,7 @@ class Configuration
             return $item->get();
         }
 
-        $instantUpdateConfigurations = [];
+        $configurations = [];
         $this->loadChannelConfigurationList();
         $currencyFactorMap = $this->getCurrencyFactorMap();
         foreach($this->configurations as $configuration)
@@ -103,13 +104,13 @@ class Configuration
             $languagesCodeMap = array_combine(explode(",", $configuration['sales_channel_languages_locale']), explode(",", $configuration['sales_channel_languages_code']));
             $languagesMap = array_combine(explode(",", $configuration['sales_channel_languages_id']), explode(",", $configuration['sales_channel_languages_locale']));
             $currenciesMap = array_combine(explode(",", $configuration['sales_channel_currencies_id']), explode(",", $configuration['sales_channel_currencies_code']));
-            $instantUpdateConfigurations[] = new ConfigurationDataObject([
+            $configurations[] = new ConfigurationDataObject([
                 "allowInstantUpdateRequests" => (bool) $configuration['instantUpdateStatus'],
                 "account" => $configuration['account'],
                 "isDev" => (bool) $configuration['devIndex'],
                 "isTest" => (bool) $configuration['isTest'],
-                "apiKey" => $configuration["instantUpdateAccessKey"],
-                "apiSecret" => $configuration["instantUpdateAccessSecret"],
+                "apiKey" => $configuration["apiKey"],
+                "apiSecret" => $configuration["apiSecret"],
                 "endpoint" => $configuration["instantUpdateEndpoint"],
                 "salesChannelId" => $configuration['sales_channel_id'],
                 "salesChannelTaxState" => $salesChannelContext->getTaxState(),
@@ -128,10 +129,127 @@ class Configuration
             ]);
         }
 
-        $item->set($instantUpdateConfigurations);
+        $item->set($configurations);
         $this->cache->save($item);
 
-        return $instantUpdateConfigurations;
+        return $configurations;
+    }
+
+    /**
+     * @return array
+     * @throws \Psr\Cache\CacheException
+     * @throws \Psr\Cache\InvalidArgumentException
+     */
+    public function getFullConfigurations() : array
+    {
+        $item = $this->cache->getItem(self::BOXALINO_DI_FULL_CACHE_KEY);
+        if ($item->isHit() && $item->get()) {
+            return $item->get();
+        }
+
+        $configurations = [];
+        $this->loadChannelConfigurationList();
+        $currencyFactorMap = $this->getCurrencyFactorMap();
+        foreach($this->configurations as $configuration)
+        {
+            $salesChannelContext = $this->salesChannelContextService->get(
+                $configuration['sales_channel_id'],
+                "boxalinofulldataintegrationtoken",
+                $configuration['sales_channel_default_language_id']
+            );
+
+            $languagesCodeMap = array_combine(explode(",", $configuration['sales_channel_languages_locale']), explode(",", $configuration['sales_channel_languages_code']));
+            $languagesMap = array_combine(explode(",", $configuration['sales_channel_languages_id']), explode(",", $configuration['sales_channel_languages_locale']));
+            $currenciesMap = array_combine(explode(",", $configuration['sales_channel_currencies_id']), explode(",", $configuration['sales_channel_currencies_code']));
+            $configurations[] = new ConfigurationDataObject([
+                "allowProductSync" => isset($configuration['productDiStatus']) ? (bool)$configuration['productDiStatus'] : false,
+                "allowUserSync" => isset($configuration['userDiStatus']) ? (bool) $configuration['userDiStatus'] : false,
+                "allowOrderSync" => isset($configuration['orderDiStatus']) ? (bool) $configuration['orderDiStatus'] : false,
+                "account" => $configuration['account'],
+                "isDev" => (bool) $configuration['devIndex'],
+                "isTest" => (bool) $configuration['isTest'],
+                "apiKey" => $configuration["apiKey"],
+                "apiSecret" => $configuration["apiSecret"],
+                "endpoint" => $configuration["fullDiEndpoint"],
+                "salesChannelId" => $configuration['sales_channel_id'],
+                "salesChannelTaxState" => $salesChannelContext->getTaxState(),
+                "defaultLanguageId" => $configuration['sales_channel_default_language_id'],
+                "defaultCurrencyId" => $configuration["sales_channel_default_currency_id"],
+                "defaultCurrencyCode" => $currenciesMap[$configuration["sales_channel_default_currency_id"]],
+                "defaultLanguageCode" => $languagesMap[$configuration['sales_channel_default_language_id']],
+                "customerGroupId" => $configuration["sales_channel_customer_group_id"],
+                "navigationCategoryId" => $configuration["sales_channel_navigation_category_id"],
+                "languages" => array_unique(explode(",", $configuration['sales_channel_languages_locale'])),
+                "languagesMap" => $languagesMap,
+                "languagesCountryCodeMap" => $languagesCodeMap,
+                "currencies" => array_unique(explode(",", $configuration['sales_channel_currencies_code'])),
+                "currenciesMap" => $currenciesMap,
+                "currencyFactorMap" => $currencyFactorMap,
+                "type"=>""
+            ]);
+        }
+
+        $item->set($configurations);
+        $this->cache->save($item);
+
+        return $configurations;
+    }
+
+    /**
+     * @return array
+     * @throws \Psr\Cache\CacheException
+     * @throws \Psr\Cache\InvalidArgumentException
+     */
+    public function getDeltaConfigurations() : array
+    {
+        $item = $this->cache->getItem(self::BOXALINO_DI_DELTA_CACHE_KEY);
+        if ($item->isHit() && $item->get()) {
+            return $item->get();
+        }
+
+        $configurations = [];
+        $this->loadChannelConfigurationList();
+        $currencyFactorMap = $this->getCurrencyFactorMap();
+        foreach($this->configurations as $configuration)
+        {
+            $salesChannelContext = $this->salesChannelContextService->get(
+                $configuration['sales_channel_id'],
+                "boxalinofulldataintegrationtoken",
+                $configuration['sales_channel_default_language_id']
+            );
+
+            $languagesCodeMap = array_combine(explode(",", $configuration['sales_channel_languages_locale']), explode(",", $configuration['sales_channel_languages_code']));
+            $languagesMap = array_combine(explode(",", $configuration['sales_channel_languages_id']), explode(",", $configuration['sales_channel_languages_locale']));
+            $currenciesMap = array_combine(explode(",", $configuration['sales_channel_currencies_id']), explode(",", $configuration['sales_channel_currencies_code']));
+            $configurations[] = new ConfigurationDataObject([
+                "allowProductDeltaSync" => (bool) $configuration['deltaProductDiStatus'],
+                "account" => $configuration['account'],
+                "isDev" => (bool) $configuration['devIndex'],
+                "isTest" => (bool) $configuration['isTest'],
+                "apiKey" => $configuration["apiKey"],
+                "apiSecret" => $configuration["apiSecret"],
+                "endpoint" => $configuration["deltaDiEndpoint"],
+                "salesChannelId" => $configuration['sales_channel_id'],
+                "salesChannelTaxState" => $salesChannelContext->getTaxState(),
+                "defaultLanguageId" => $configuration['sales_channel_default_language_id'],
+                "defaultCurrencyId" => $configuration["sales_channel_default_currency_id"],
+                "defaultCurrencyCode" => $currenciesMap[$configuration["sales_channel_default_currency_id"]],
+                "defaultLanguageCode" => $languagesMap[$configuration['sales_channel_default_language_id']],
+                "customerGroupId" => $configuration["sales_channel_customer_group_id"],
+                "navigationCategoryId" => $configuration["sales_channel_navigation_category_id"],
+                "languages" => array_unique(explode(",", $configuration['sales_channel_languages_locale'])),
+                "languagesMap" => $languagesMap,
+                "languagesCountryCodeMap" => $languagesCodeMap,
+                "currencies" => array_unique(explode(",", $configuration['sales_channel_currencies_code'])),
+                "currenciesMap" => $currenciesMap,
+                "currencyFactorMap" => $currencyFactorMap
+            ]);
+        }
+
+        $item->set($configurations);
+        $this->cache->save($item);
+
+        return $configurations;
     }
 
     /**

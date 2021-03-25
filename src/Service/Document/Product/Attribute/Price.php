@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Service\InstantUpdate\Document\Product\Attribute;
+namespace Boxalino\DataIntegration\Service\Document\Product\Attribute;
 
-use Boxalino\DataIntegration\Service\InstantUpdate\Document\Product\AttributeHandler;
+use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
 use Boxalino\DataIntegrationDoc\Service\Doc\Schema\PriceLocalized;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaPropertyHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
 use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Price as PriceSchema;
 use Doctrine\DBAL\Connection;
@@ -20,9 +19,9 @@ use Shopware\Core\Framework\Uuid\Uuid;
  * By default, just the default currency values are exported
  * For more options - please customize
  *
- * @package Boxalino\DataIntegration\Service\InstantUpdate\Document\Product\Attribute
+ * @package Boxalino\DataIntegration\Service\Document\Product\Attribute
  */
-class Price extends AttributeHandler
+class Price extends IntegrationSchemaPropertyHandler
 {
 
     /**
@@ -32,33 +31,16 @@ class Price extends AttributeHandler
     {
         $content = [];
         $currencyFactor = $this->getConfiguration()->getCurrencyFactorMap();
-        foreach ($this->getData(DocSchemaInterface::FIELD_PRICE) as $item)
+        $languages = $this->getConfiguration()->getLanguages();
+        $currencyCodes = $this->getConfiguration()->getCurrencies();
+        foreach ($this->getData() as $item)
         {
-            $listPrices = []; $prices = [];
-            foreach($this->getConfiguration()->getLanguages() as $language)
-            {
-                foreach($this->getConfiguration()->getCurrencies() as $currencyCode)
-                {
-                    if($item['price'])
-                    {
-                        $prices[] = $this->getPrice($language, $currencyCode, $item['price'], $currencyFactor[$currencyCode]);
-                    }
-                    if($item['list_price'])
-                    {
-                        $listPrices[] = $this->getPrice($language, $currencyCode, $item['list_price'], $currencyFactor[$currencyCode]);
-                    }
-                }
-            }
-
-            if(empty($prices) && empty($listPrices))
+            if(is_null($item['list_price']) && is_null($item['price']))
             {
                 continue;
             }
 
-            $schema = new PriceSchema();
-            $schema->setSalesPrice($prices)
-                ->setListPrice($listPrices);
-
+            $schema = $this->getPriceSchema($languages, $currencyCodes, $currencyFactor, $item['price'], $item['list_price']);
             $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_PRICE] = $schema;
         }
 
@@ -69,15 +51,15 @@ class Price extends AttributeHandler
      * @param string $propertyName
      * @return QueryBuilder
      */
-    public function getQuery(string $propertyName): QueryBuilder
+    public function getQuery(?string $propertyName = null): QueryBuilder
     {
         $query = $this->connection->createQueryBuilder();
         $query->select($this->getRequiredFields())
             ->from("product")
             ->andWhere('version_id = :live')
             ->andWhere("JSON_SEARCH(category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
-            ->andWhere('id IN (:ids)')
-            ->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
+            #->andWhere('id IN (:ids)')
+            #->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
             ->setParameter("channelRootCategoryId", $this->getConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 
@@ -91,7 +73,7 @@ class Price extends AttributeHandler
      * @return array
      * @throws \Exception
      */
-    protected function getRequiredFields(): array
+    public function getRequiredFields(): array
     {
         if ($this->getConfiguration()->getSalesChannelTaxState() === CartPrice::TAX_STATE_GROSS) {
             return [
@@ -108,21 +90,5 @@ class Price extends AttributeHandler
         ];
     }
 
-    /**
-     * @param $language
-     * @param $currencyCode
-     * @param $value
-     * @param $factor
-     * @return PriceLocalized
-     */
-    protected function getPrice($language, $currencyCode, $value, $factor) : PriceLocalized
-    {
-        $schema = new PriceLocalized();
-        $schema->setValue(round($value*$factor, 2))
-            ->setCurrency($currencyCode)
-            ->setLanguage($language);
-
-        return $schema;
-    }
 
 }

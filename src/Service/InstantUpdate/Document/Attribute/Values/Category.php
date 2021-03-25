@@ -1,13 +1,13 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\InstantUpdate\Document\Attribute\Values;
 
-use Boxalino\DataIntegration\Service\InstantUpdate\Document\DocHandlerTrait;
-use Boxalino\DataIntegration\Service\InstantUpdate\Document\DocPropertiesHandlerInterface;
+use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
+use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
 use Boxalino\DataIntegration\Service\InstantUpdate\Document\Product\AttributeHandler;
 use Boxalino\DataIntegrationDoc\Service\Doc\AttributeValues\Hierarchical;
 use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Localized;
-use Boxalino\DataIntegrationDoc\Service\DocPropertiesTrait;
-use Boxalino\DataIntegrationDoc\Service\Integration\DocProduct\AttributeHandlerInterface;
+use Boxalino\DataIntegrationDoc\Service\Doc\DocPropertiesTrait;
+use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaPropertyHandlerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -23,11 +23,9 @@ use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
  * @package Boxalino\DataIntegration\Service\InstantUpdate\Document\Attribute
  */
 class Category extends AttributeHandler
-    implements DocPropertiesHandlerInterface, AttributeHandlerInterface
 {
 
     use DocPropertiesTrait;
-    use DocHandlerTrait;
 
     /**
      * @var StringLocalized
@@ -56,7 +54,7 @@ class Category extends AttributeHandler
         {
             $schema = [];
             $schema['numerical'] = false;
-            $schema['value_id'] = $item[$this->getInstantUpdateIdField()];
+            $schema['value_id'] = $item[$this->getDiIdField()];
             foreach(array_filter(explode("|", $item['parent_value_ids'] ?? "")) as $parentId)
             {
                 $schema['parent_value_ids'][] = $parentId;
@@ -106,7 +104,7 @@ class Category extends AttributeHandler
         $translationFields = preg_filter('/^/', 'translations.', $this->getConfiguration()->getLanguages());
         return array_merge($translationFields,
             [
-                'LOWER(HEX(category.id)) AS ' . $this->getInstantUpdateIdField(),
+                'LOWER(HEX(category.id)) AS ' . $this->getDiIdField(),
                 "LOWER(HEX(category.parent_id)) AS parent_value_ids"
             ]
         );

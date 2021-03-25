@@ -23,6 +23,20 @@
             <defaultValue>0</defaultValue>
             <label>Test mode (log document content)</label>
         </input-field>
+        <input-field type="text">
+            <name>apiKey</name>
+            <label>Data Integration Key</label>
+            <helpText>Access Key for updating the data index</helpText>
+        </input-field>
+        <input-field type="text">
+            <name>apiSecret</name>
+            <label>Data Integration Secret</label>
+            <helpText>Access Secret for updating the data index</helpText>
+        </input-field>
+    </card>
+    <card>
+        <title>Instant Update Configuration</title>
+        <title lang="de-DE">Instant Update Konfiguration</title>
         <input-field type="bool">
             <name>instantUpdateStatus</name>
             <defaultValue>0</defaultValue>
@@ -30,19 +44,51 @@
             <helpText>Activate / Disable the Instant Update Integration (delta replacement)</helpText>
         </input-field>
         <input-field type="text">
-            <name>instantUpdateAccessKey</name>
-            <label>Instant Update Access Key</label>
-            <helpText>Access Key for the Instant Update requests</helpText>
-        </input-field>
-        <input-field type="text">
-            <name>instantUpdateAccessSecret</name>
-            <label>Instant Update Access Secret</label>
-            <helpText>Access Secret for the Instant Update requests</helpText>
-        </input-field>
-        <input-field type="text">
             <name>instantUpdateEndpoint</name>
             <label>Instant Update Endpoint</label>
             <helpText>Endpoint for Instant Update requests</helpText>
+        </input-field>
+    </card>
+    <card>
+        <title>Full Data Integration Configuration</title>
+        <title lang="de-DE">Full Konfiguration</title>
+        <input-field type="bool">
+            <name>productDiStatus</name>
+            <defaultValue>0</defaultValue>
+            <label>Allow Product Data Integration</label>
+            <helpText>Activate / Disable the Full Data Integration</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>userDiStatus</name>
+            <defaultValue>0</defaultValue>
+            <label>Enable User Data Integration</label>
+            <helpText>Activate / Disable the Data Integration for doc_user document</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>orderDiStatus</name>
+            <defaultValue>0</defaultValue>
+            <label>Enable Order Data Integration</label>
+            <helpText>Activate / Disable the Data Integration for the doc_order document</helpText>
+        </input-field>
+        <input-field type="text">
+            <name>fullDiEndpoint</name>
+            <label>Full Data Integration Endpoint</label>
+            <helpText>Endpoint for full data sync requests</helpText>
+        </input-field>
+    </card>
+    <card>
+        <title>Delta Data Integration Configuration</title>
+        <title lang="de-DE">Delta Konfiguration</title>
+        <input-field type="bool">
+            <name>deltaProductDiStatus</name>
+            <defaultValue>0</defaultValue>
+            <label>Allow Delta Data Integration (product)</label>
+            <helpText>Activate / Disable the Delta Data Integration</helpText>
+        </input-field>
+        <input-field type="text">
+            <name>deltaDiEndpoint</name>
+            <label>Delta Data Integration Endpoint</label>
+            <helpText>Endpoint for delta data sync requests</helpText>
         </input-field>
     </card>
 </config>

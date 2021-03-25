@@ -1,17 +1,17 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Service\InstantUpdate\Document;
+namespace Boxalino\DataIntegration\Service\Document;
 
+use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Localized;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\DocSchemaDefinitionInterface;
-use Boxalino\DataIntegrationDoc\Service\Integration\DocHandlerInterface;
-use Boxalino\DataIntegrationDoc\Service\Integration\DocProduct\AttributeHandlerInterface;
+use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocHandlerInterface;
+use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
 
 /**
- * Trait DocHandlerTrait
+ * Trait IntegrationIntegrationDocHandlerTrait
  *
- * @package Boxalino\DataIntegrationDoc\Service
+ * @package Boxalino\DataIntegration\Service\Document
  */
-trait DocHandlerTrait
+trait IntegrationDocHandlerTrait
 {
     /**
      * @var array
@@ -33,9 +33,9 @@ trait DocHandlerTrait
 
     /**
      * @param array $ids
-     * @return DocPropertiesHandlerInterface
+     * @return IntegrationDocHandlerInterface
      */
-    public function setIds(array $ids): DocPropertiesHandlerInterface
+    public function setIds(array $ids): IntegrationDocHandlerInterface
     {
         $this->ids = $ids;
         return $this;
@@ -51,9 +51,9 @@ trait DocHandlerTrait
 
     /**
      * @param ConfigurationDataObject $configuration
-     * @return DocPropertiesHandlerInterface
+     * @return IntegrationDocHandlerInterface
      */
-    public function setConfiguration(ConfigurationDataObject $configuration): DocPropertiesHandlerInterface
+    public function setConfiguration(ConfigurationDataObject $configuration): IntegrationDocHandlerInterface
     {
         $this->configuration = $configuration;
         return $this;
@@ -67,13 +67,21 @@ trait DocHandlerTrait
     {
         foreach($this->getHandlers() as $handler)
         {
-            if($handler instanceof DocPropertiesHandlerInterface)
+            if($handler instanceof IntegrationDocHandlerInterface)
             {
                 $handler->setConfiguration($this->getConfiguration())->setIds($this->getIds());
             }
         }
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDiIdField() : string
+    {
+        return DocSchemaInterface::DI_ID_FIELD;
     }
 
 }

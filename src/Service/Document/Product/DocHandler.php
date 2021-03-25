@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Service\InstantUpdate\Document\Product;
+namespace Boxalino\DataIntegration\Service\Document\Product;
 
 use Boxalino\DataIntegrationDoc\Service\Doc\DocPropertiesTrait;
 use Boxalino\DataIntegrationDoc\Service\Generator\DocGeneratorInterface;
@@ -28,7 +28,7 @@ use Psr\Log\LoggerInterface;
  *  - based on the navigation category ID it can be identified to which channel/data index the product ID belongs to
  * 3. all Boxalino accounts are updated with the products from the channel linked to the account
  *
- * @package Boxalino\DataIntegration\Service\InstantUpdate\Document\Product
+ * @package Boxalino\DataIntegration\Service\Document\Product
  */
 class DocHandler extends DocProduct
     implements DocProductHandlerInterface, IntegrationDocHandlerInterface

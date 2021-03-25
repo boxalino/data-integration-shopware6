@@ -5,7 +5,7 @@ use Boxalino\DataIntegration\Service\Util\Configuration;
 use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailDocLoadException;
 use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailSyncException;
 use Boxalino\DataIntegrationDoc\Service\GcpClientInterface;
-use Boxalino\DataIntegrationDoc\Service\Integration\IntegrationHandlerInterface;
+use Boxalino\DataIntegrationDoc\Service\Integration\ProductIntegrationHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 use GuzzleHttp\Psr7\Request;
 use Psr\Log\LoggerInterface;
@@ -17,7 +17,7 @@ use Psr\Log\LoggerInterface;
  * It does not remove existing items
  * It does not add new items
  *
- * @package Boxalini\Exporter\Service\InstantUpdate
+ * @package Boxalini\DataIntegration\Service\InstantUpdate
  */
 class InstantUpdateHandler implements InstantUpdateHandlerInterface
 {
@@ -28,19 +28,19 @@ class InstantUpdateHandler implements InstantUpdateHandlerInterface
     protected $client;
 
     /**
-     * @var IntegrationHandlerInterface
+     * @var ProductIntegrationHandlerInterface
      */
     protected $integrationHandler;
 
     /**
-     * @var Configuration 
+     * @var Configuration
      */
     protected $configurationManager;
 
     public function __construct(
         Configuration $configurationManager,
         GcpClientInterface $client,
-        IntegrationHandlerInterface $integrationHandler
+        ProductIntegrationHandlerInterface $integrationHandler
     ){
         $this->configurationManager = $configurationManager;
         $this->client = $client;
@@ -60,7 +60,7 @@ class InstantUpdateHandler implements InstantUpdateHandlerInterface
                 try {
                     $configuration->setData("type", GcpClientInterface::GCP_TYPE_PRODUCT);
                     $this->integrationHandler->setIds($ids)->setConfiguration($configuration);
-                    $documents = $this->integrationHandler->getDocs();                    
+                    $documents = $this->integrationHandler->getDocs();
                     $this->client->send($configuration, $documents, GcpClientInterface::GCP_MODE_INSTANT_UPDATE);
                 } catch (FailDocLoadException $exception)
                 {

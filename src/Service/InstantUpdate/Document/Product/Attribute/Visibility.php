@@ -1,9 +1,8 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\InstantUpdate\Document\Product\Attribute;
 
-use Boxalino\DataIntegration\Service\Component\ProductComponentInterface;
 use Boxalino\DataIntegration\Service\InstantUpdate\Document\Product\AttributeHandler;
-use Boxalino\DataIntegrationDoc\Service\Integration\DocProduct\AttributeHandlerInterface;
+use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaPropertyHandlerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -11,6 +10,7 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Visibility as VisibilitySchema;
 use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Localized;
+use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
 
 /**
  * Class Visibility
@@ -26,16 +26,16 @@ class Visibility extends AttributeHandler
     public function getValues() : array
     {
         $content = [];
-        foreach ($this->getData(AttributeHandlerInterface::ATTRIBUTE_TYPE_VISIBILITY) as $item)
+        foreach ($this->getData(DocSchemaInterface::FIELD_VISIBILITY) as $item)
         {
             $schema = new VisibilitySchema();
             foreach($this->getConfiguration()->getLanguages() as $language)
             {
                 $localized = new Localized();
-                $localized->setLanguage($language)->setValue($item[AttributeHandlerInterface::ATTRIBUTE_TYPE_VISIBILITY]);
+                $localized->setLanguage($language)->setValue($item[DocSchemaInterface::FIELD_VISIBILITY]);
                 $schema->addValue($localized);
             }
-            $content[$item[$this->getInstantUpdateIdField()]][AttributeHandlerInterface::ATTRIBUTE_TYPE_VISIBILITY] = [$schema];
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_VISIBILITY] = [$schema];
         }
 
         return $content;
@@ -48,7 +48,7 @@ class Visibility extends AttributeHandler
     public function getQuery(string $propertyName): QueryBuilder
     {
         $query = $this->connection->createQueryBuilder();
-        $query->select(["LOWER(HEX(product.id)) AS {$this->getInstantUpdateIdField()}", "product_visibility.visibility AS {$propertyName}"])
+        $query->select(["LOWER(HEX(product.id)) AS {$this->getDiIdField()}", "product_visibility.visibility AS {$propertyName}"])
             ->from("product")
             ->leftJoin("product", 'product_visibility', 'product_visibility',
                 'product.id = product_visibility.product_id AND product.version_id = product_visibility.product_version_id')

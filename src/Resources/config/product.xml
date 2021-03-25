@@ -1,0 +1,366 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:monolog="http://symfony.com/schema/dic/monolog"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd http://symfony.com/schema/dic/monolog http://symfony.com/schema/dic/monolog/monolog-1.0.xsd">
+
+    <monolog:config>
+        <monolog:channel>boxalino-di-product</monolog:channel>
+        <monolog:handler name="boxalino_di_product_log"
+                         type="stream"
+                         path="%kernel.logs_dir%/boxalino-di-product-%kernel.environment%.log"
+                         level="debug">
+            <monolog:channels>
+                <monolog:channel>boxalino-di-product</monolog:channel>
+            </monolog:channels>
+        </monolog:handler>
+    </monolog:config>
+
+    <services>
+
+        <!-- A: CLI command -->
+        <service id="Boxalino\DataIntegration\Service\FullCliCommand">
+            <argument type="service" id="boxalino.di.configurator"/>
+            <argument type="service" id="Boxalino\DataIntegrationDoc\Service\GcpClientInterface"/>
+            <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\ProductIntegrationHandlerInterface"/>
+            <tag name="console.command"/>
+        </service>
+
+        <!-- B: DI handler - generates each file tyle (handler) required for data type integration -->
+        <service id="Boxalino\DataIntegrationDoc\Service\Integration\ProductIntegrationHandlerInterface"
+                 class="Boxalino\DataIntegration\Service\Integration\ProductIntegrationHandler">
+            <call method="addHandler">
+                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\DocLanguagesHandlerInterface"/>
+            </call>
+            <call method="addHandler">
+                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\DocAttributeHandlerInterface"/>
+            </call>
+            <call method="addHandler">
+                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\DocAttributeValuesHandlerInterface"/>
+            </call>
+            <call method="addHandler">
+                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\DocProductHandlerInterface"/>
+            </call>
+        </service>
+
+        <!-- A: Brand Doc Attribute Handler -->
+        <service id="boxalino.di.product.brand" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Brand">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.util.localized"/>
+        </service>
+
+        <!-- C: Link Doc Attribute Handler -->
+        <service id="boxalino.di.product.link" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Link">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.util.localized"/>
+        </service>
+
+        <!-- D: Properties Doc Attribute Handler -->
+        <service id="boxalino.di.product.property" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Property">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.util.localized"/>
+        </service>
+
+        <!-- E: Properties Doc Attribute Handler -->
+        <service id="boxalino.di.product.option" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Option">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.util.localized"/>
+        </service>
+
+        <!-- F: product translation Doc Attribute Handler -->
+        <service id="boxalino.di.product.translation" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Translation">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.util.localized"/>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>name</argument>
+                <argument>title</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>description</argument>
+                <argument>description</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>meta_title</argument>
+                <argument>localized_string_property</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>meta_description</argument>
+                <argument>localized_string_property</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>keywords</argument>
+                <argument>localized_string_property</argument>
+            </call>
+        </service>
+
+        <!-- G: Visibility Doc Attribute Handler -->
+        <service id="boxalino.di.product.visibility" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Visibility">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>visibility</argument>
+            </call>
+        </service>
+
+        <!-- H: SKU Price Attribute Handler -->
+        <service id="boxalino.di.product.price" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Price">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>price</argument>
+            </call>
+        </service>
+
+        <!-- I: Image Attribute Handler -->
+        <service id="boxalino.di.product.images" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Image">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
+            <argument type="service" id="media.repository"/>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>images</argument>
+            </call>
+        </service>
+
+        <!-- J: Stock Attribute Handler -->
+        <service id="boxalino.di.product.stock" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Stock">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>stock</argument>
+            </call>
+        </service>
+
+        <!-- K: Categorization Attribute Handler -->
+        <service id="boxalino.di.product.category" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Category">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.values.category"/>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>categories</argument>
+            </call>
+        </service>
+
+        <!-- K: Product tags -->
+        <service id="boxalino.di.product.tags" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Tag">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
+
+        <!-- K: Product Delivery Time -->
+        <service id="boxalino.di.product.delivery" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\DeliveryTime">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.util.localized"/>
+        </service>
+
+        <!-- L: Generic product attributes from product table Attribute Handler -->
+        <service id="boxalino.di.product.entity" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Entity">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>id</argument>
+                <argument>internal_id</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>product_number</argument>
+                <argument>sku</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>ean</argument>
+                <argument>ean</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>updated_at</argument>
+                <argument>last_update</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>created_at</argument>
+                <argument>creation</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>active</argument>
+                <argument>status</argument>
+            </call>
+            <!-- is_closeout is used as logic for the "show out of stock" property -->
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>is_closeout</argument>
+                <argument>show_out_of_stock</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>rating_average</argument>
+                <argument>numeric_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>restock_time</argument>
+                <argument>numeric_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>sales</argument>
+                <argument>numeric_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>purchase_price</argument>
+                <argument>numeric_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>child_count</argument>
+                <argument>numeric_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>min_purchase</argument>
+                <argument>numeric_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>tax_rate</argument>
+                <argument>numeric_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>auto_increment</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>shipping_free</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>is_closeout</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>available</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>mark_as_topseller</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>main_variant_id</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>manufacturer_number</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>delivery_time_id</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>parent_id</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>category_tree</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>option_ids</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>property_ids</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>display_group</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>tag</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>release_date</argument>
+                <argument>datetime_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>delivery_time</argument>
+                <argument>localized_string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>tax</argument>
+                <argument>localized_string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>tag</argument>
+                <argument>localized_string_attributes</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>status</argument>
+                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Status</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>string_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\StringAttribute</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>localized_string_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\TypedLocalized</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>numeric_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\NumericAttribute</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>localized_numeric_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\TypedLocalized</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>datetime_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\DatetimeAttribute</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>localized_datetime_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\TypedLocalized</argument>
+            </call>
+        </service>
+
+        <!-- M: Attribute Handler for the category values (hierarchical) -->
+        <service id="boxalino.di.values.category" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\Category">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.util.localized"/>
+            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
+            <argument type="service" id="media.repository"/>
+        </service>
+
+        <!-- N: Attribute Handler for the brand -->
+        <service id="boxalino.di.values.brand" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\Brand">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.util.localized"/>
+            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
+            <argument type="service" id="media.repository"/>
+        </service>
+
+        <!-- O: Attribute Handler for the properties -->
+        <service id="boxalino.di.values.property" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\Property">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.util.localized"/>
+            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
+            <argument type="service" id="media.repository"/>
+        </service>
+
+        <!-- P: Attribute Handler for the tags -->
+        <service id="boxalino.di.values.tags" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\Tag">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
+
+        <!-- S: Attribute Handler for the delivery times -->
+        <service id="boxalino.di.values.delivery" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\DeliveryTime">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.util.localized"/>
+        </service>
+
+        <!-- T: Attribute info handler for SW6 properties -->
+        <service id="boxalino.di.attribute.property" class="Boxalino\DataIntegration\Service\Document\Attribute\Property">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.util.localized"/>
+            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+        </service>
+
+        <!-- U: Attribute info handler for GENERIC attributes from ENTITY -->
+        <service id="boxalino.di.attribute.entity" class="Boxalino\DataIntegration\Service\Document\Attribute\Entity">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.product.entity"/>
+        </service>
+
+    </services>
+
+</container>

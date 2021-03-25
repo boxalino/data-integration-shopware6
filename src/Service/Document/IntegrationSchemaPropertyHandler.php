@@ -1,25 +1,29 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Service\InstantUpdate\Document\Product;
+namespace Boxalino\DataIntegration\Service\Document;
 
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Doc\DocPropertiesTrait;
+use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaIntegrationTrait;
 use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaPropertyHandler;
 use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaPropertyHandlerInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 
 /**
- * Class AttributeHandler
- * Gets values for every attribute, based on the configured attribute handler
+ * Class IntegrationPropertyHandler
  *
- * @package Boxalino\DataIntegration\Service\InstantUpdate\Document
+ * Handles the data integration logic for product attributes
+ * (from the documented schema and/or available in the project)
+ *
+ * @package Boxalino\DataIntegration\Service\Document\Product
  */
-abstract class AttributeHandler extends DocSchemaPropertyHandler
+abstract class IntegrationSchemaPropertyHandler extends DocSchemaPropertyHandler
     implements \JsonSerializable, DocSchemaPropertyHandlerInterface, IntegrationDocHandlerInterface
 {
 
     use IntegrationDocHandlerTrait;
+    use DocSchemaIntegrationTrait;
 
     /**
      * @var Connection
@@ -46,14 +50,11 @@ abstract class AttributeHandler extends DocSchemaPropertyHandler
         }
     }
 
+
     /**
      * @param string $propertyName
      * @return QueryBuilder
      */
     abstract function getQuery(?string $propertyName = null) : QueryBuilder;
 
-    /**
-     * @return array
-     */
-    abstract public function getValues() : array;
 }

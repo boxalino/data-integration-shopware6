@@ -16,6 +16,12 @@
         </monolog:handler>
     </monolog:config>
 
+    <imports>
+        <import resource="product.xml"/>
+        <import resource="user.xml"/>
+        <import resource="order.xml"/>
+    </imports>
+
     <services>
 
         <!-- A: configuration cache handler (loads instant-update configurations in a key) -->

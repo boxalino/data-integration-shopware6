@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Service\InstantUpdate\Document\Product\Attribute;
+namespace Boxalino\DataIntegration\Service\Document\Product\Attribute;
 
-use Boxalino\DataIntegration\Service\InstantUpdate\Document\Product\AttributeHandler;
+use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
 use Boxalino\DataIntegrationDoc\Service\Doc\Schema\PricingLocalized;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaPropertyHandlerInterface;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Pricing as PricingSchema;
 use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Pricing as PricingSchema;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -20,9 +19,9 @@ use Shopware\Core\Framework\Uuid\Uuid;
  * By default, just the default currency values are exported
  * For more options - please customize
  *
- * @package Boxalino\DataIntegration\Service\InstantUpdate\Document\Product\Attribute
+ * @package Boxalino\DataIntegration\Service\Document\Product\Attribute
  */
-class Pricing extends AttributeHandler
+class Pricing extends IntegrationSchemaPropertyHandler
 {
 
     /**
@@ -31,20 +30,15 @@ class Pricing extends AttributeHandler
     public function getValues() : array
     {
         $content = [];
-        $currencyFactor = $this->getConfiguration()->getCurrencyFactorMap();
-        foreach ($this->getData(DocSchemaInterface::FIELD_PRICING) as $item)
+        $currencyFactors = $this->getConfiguration()->getCurrencyFactorMap();
+        $languages = $this->getConfiguration()->getLanguages();
+        $currencyCodes = $this->getConfiguration()->getCurrencies();
+        foreach ($this->getData() as $item)
         {
-            $schema = new PricingSchema();
             $label = ($item['min_price'] < $item['max_price']) ? "from" : "";
-            foreach($this->getConfiguration()->getLanguages() as $language)
-            {
-                foreach($this->getConfiguration()->getCurrencies() as $currencyCode)
-                {
-                    $schema->addValue($this->getPrice($language, $currencyCode, $item['min_price'], $currencyFactor[$currencyCode], $label));
-                }
-            }
 
-            $schema->setType("discounted");
+            /** @var PricingSchema $schema */
+            $schema = $this->getPricingSchema($languages, $currencyCodes, $currencyFactors, $item['min_price'], $label);
             $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_PRICING] = $schema;
         }
 
@@ -57,30 +51,22 @@ class Pricing extends AttributeHandler
      * @param string $propertyName
      * @return QueryBuilder
      */
-    public function getQuery(string $propertyName): QueryBuilder
+    public function getQuery(?string $propertyName = null): QueryBuilder
     {
-        $query = $this->connection->createQueryBuilder();
-        $query->select($this->getRequiredFields())
-            ->from("(" .$this->getPriceQuery()->__toString().")", "product")
-            ->groupBy('parent_id')
-            ->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
-            ->setParameter("channelRootCategoryId", $this->getConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
-            ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
-
-        return $query;
-    }
-
-    /**
-     * @return array
-     * @throws \Exception
-     */
-    public function getRequiredFields(): array
-    {
-        return [
+        $fields =  [
             "parent_id AS {$this->getDiIdField()}",
             'MIN(price) AS min_price',
             'MAX(price) AS max_price'
         ];
+        $query = $this->connection->createQueryBuilder();
+        $query->select($fields)
+            ->from("(" .$this->getPriceQuery()->__toString().")", "product")
+            ->groupBy('parent_id')
+            #->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
+            ->setParameter("channelRootCategoryId", $this->getConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
+            ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
+
+        return $query;
     }
 
     /**
@@ -93,8 +79,8 @@ class Pricing extends AttributeHandler
             ->from("product")
             ->andWhere('version_id = :live')
             ->andWhere("JSON_SEARCH(category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
-            ->andWhere("active = 1 OR parent_id IS NULL")
-            ->andWhere('id IN (:ids)');
+            ->andWhere("active = 1 OR parent_id IS NULL");
+        #->andWhere('id IN (:ids)');
 
         return $query;
     }
@@ -122,24 +108,6 @@ class Pricing extends AttributeHandler
         return array_merge($baseFields, [
             'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(price, \'$.*.net\'),\'$[0]\'), 2), ",", "") AS price',
         ]);
-    }
-
-    /**
-     * @param $language
-     * @param $currencyCode
-     * @param $value
-     * @param $factor
-     * @return PriceLocalized
-     */
-    protected function getPrice($language, $currencyCode, $value, $factor, $label) : PricingLocalized
-    {
-        $schema = new PricingLocalized();
-        $schema->setValue(round($value*$factor, 2))
-            ->setCurrency($currencyCode)
-            ->setLanguage($language)
-            ->setLabel($label);
-
-        return $schema;
     }
 
 }

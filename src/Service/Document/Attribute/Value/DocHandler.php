@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Service\InstantUpdate\Document\Attribute\Values;
+namespace Boxalino\DataIntegration\Service\Document\Attribute\Value;
 
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Doc\AttributeValue;
@@ -12,10 +12,10 @@ use Psr\Log\LoggerInterface;
 
 /**
  * Class DocHandler
- * Generator for the doc_attribute_values document
+ * Generator for the doc_attribute_value document
  * https://boxalino.atlassian.net/wiki/spaces/BPKB/pages/252313624/doc+attribute+values
  *
- * @package Boxalino\DataIntegration\Service\InstantUpdate\Document\Attribute\Values
+ * @package Boxalino\DataIntegration\Service\Document\Attribute\Value
  */
 class DocHandler extends DocAttributeValues
     implements DocAttributeValuesHandlerInterface, IntegrationDocHandlerInterface
@@ -58,8 +58,8 @@ class DocHandler extends DocAttributeValues
                     {
                         foreach($content as $schema)
                         {
-                            /** @var AttributeValue | DocHandlerInterface $doc */
-                            $doc = $this->getDocPropertySchema(DocAttributeValuesHandlerInterface::DOC_TYPE, $schema);
+                            /** @var AttributeValue | DocSchemaPropertyHandlerInterface $doc */
+                            $doc = $this->getDocPropertySchema($this->getDocType(), $schema);
                             $doc->setAttributeName($propertyName)->setCreationTm(date("Y-m-d H:i:s"));
 
                             $this->addDocLine($doc);
