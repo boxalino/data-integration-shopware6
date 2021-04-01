@@ -5,7 +5,7 @@ use Boxalino\DataIntegration\Service\Util\Configuration;
 use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailDocLoadException;
 use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailSyncException;
 use Boxalino\DataIntegrationDoc\Service\GcpClientInterface;
-use Boxalino\DataIntegrationDoc\Service\Integration\ProductIntegrationHandlerInterface;
+use Boxalino\DataIntegrationDoc\Service\Integration\OrderIntegrationHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -13,17 +13,16 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class FullCliCommand
+ * Class OrderCliCommand
  *
  * Use to trigger the data integration processes
- * ex: php bin/console boxalino:data-integration:full [type] [account]
+ * ex: php bin/console boxalino:data-integration:order [mode] [account]
  *
  * @package Boxalino\DataIntegration\Service
  */
-class FullCliCommand extends Command
+class OrderCliCommand extends Command
 {
-    protected static $defaultName = 'boxalino:data-integration:full';
-
+    protected static $defaultName = 'boxalino:data-integration:order';
 
     /**
      * @var GcpClientInterface
@@ -31,7 +30,7 @@ class FullCliCommand extends Command
     protected $client;
 
     /**
-     * @var ProductIntegrationHandlerInterface
+     * @var OrderIntegrationHandlerInterface
      */
     protected $integrationHandler;
 
@@ -43,7 +42,7 @@ class FullCliCommand extends Command
     public function __construct(
         Configuration $configurationManager,
         GcpClientInterface $client,
-        ProductIntegrationHandlerInterface $integrationHandler
+        OrderIntegrationHandlerInterface $integrationHandler
     ){
         $this->configurationManager = $configurationManager;
         $this->client = $client;
@@ -54,11 +53,11 @@ class FullCliCommand extends Command
 
     protected function configure()
     {
-        $this->setDescription("Boxalino Full Data Integration Command. Accepts parameters [type] [account]")
-            ->setHelp("This command allows you to update the Boxalino SOLR data index with your current data.");
+        $this->setDescription("Boxalino Order Data Integration Command. Accepts parameters [mode] [account]")
+            ->setHelp("This command allows you to update the orders content directly in BigQuery.");
 
         $this->addArgument(
-            "type", InputArgument::REQUIRED, "Document Type: product, user, order, etc"
+            "mode", InputArgument::REQUIRED, "Document Sync Mode: full, delta, instant"
         );
 
         $this->addArgument(
@@ -70,13 +69,9 @@ class FullCliCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $type = $input->getArgument("type");
+        $type = $input->getArgument("mode");
         $account = $input->getArgument("account");
-        $output->writeln('Start of Full Boxalino Data Integration (DI) for '. $type .'...');
-
-        //get service for the type
-        //set account (if set)
-        //export
+        $output->writeln('Start of Boxalino Order Data Integration (DI) for '. $type .'...');
 
         try{
             if(!empty($account))
@@ -86,7 +81,7 @@ class FullCliCommand extends Command
                 {
                     try {
                         $configuration->setData("type", $this->integrationHandler->getIntegrationType());
-                        $this->integrationHandler->setIds([])->setConfiguration($configuration);
+                        $this->integrationHandler->setConfiguration($configuration);
                         $documents = $this->integrationHandler->getDocs();
                         $this->client->send($configuration, $documents, $this->integrationHandler->getIntegrationStrategy());
                     } catch (FailDocLoadException $exception)
@@ -108,7 +103,7 @@ class FullCliCommand extends Command
             $output->writeln($exc->getMessage());
         }
 
-        $output->writeln("End of Boxalino Full Data Integration Process.");
+        $output->writeln("End of Boxalino Order Data Integration Process.");
         return 0;
     }
 

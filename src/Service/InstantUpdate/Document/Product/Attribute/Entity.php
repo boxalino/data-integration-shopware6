@@ -5,7 +5,6 @@ use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
 use Boxalino\DataIntegration\Service\InstantUpdate\Document\Product\AttributeHandler;
 use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Localized;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\TypedLocalized;
 use Boxalino\DataIntegrationDoc\Service\Doc\DocPropertiesTrait;
 use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaPropertyHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocProductHandlerInterface;
@@ -43,26 +42,26 @@ class Entity extends AttributeHandler
                 if($this->handlerHasProperty($propertyName))
                 {
                     $docAttributeName = $this->properties[$propertyName];
-                    if(in_array($docAttributeName, $this->getBooleanSchemaTypes()))
+                    if(in_array($docAttributeName, $this->getProductBooleanSchemaTypes()))
                     {
                         $content[$item[$this->getDiIdField()]][$docAttributeName] = (bool)$value;
                         continue;
                     }
 
-                    if(in_array($docAttributeName, $this->getSingleValueSchemaTypes()))
+                    if(in_array($docAttributeName, $this->getProductSingleValueSchemaTypes()))
                     {
                         $content[$item[$this->getDiIdField()]][$docAttributeName] = $value;
                         continue;
                     }
 
-                    if(in_array($docAttributeName, $this->getMultivalueSchemaTypes()))
+                    if(in_array($docAttributeName, $this->getProductMultivalueSchemaTypes()))
                     {
                         if(!isset($content[$item[$this->getDiIdField()]][$docAttributeName]))
                         {
                             $content[$item[$this->getDiIdField()]][$docAttributeName] = [];
                         }
 
-                        if(in_array($docAttributeName, $this->getLocalizedSchemaProperties()))
+                        if(in_array($docAttributeName, $this->getProductLocalizedSchemaProperties()))
                         {
                             foreach($this->getConfiguration()->getLanguages() as $language)
                             {
@@ -90,7 +89,6 @@ class Entity extends AttributeHandler
 
                         if(in_array($docAttributeName, $this->getTypedLocalizedSchemaProperties()))
                         {
-                            /** @var TypedLocalized $typedProperty */
                             $typedProperty = $this->getAttributeSchema($docAttributeName);
                             if($typedProperty)
                             {

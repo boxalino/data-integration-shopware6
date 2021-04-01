@@ -5,7 +5,7 @@ use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 use Boxalino\DataIntegration\Service\Util\ShopwareLocalizedTrait;
 use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Localized;
 use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Repeated;
+use Boxalino\DataIntegrationDoc\Service\Doc\Schema\RepeatedGenericLocalized;
 use Boxalino\DataIntegrationDoc\Service\Doc\Schema\RepeatedLocalized;
 use Doctrine\DBAL\ParameterType;
 use Shopware\Core\Defaults;
@@ -84,11 +84,11 @@ trait DocAttributeValueTrait
 
     /**
      * @param array $item
-     * @return Repeated
+     * @return RepeatedGenericLocalized
      */
-    public function getImage(array $item) : Repeated
+    public function getImage(array $item) : RepeatedGenericLocalized
     {
-        $images = new Repeated();
+        $images = new RepeatedGenericLocalized();
         $schema = new RepeatedLocalized();
         if($item[DocSchemaInterface::FIELD_IMAGES])
         {

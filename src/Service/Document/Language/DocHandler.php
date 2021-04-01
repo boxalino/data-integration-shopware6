@@ -27,7 +27,11 @@ class DocHandler extends DocLanguages
      */
     public function getDoc(): string
     {
-        $this->createDocLines();
+        if(empty($this->docs))
+        {
+            $this->createDocLines();
+        }
+
         return parent::getDoc();
     }
 

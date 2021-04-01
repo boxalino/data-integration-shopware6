@@ -55,13 +55,13 @@ class Entity extends IntegrationSchemaPropertyHandler
                 $content[$docAttributeName][DocSchemaInterface::FIELD_LABEL] = $this->getPropertyLabel($propertyName, $languages);
 
                 $docMappingName = $this->productEntityConfiguration->getProperties()[$propertyName];
-                if( in_array($docMappingName, $this->getBooleanSchemaTypes()) ||
-                    in_array($docMappingName, $this->getSingleValueSchemaTypes())
+                if( in_array($docMappingName, $this->getProductBooleanSchemaTypes()) ||
+                    in_array($docMappingName, $this->getProductSingleValueSchemaTypes())
                 ){
                     continue;
                 }
 
-                if(in_array($docMappingName, $this->getMultivalueSchemaTypes()))
+                if(in_array($docMappingName, $this->getProductMultivalueSchemaTypes()))
                 {
                     if(in_array($docMappingName, $this->getTypedLocalizedSchemaProperties())
                     ){
@@ -71,7 +71,6 @@ class Entity extends IntegrationSchemaPropertyHandler
 
                     if(in_array($docMappingName, $this->getTypedSchemaProperties()))
                     {
-                        /** @var Typed | null $typedProperty */
                         $typedProperty = $this->productEntityConfiguration->getAttributeSchema($docMappingName);
                         if($typedProperty)
                         {

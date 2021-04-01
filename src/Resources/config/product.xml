@@ -19,27 +19,41 @@
     <services>
 
         <!-- A: CLI command -->
-        <service id="Boxalino\DataIntegration\Service\FullCliCommand">
+        <service id="Boxalino\DataIntegration\Service\ProductCliCommand">
             <argument type="service" id="boxalino.di.configurator"/>
             <argument type="service" id="Boxalino\DataIntegrationDoc\Service\GcpClientInterface"/>
             <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\ProductIntegrationHandlerInterface"/>
             <tag name="console.command"/>
         </service>
 
-        <!-- B: DI handler - generates each file tyle (handler) required for data type integration -->
+        <!-- B.1: DI handler - generates each file tyle (handler) required for data type integration -->
         <service id="Boxalino\DataIntegrationDoc\Service\Integration\ProductIntegrationHandlerInterface"
                  class="Boxalino\DataIntegration\Service\Integration\ProductIntegrationHandler">
             <call method="addHandler">
-                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\DocLanguagesHandlerInterface"/>
+                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocLanguagesHandlerInterface"/>
             </call>
             <call method="addHandler">
-                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\DocAttributeHandlerInterface"/>
+                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocAttributeHandlerInterface"/>
             </call>
             <call method="addHandler">
-                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\DocAttributeValuesHandlerInterface"/>
+                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocAttributeValuesHandlerInterface"/>
             </call>
             <call method="addHandler">
-                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\DocProductHandlerInterface"/>
+                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocProductHandlerInterface"/>
+            </call>
+        </service>
+
+        <!-- B.2: DI handler - generates each file tyle (handler) required for data type integration -->
+        <service id="Boxalino\DataIntegrationDoc\Service\Integration\ProductInstantIntegrationHandlerInterface"
+                 class="Boxalino\DataIntegration\Service\Integration\Product\InstantIntegrationHandler">
+            <call method="addHandler">
+                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocLanguagesHandlerInterface"/>
+            </call>
+            <call method="addHandler">
+                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocAttributeValuesHandlerInterface"/>
+            </call>
+            <call method="addHandler">
+                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocProductHandlerInterface"/>
             </call>
         </service>
 
@@ -290,7 +304,7 @@
             </call>
             <call method="addSchemaDefinition">
                 <argument>localized_string_attributes</argument>
-                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\TypedLocalized</argument>
+                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\StringLocalizedAttribute</argument>
             </call>
             <call method="addSchemaDefinition">
                 <argument>numeric_attributes</argument>
@@ -298,7 +312,7 @@
             </call>
             <call method="addSchemaDefinition">
                 <argument>localized_numeric_attributes</argument>
-                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\TypedLocalized</argument>
+                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\NumericLocalizedAttribute</argument>
             </call>
             <call method="addSchemaDefinition">
                 <argument>datetime_attributes</argument>
@@ -306,7 +320,7 @@
             </call>
             <call method="addSchemaDefinition">
                 <argument>localized_datetime_attributes</argument>
-                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\TypedLocalized</argument>
+                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\DatetimeLocalizedAttribute</argument>
             </call>
         </service>
 

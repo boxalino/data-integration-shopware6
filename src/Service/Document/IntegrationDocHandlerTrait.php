@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document;
 
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Localized;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
@@ -16,7 +15,7 @@ trait IntegrationDocHandlerTrait
     /**
      * @var array
      */
-    protected $ids;
+    protected $ids = [];
 
     /**
      * @var ConfigurationDataObject

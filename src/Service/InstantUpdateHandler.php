@@ -5,7 +5,7 @@ use Boxalino\DataIntegration\Service\Util\Configuration;
 use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailDocLoadException;
 use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailSyncException;
 use Boxalino\DataIntegrationDoc\Service\GcpClientInterface;
-use Boxalino\DataIntegrationDoc\Service\Integration\ProductIntegrationHandlerInterface;
+use Boxalino\DataIntegrationDoc\Service\Integration\ProductInstantIntegrationHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 use GuzzleHttp\Psr7\Request;
 use Psr\Log\LoggerInterface;
@@ -28,7 +28,7 @@ class InstantUpdateHandler implements InstantUpdateHandlerInterface
     protected $client;
 
     /**
-     * @var ProductIntegrationHandlerInterface
+     * @var ProductInstantIntegrationHandlerInterface
      */
     protected $integrationHandler;
 
@@ -40,7 +40,7 @@ class InstantUpdateHandler implements InstantUpdateHandlerInterface
     public function __construct(
         Configuration $configurationManager,
         GcpClientInterface $client,
-        ProductIntegrationHandlerInterface $integrationHandler
+        ProductInstantIntegrationHandlerInterface $integrationHandler
     ){
         $this->configurationManager = $configurationManager;
         $this->client = $client;
@@ -58,10 +58,10 @@ class InstantUpdateHandler implements InstantUpdateHandlerInterface
             if($configuration->getAllowInstantUpdateRequests())
             {
                 try {
-                    $configuration->setData("type", GcpClientInterface::GCP_TYPE_PRODUCT);
+                    $configuration->setData("type", $this->integrationHandler->getIntegrationType());
                     $this->integrationHandler->setIds($ids)->setConfiguration($configuration);
                     $documents = $this->integrationHandler->getDocs();
-                    $this->client->send($configuration, $documents, GcpClientInterface::GCP_MODE_INSTANT_UPDATE);
+                    $this->client->send($configuration, $documents, $this->integrationHandler->getIntegrationStrategy());
                 } catch (FailDocLoadException $exception)
                 {
                     //maybe a fallback to save the content of the documents and try again later or have the integration team review

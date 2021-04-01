@@ -36,7 +36,12 @@ class DocHandler extends DocAttributeValues
      */
     public function getDoc(): string
     {
-        $this->createDocLines();
+        if(empty($this->docs))
+        {
+            $this->addPropertiesOnHandlers();
+            $this->createDocLines();
+
+        }
         return parent::getDoc();
     }
 
@@ -45,7 +50,6 @@ class DocHandler extends DocAttributeValues
      */
     protected function createDocLines() : self
     {
-        $this->addPropertiesOnHandlers();
         $data = [];
         try {
             foreach($this->getHandlers() as $handler)

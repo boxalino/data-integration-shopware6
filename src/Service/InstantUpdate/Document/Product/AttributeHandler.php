@@ -3,6 +3,7 @@ namespace Boxalino\DataIntegration\Service\InstantUpdate\Document\Product;
 
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
+use Boxalino\DataIntegrationDoc\Service\Doc\DocProductAttributeTrait;
 use Boxalino\DataIntegrationDoc\Service\Doc\DocPropertiesTrait;
 use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaPropertyHandler;
 use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaPropertyHandlerInterface;
@@ -20,6 +21,7 @@ abstract class AttributeHandler extends DocSchemaPropertyHandler
 {
 
     use IntegrationDocHandlerTrait;
+    use DocProductAttributeTrait;
 
     /**
      * @var Connection

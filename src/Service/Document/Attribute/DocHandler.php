@@ -37,7 +37,12 @@ class DocHandler extends DocAttribute
      */
     public function getDoc(): string
     {
-        $this->createDocLines();
+        if(empty($this->docs))
+        {
+            $this->addPropertiesOnHandlers();
+            $this->setLanguages($this->getConfiguration()->getLanguages());
+            $this->createDocLines();
+        }
         return parent::getDoc();
     }
 
@@ -48,9 +53,6 @@ class DocHandler extends DocAttribute
     {
         try {
             $data = [];
-            $this->addPropertiesOnHandlers();
-            $this->setLanguages($this->getConfiguration()->getLanguages());
-
             foreach($this->getHandlers() as $handler)
             {
                 if($handler instanceof DocSchemaPropertyHandlerInterface)

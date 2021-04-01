@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Service\Document;
+namespace Boxalino\DataIntegration\Service\Integration;
 
+use Boxalino\DataIntegrationDoc\Service\GcpClientInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\OrderIntegrationHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\IntegrationHandler;
@@ -26,5 +27,22 @@ class OrderIntegrationHandler extends IntegrationHandler
         $this->addPropertiesOnHandlers();
         return parent::getDocs();
     }
+
+    /**
+     * @return string
+     */
+    public function getIntegrationStrategy(): string
+    {
+        return OrderIntegrationHandlerInterface::INTEGRATION_MODE;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIntegrationType(): string
+    {
+        return OrderIntegrationHandlerInterface::INTEGRATION_TYPE;
+    }
+
 
 }

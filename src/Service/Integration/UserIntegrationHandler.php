@@ -27,4 +27,21 @@ class UserIntegrationHandler extends IntegrationHandler
         return parent::getDocs();
     }
 
+    /**
+     * @return string
+     */
+    public function getIntegrationStrategy(): string
+    {
+        return UserIntegrationHandlerInterface::INTEGRATION_MODE;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIntegrationType(): string
+    {
+        return UserIntegrationHandlerInterface::INTEGRATION_TYPE;
+    }
+
+
 }

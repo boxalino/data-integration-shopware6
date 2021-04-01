@@ -52,7 +52,12 @@ class DocHandler extends DocProduct
      */
     public function getDoc() : string
     {
-        $this->createDocLines();
+        if(empty($this->docs))
+        {
+            $this->generateDocData();
+            $this->createDocLines();
+        }
+
         return parent::getDoc();
     }
 
@@ -89,21 +94,21 @@ class DocHandler extends DocProduct
     {
         $productGroups = [];
         $productSkus = [];
-        foreach($this->generateDocData() as $productId => $productData)
+        foreach($this->getDocData() as $id => $content)
         {
             try{
-                $schema = $this->getDocPropertySchema($productData[DocSchemaInterface::DI_DOC_TYPE_FIELD], $productData);
-                $parentId = $productData[DocSchemaInterface::DI_PARENT_ID_FIELD];
+                $schema = $this->getDocPropertySchema($content[DocSchemaInterface::DI_DOC_TYPE_FIELD], $content);
+                $parentId = $content[DocSchemaInterface::DI_PARENT_ID_FIELD];
                 if(is_null($parentId))
                 {
                     $sku = $this->docTypePropDiffDuplicate(
                         DocProductHandlerInterface::DOC_PRODUCT_LEVEL_GROUP,
                         DocProductHandlerInterface::DOC_PRODUCT_LEVEL_SKU,
-                        $productData
+                        $content
                     );
 
                     $schema->addSkus([$sku]);
-                    $productGroups[$productId] = $schema;
+                    $productGroups[$id] = $schema;
                     continue;
                 }
 

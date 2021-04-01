@@ -3,8 +3,9 @@ namespace Boxalino\DataIntegration\Service\Document;
 
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
+use Boxalino\DataIntegrationDoc\Service\Doc\DocOrderAttributeTrait;
+use Boxalino\DataIntegrationDoc\Service\Doc\DocProductAttributeTrait;
 use Boxalino\DataIntegrationDoc\Service\Doc\DocPropertiesTrait;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaIntegrationTrait;
 use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaPropertyHandler;
 use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaPropertyHandlerInterface;
 use Doctrine\DBAL\Connection;
@@ -16,14 +17,15 @@ use Doctrine\DBAL\Query\QueryBuilder;
  * Handles the data integration logic for product attributes
  * (from the documented schema and/or available in the project)
  *
- * @package Boxalino\DataIntegration\Service\Document\Product
+ * @package Boxalino\DataIntegration\Service\Document
  */
 abstract class IntegrationSchemaPropertyHandler extends DocSchemaPropertyHandler
     implements \JsonSerializable, DocSchemaPropertyHandlerInterface, IntegrationDocHandlerInterface
 {
 
     use IntegrationDocHandlerTrait;
-    use DocSchemaIntegrationTrait;
+    use DocProductAttributeTrait;
+    use DocOrderAttributeTrait;
 
     /**
      * @var Connection

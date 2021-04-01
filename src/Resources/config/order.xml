@@ -17,8 +17,166 @@
     </monolog:config>
 
     <services>
+        <!-- A: CLI command -->
+        <service id="Boxalino\DataIntegration\Service\OrderCliCommand">
+            <argument type="service" id="boxalino.di.configurator"/>
+            <argument type="service" id="Boxalino\DataIntegrationDoc\Service\GcpClientInterface"/>
+            <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\OrderIntegrationHandlerInterface"/>
+            <tag name="console.command"/>
+        </service>
 
+        <!-- B: DI handler - generates each file tyle (handler) required for data type integration -->
+        <service id="Boxalino\DataIntegrationDoc\Service\Integration\OrderIntegrationHandlerInterface"
+                 class="Boxalino\DataIntegration\Service\Integration\OrderIntegrationHandler">
+            <call method="addHandler">
+                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocLanguagesHandlerInterface"/>
+            </call>
+            <call method="addHandler">
+                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocOrderHandlerInterface"/>
+            </call>
+        </service>
 
+        <!-- C: Generic order attributes from order table Attribute Handler -->
+        <service id="boxalino.di.order.entity" class="Boxalino\DataIntegration\Service\Document\Order\Entity">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>id</argument>
+                <argument>internal_id</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>order_number</argument>
+                <argument>external_id</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>store</argument> <!-- sales_channel_id -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>currency_cd</argument> <!-- mapping from currency_id -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>currency_factor</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>amount_total</argument>
+                <argument>total_crncy_amt</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>amount_net</argument>
+                <argument>total_crncy_amt_net</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>tax_status</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>shipping_total</argument>
+                <argument>shipping_costs</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>tax_free</argument> <!-- if tax_status=="net" - true -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>tax_amnt</argument> <!-- diff between total price - total price net -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>language</argument> <!-- mapping from language_id -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>tracking_code</argument> <!-- mapping from order_delivery -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>payment_method</argument> <!-- mapping from order_transaction -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>shipping_method</argument> <!-- mapping from order_delivery -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>shipping_description</argument> <!-- mapping from order_delivery -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>sent</argument> <!-- mapping from order_delivery -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>email</argument> <!-- mapping from language_id -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>persona_id</argument> <!-- mapping from order_customer -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>customer_comment</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>updated_at</argument>
+                <argument>last_update</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>order_date_time</argument>
+                <argument>creation</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>status</argument> <!-- based on state_id -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>status_code</argument> <!-- based on state_id -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>auto_increment</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>campaign_code</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>affiliate_code</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>deep_link_code</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>customer_comments</argument>
+                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Order\Comment</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>string_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\StringAttribute</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>localized_string_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\StringLocalizedAttribute</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>numeric_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\NumericAttribute</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>localized_numeric_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\NumericLocalizedAttribute</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>datetime_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\DatetimeAttribute</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>localized_datetime_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\DatetimeLocalizedAttribute</argument>
+            </call>
+        </service>
+
+        <service id="boxalino.di.order.contact.shipping" class="Boxalino\DataIntegration\Service\Document\Order\Contact\Shipping">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
+
+        <service id="boxalino.di.order.contact.billing" class="Boxalino\DataIntegration\Service\Document\Order\Contact\Billing">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
+
+        <service id="boxalino.di.order.product" class="Boxalino\DataIntegration\Service\Document\Order\Product">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
 
     </services>
 

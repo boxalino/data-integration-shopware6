@@ -1,25 +1,25 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Service\Integration;
+namespace Boxalino\DataIntegration\Service\Integration\Product;
 
 use Boxalino\DataIntegrationDoc\Service\GcpClientInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocProductHandlerInterface;
-use Boxalino\DataIntegrationDoc\Service\Integration\ProductIntegrationHandlerInterface;
+use Boxalino\DataIntegrationDoc\Service\Integration\ProductInstantIntegrationHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\IntegrationHandler;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
 
 /**
- * Class ProductIntegrationHandler
+ * Class InstantIntegrationHandler
  * Handles the product integration scenarios:
- * - full
+ * - instant
  *
  * Integrated as a service
  *
  * @package Boxalino\DataIntegrationDoc\Service
  */
-class ProductIntegrationHandler extends IntegrationHandler
-    implements IntegrationDocHandlerInterface, ProductIntegrationHandlerInterface
+class InstantIntegrationHandler extends IntegrationHandler
+    implements IntegrationDocHandlerInterface, ProductInstantIntegrationHandlerInterface
 {
 
     use IntegrationDocHandlerTrait;
@@ -38,7 +38,7 @@ class ProductIntegrationHandler extends IntegrationHandler
      */
     public function getIntegrationStrategy(): string
     {
-        return ProductIntegrationHandlerInterface::INTEGRATION_MODE;
+        return ProductInstantIntegrationHandlerInterface::INTEGRATION_MODE;
     }
 
     /**
@@ -46,7 +46,7 @@ class ProductIntegrationHandler extends IntegrationHandler
      */
     public function getIntegrationType(): string
     {
-        return ProductIntegrationHandlerInterface::INTEGRATION_TYPE;
+        return ProductInstantIntegrationHandlerInterface::INTEGRATION_TYPE;
     }
 
 }

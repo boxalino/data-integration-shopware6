@@ -33,6 +33,11 @@
             <label>Data Integration Secret</label>
             <helpText>Access Secret for updating the data index</helpText>
         </input-field>
+        <input-field type="text">
+            <name>batchSize</name>
+            <label>Data Integration Batch Size</label>
+            <helpText>Batch Size for export in full mode (product, customers, orders, etc)</helpText>
+        </input-field>
     </card>
     <card>
         <title>Instant Update Configuration</title>
@@ -79,12 +84,6 @@
     <card>
         <title>Delta Data Integration Configuration</title>
         <title lang="de-DE">Delta Konfiguration</title>
-        <input-field type="bool">
-            <name>deltaProductDiStatus</name>
-            <defaultValue>0</defaultValue>
-            <label>Allow Delta Data Integration (product)</label>
-            <helpText>Activate / Disable the Delta Data Integration</helpText>
-        </input-field>
         <input-field type="text">
             <name>deltaDiEndpoint</name>
             <label>Delta Data Integration Endpoint</label>
