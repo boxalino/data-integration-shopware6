@@ -30,9 +30,9 @@ class Price extends IntegrationSchemaPropertyHandler
     public function getValues() : array
     {
         $content = [];
-        $currencyFactor = $this->getConfiguration()->getCurrencyFactorMap();
-        $languages = $this->getConfiguration()->getLanguages();
-        $currencyCodes = $this->getConfiguration()->getCurrencies();
+        $currencyFactor = $this->getSystemConfiguration()->getCurrencyFactorMap();
+        $languages = $this->getSystemConfiguration()->getLanguages();
+        $currencyCodes = $this->getSystemConfiguration()->getCurrencies();
         foreach ($this->getData() as $item)
         {
             if(is_null($item['list_price']) && is_null($item['price']))
@@ -60,7 +60,7 @@ class Price extends IntegrationSchemaPropertyHandler
             ->andWhere("JSON_SEARCH(category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
             #->andWhere('id IN (:ids)')
             #->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
-            ->setParameter("channelRootCategoryId", $this->getConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
+            ->setParameter("channelRootCategoryId", $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 
         return $query;
@@ -75,7 +75,7 @@ class Price extends IntegrationSchemaPropertyHandler
      */
     public function getRequiredFields(): array
     {
-        if ($this->getConfiguration()->getSalesChannelTaxState() === CartPrice::TAX_STATE_GROSS) {
+        if ($this->getSystemConfiguration()->getSalesChannelTaxState() === CartPrice::TAX_STATE_GROSS) {
             return [
                 'LOWER(HEX(id)) AS ' . $this->getDiIdField(),
                 'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(price, \'$.*.gross\'),\'$[0]\'), 2), ",", "") AS price',

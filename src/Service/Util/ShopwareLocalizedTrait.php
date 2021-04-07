@@ -56,7 +56,7 @@ trait ShopwareLocalizedTrait
      */
     public function getLanguageHeaderColumns() : array
     {
-        return preg_filter('/^/', $this->getPrefix() .'.', $this->getConfiguration()->getLanguages());
+        return preg_filter('/^/', $this->getPrefix() .'.', $this->getSystemConfiguration()->getLanguages());
     }
 
     /**

@@ -59,9 +59,9 @@ class InstantUpdateHandler implements InstantUpdateHandlerInterface
             {
                 try {
                     $configuration->setData("type", $this->integrationHandler->getIntegrationType());
-                    $this->integrationHandler->setIds($ids)->setConfiguration($configuration);
+                    $this->integrationHandler->setIds($ids)->setSystemConfiguration($configuration);
                     $documents = $this->integrationHandler->getDocs();
-                    $this->client->send($configuration, $documents, $this->integrationHandler->getIntegrationStrategy());
+                    $this->client->send($configuration, $documents, $this->integrationHandler->getIntegrationMode());
                 } catch (FailDocLoadException $exception)
                 {
                     //maybe a fallback to save the content of the documents and try again later or have the integration team review

@@ -1,12 +1,14 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service;
 
+use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
 use Boxalino\DataIntegration\Service\Util\Configuration;
 use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailDocLoadException;
 use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailSyncException;
 use Boxalino\DataIntegrationDoc\Service\GcpClientInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\OrderIntegrationHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,9 +27,9 @@ class OrderCliCommand extends Command
     protected static $defaultName = 'boxalino:data-integration:order';
 
     /**
-     * @var GcpClientInterface
+     * @var LoggerInterface
      */
-    protected $client;
+    protected $logger;
 
     /**
      * @var OrderIntegrationHandlerInterface
@@ -39,14 +41,21 @@ class OrderCliCommand extends Command
      */
     protected $configurationManager;
 
+    /**
+     * @var string
+     */
+    protected $environment;
+
     public function __construct(
         Configuration $configurationManager,
-        GcpClientInterface $client,
-        OrderIntegrationHandlerInterface $integrationHandler
+        OrderIntegrationHandlerInterface $integrationHandler,
+        LoggerInterface $logger,
+        string $environment
     ){
         $this->configurationManager = $configurationManager;
-        $this->client = $client;
         $this->integrationHandler = $integrationHandler;
+        $this->logger = $logger;
+        $this->environment = $environment;
 
         parent::__construct();
     }
@@ -54,7 +63,7 @@ class OrderCliCommand extends Command
     protected function configure()
     {
         $this->setDescription("Boxalino Order Data Integration Command. Accepts parameters [mode] [account]")
-            ->setHelp("This command allows you to update the orders content directly in BigQuery.");
+            ->setHelp("This command allows to synchronize the orders content to BigQuery.");
 
         $this->addArgument(
             "mode", InputArgument::REQUIRED, "Document Sync Mode: full, delta, instant"
@@ -74,29 +83,36 @@ class OrderCliCommand extends Command
         $output->writeln('Start of Boxalino Order Data Integration (DI) for '. $type .'...');
 
         try{
-            if(!empty($account))
+            if(empty($type))
             {
-                /** @var ConfigurationDataObject $configuration */
-                foreach($this->configurationManager->getFullConfigurations() as $configuration)
+                return 0;
+            }
+
+            /** @var ConfigurationDataObject $configuration */
+            foreach($this->configurationManager->getFullConfigurations() as $configuration)
+            {
+                if($configuration->getAccount() == $account)
                 {
                     try {
-                        $configuration->setData("type", $this->integrationHandler->getIntegrationType());
-                        $this->integrationHandler->setConfiguration($configuration);
-                        $documents = $this->integrationHandler->getDocs();
-                        $this->client->send($configuration, $documents, $this->integrationHandler->getIntegrationStrategy());
+                        $this->integrationHandler->setSystemConfiguration($configuration);
+
+                        $this->integrationHandler
+                            ->addConfigurationScope($configuration)
+                            ->integrate();
                     } catch (FailDocLoadException $exception)
                     {
                         //maybe a fallback to save the content of the documents and try again later or have the integration team review
-                        $this->client->logOrThrowException($exception);
+                        $this->logOrThrowException($exception);
                     } catch (FailSyncException $exception)
                     {
                         //save that the product id was not synced (relevant for full error data sync alerts)
-                        $this->client->logOrThrowException($exception);
+                        $this->logOrThrowException($exception);
                     } catch (\Throwable $exception)
                     {
-                        $this->client->logOrThrowException($exception);
+                        $this->logOrThrowException($exception);
                     }
                 }
+
             }
         } catch (\Exception $exc)
         {
@@ -106,5 +122,23 @@ class OrderCliCommand extends Command
         $output->writeln("End of Boxalino Order Data Integration Process.");
         return 0;
     }
+
+    /**
+     * Do not throw exception, the product update must not be blocked if the SOLR SYNC update does not work
+     *
+     * @param \Throwable $exception
+     * @return bool
+     * @throws \Throwable
+     */
+    public function logOrThrowException(\Throwable $exception)
+    {
+        if ($this->environment === 'prod') {
+            $this->logger->warning("Boxalino API Data Integration error: " . $exception->getMessage());
+            throw $exception;
+        }
+
+        $this->logger->info("Boxalino API Data Integration error: " . $exception->getMessage());
+    }
+
 
 }

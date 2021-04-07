@@ -67,7 +67,7 @@ trait DocAttributeValueTrait
      */
     public function addingPropertyToSchema(string $property, array $schema, $source = null) : array
     {
-        foreach($this->getConfiguration()->getLanguages() as $language)
+        foreach($this->getSystemConfiguration()->getLanguages() as $language)
         {
             $content = null;
             if(is_array($source) && isset($source[$language])){ $content = $source[$language]; }
@@ -93,7 +93,7 @@ trait DocAttributeValueTrait
         if($item[DocSchemaInterface::FIELD_IMAGES])
         {
             $value = $this->getImageByMediaId($item[DocSchemaInterface::FIELD_IMAGES]);
-            foreach($this->getConfiguration()->getLanguages() as $language)
+            foreach($this->getSystemConfiguration()->getLanguages() as $language)
             {
                 $localized = new Localized();
                 $localized->setLanguage($language)->setValue($value);

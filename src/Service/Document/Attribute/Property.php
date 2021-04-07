@@ -92,7 +92,7 @@ class Property extends IntegrationSchemaPropertyHandler
         return $this->localizedStringBuilder->getLocalizedFields('property_group_translation',
             'property_group_id', 'property_group_id','property_group_id',
             'name', ['property_group_translation.property_group_id'],
-            $this->getConfiguration()->getLanguagesMap(), $this->getConfiguration()->getDefaultLanguageId()
+            $this->getSystemConfiguration()->getLanguagesMap(), $this->getSystemConfiguration()->getDefaultLanguageId()
         );
     }
 
@@ -115,7 +115,7 @@ class Property extends IntegrationSchemaPropertyHandler
         if($this->translations->offsetExists($id))
         {
             $content = $this->translations->offsetGet($id);
-            foreach($this->getConfiguration()->getLanguages() as $language)
+            foreach($this->getSystemConfiguration()->getLanguages() as $language)
             {
                 $localized = new Localized();
                 $localized->setValue($content[$language])->setLanguage($language);

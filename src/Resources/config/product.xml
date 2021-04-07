@@ -21,8 +21,9 @@
         <!-- A: CLI command -->
         <service id="Boxalino\DataIntegration\Service\ProductCliCommand">
             <argument type="service" id="boxalino.di.configurator"/>
-            <argument type="service" id="Boxalino\DataIntegrationDoc\Service\GcpClientInterface"/>
             <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\ProductIntegrationHandlerInterface"/>
+            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument>%kernel.environment%</argument>
             <tag name="console.command"/>
         </service>
 

@@ -23,26 +23,18 @@ class DocHandler extends DocAttributeValues
 
     use IntegrationDocHandlerTrait;
 
-    protected $logger;
-
-    public function __construct(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-        parent::__construct();
-    }
-
     /**
      * @return string
      */
-    public function getDoc(): string
+    public function getDocContent(): string
     {
         if(empty($this->docs))
         {
-            $this->addPropertiesOnHandlers();
+            $this->addSystemConfigurationOnHandlers();
             $this->createDocLines();
 
         }
-        return parent::getDoc();
+        return parent::getDocContent();
     }
 
     /**
@@ -63,7 +55,7 @@ class DocHandler extends DocAttributeValues
                         foreach($content as $schema)
                         {
                             /** @var AttributeValue | DocSchemaPropertyHandlerInterface $doc */
-                            $doc = $this->getDocPropertySchema($this->getDocType(), $schema);
+                            $doc = $this->getDocSchemaGenerator($schema);
                             $doc->setAttributeName($propertyName)->setCreationTm(date("Y-m-d H:i:s"));
 
                             $this->addDocLine($doc);

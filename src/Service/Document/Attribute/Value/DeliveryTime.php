@@ -77,7 +77,7 @@ class DeliveryTime extends IntegrationSchemaPropertyHandler
         return $this->localizedStringBuilder->getLocalizedFields('delivery_time_translation',
             'delivery_time_id', 'delivery_time_id','delivery_time_id',
             'name', ['delivery_time_translation.delivery_time_id'],
-            $this->getConfiguration()->getLanguagesMap(), $this->getConfiguration()->getDefaultLanguageId()
+            $this->getSystemConfiguration()->getLanguagesMap(), $this->getSystemConfiguration()->getDefaultLanguageId()
         );
     }
 

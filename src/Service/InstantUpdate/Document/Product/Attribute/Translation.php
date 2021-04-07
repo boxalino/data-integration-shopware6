@@ -44,7 +44,7 @@ class Translation extends AttributeHandler
                 {
                     $content[$item[$this->getDiIdField()]][$docAttributeName] = [];
                 }
-                foreach($this->getConfiguration()->getLanguages() as $language)
+                foreach($this->getSystemConfiguration()->getLanguages() as $language)
                 {
                     $localized = new Localized();
                     $localized->setLanguage($language)->setValue($item[$language]);
@@ -87,7 +87,7 @@ class Translation extends AttributeHandler
     {
         return $this->localizedStringBuilder->getLocalizedFields('product_translation', 'product_id', 'product_id',
             'product_version_id', $propertyName, ['product_translation.product_id', 'product_translation.product_version_id'],
-            $this->getConfiguration()->getLanguagesMap(), $this->getConfiguration()->getDefaultLanguageId()
+            $this->getSystemConfiguration()->getLanguagesMap(), $this->getSystemConfiguration()->getDefaultLanguageId()
         );
     }
 

@@ -24,25 +24,16 @@ class DocHandler extends DocOrder
 
     use IntegrationDocHandlerTrait;
 
-    protected $logger;
-
-    public function __construct(LoggerInterface $logger)
-    {
-        parent::__construct();
-        $this->logger = $logger;
-    }
-
     /**
      * @return string
      */
-    public function getDoc(): string
+    public function getDocContent(): string
     {
-        if(empty($this->docs))
-        {
-            $this->generateDocData();
-            $this->createDocLines();
-        }
-        return parent::getDoc();
+        $this->addSystemConfigurationOnHandlers();
+        $this->generateDocData();
+        $this->createDocLines();
+
+        return parent::getDocContent();
     }
 
     /**
@@ -54,7 +45,7 @@ class DocHandler extends DocOrder
             foreach($this->getDocData() as $id=>$content)
             {
                 /** @var Order | DocHandlerInterface $doc */
-                $doc = $this->getDocPropertySchema(DocOrderHandlerInterface::DOC_TYPE, $content);
+                $doc = $this->getDocSchemaGenerator($content);
                 $doc->setCreationTm(date("Y-m-d H:i:s"));
 
                 $this->addDocLine($doc);
@@ -68,16 +59,5 @@ class DocHandler extends DocOrder
         return $this;
     }
 
-
-    /**
-     * Create the product groups content (based on the IDs to be updated)
-     *
-     * @return array
-     */
-    public function generateDocData() : array
-    {
-        $this->addPropertiesOnHandlers();
-        return parent::generateDocData();
-    }
 
 }

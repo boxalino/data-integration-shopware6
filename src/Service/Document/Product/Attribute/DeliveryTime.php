@@ -39,7 +39,7 @@ class DeliveryTime extends IntegrationSchemaPropertyHandler
     public function getValues() : array
     {
         $content = [];
-        $languages = $this->getConfiguration()->getLanguages();
+        $languages = $this->getSystemConfiguration()->getLanguages();
         foreach ($this->getData() as $item)
         {
             if(!isset($content[$item[$this->getDiIdField()]]))
@@ -79,7 +79,7 @@ class DeliveryTime extends IntegrationSchemaPropertyHandler
             ->andWhere('product.version_id = :live')
             ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
             ->addGroupBy('product.id')
-            ->setParameter('channelRootCategoryId', $this->getConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
+            ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION));
 
         return $query;
@@ -95,7 +95,7 @@ class DeliveryTime extends IntegrationSchemaPropertyHandler
         return $this->localizedStringBuilder->getLocalizedFields('delivery_time_translation',
             'delivery_time_id', 'delivery_time_id','delivery_time_id',
             'name', ['delivery_time_translation.delivery_time_id'],
-            $this->getConfiguration()->getLanguagesMap(), $this->getConfiguration()->getDefaultLanguageId()
+            $this->getSystemConfiguration()->getLanguagesMap(), $this->getSystemConfiguration()->getDefaultLanguageId()
         );
     }
 

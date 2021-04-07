@@ -25,14 +25,14 @@ class DocHandler extends DocLanguages
     /**
      * @return string
      */
-    public function getDoc(): string
+    public function getDocContent(): string
     {
         if(empty($this->docs))
         {
             $this->createDocLines();
         }
 
-        return parent::getDoc();
+        return parent::getDocContent();
     }
 
     /**
@@ -40,10 +40,10 @@ class DocHandler extends DocLanguages
      */
     protected function createDocLines() : self
     {
-        foreach($this->getConfiguration()->getLanguagesCountryCodeMap() as $language=>$countryCode)
+        foreach($this->getSystemConfiguration()->getLanguagesCountryCodeMap() as $language=>$countryCode)
         {
             /** @var Language | DocHandlerInterface $doc */
-            $doc = $this->getDocPropertySchema(DocLanguagesHandlerInterface::DOC_TYPE);
+            $doc = $this->getDocSchemaGenerator();
             $doc->setLanguage($language)->setCountryCode($countryCode)->setCreationTm(date("Y-m-d H:i:s"));
 
             $this->addDocLine($doc);

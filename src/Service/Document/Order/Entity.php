@@ -84,7 +84,7 @@ class Entity extends IntegrationSchemaPropertyHandler
                             if($typedProperty)
                             {
                                 $typedProperty->setName($propertyName);
-                                foreach($this->getConfiguration()->getLanguages() as $language)
+                                foreach($this->getSystemConfiguration()->getLanguages() as $language)
                                 {
                                     $localized = new Localized();
                                     $localized->setLanguage($language)->setValue($value);
@@ -123,7 +123,7 @@ class Entity extends IntegrationSchemaPropertyHandler
     {
         $properties = $this->getFields();
         $orderStateId = $this->getStateId();
-        $defaultLanguageId = $this->getConfiguration()->getDefaultLanguageId();
+        $defaultLanguageId = $this->getSystemConfiguration()->getDefaultLanguageId();
 
         $query = $this->connection->createQueryBuilder();
         $query->select($properties)
@@ -162,7 +162,7 @@ class Entity extends IntegrationSchemaPropertyHandler
             ->andWhere("o.version_id = :live")
             ->orderBy("o.order_date_time", 'DESC')
             ->groupBy("o.id")
-            //->setParameter('channelId', Uuid::fromHexToBytes($this->getConfiguration()->getSalesChannelId()), ParameterType::BINARY)
+            //->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
             ->setParameter('defaultLanguageId', Uuid::fromHexToBytes($defaultLanguageId), ParameterType::BINARY)
             ->setParameter('orderStateMachineId', $orderStateId, ParameterType::BINARY);

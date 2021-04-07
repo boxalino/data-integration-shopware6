@@ -50,10 +50,10 @@ class DocHandler extends DocProduct
     /**
      * @return string
      */
-    public function getDoc() : string
+    public function getDocContent() : string
     {
         $this->createDocLines();
-        return parent::getDoc();
+        return parent::getDocContent();
     }
 
     /**
@@ -70,9 +70,9 @@ class DocHandler extends DocProduct
         $productGroups = $this->getDocProductGroups();
         foreach($productGroups as $productGroup)
         {
-            $document = $this->getDocPropertySchema(DocProductHandlerInterface::DOC_TYPE);
+            $document = $this->getDocSchemaGenerator();
 
-            $productLine = $this->getDocPropertySchema(DocProductHandlerInterface::DOC_PRODUCT_LEVEL_LINE);
+            $productLine = $this->getDocSchemaGenerator(DocProductHandlerInterface::DOC_PRODUCT_LEVEL_LINE);
             $productLine->addProductGroup($productGroup);
 
             $document->setProductLine($productLine)->setCreationTm(date("Y-m-d H:i:s"));
@@ -92,7 +92,7 @@ class DocHandler extends DocProduct
         foreach($this->generateDocData() as $productId => $productData)
         {
             try{
-                $schema = $this->getDocPropertySchema($productData[DocSchemaInterface::DI_DOC_TYPE_FIELD], $productData);
+                $schema = $this->getDocSchemaGenerator($productData[DocSchemaInterface::DI_DOC_TYPE_FIELD], $productData);
                 $parentId = $productData[DocSchemaInterface::DI_PARENT_ID_FIELD];
                 if(is_null($parentId))
                 {
@@ -124,7 +124,7 @@ class DocHandler extends DocProduct
         foreach($productSkus as $parentId => $skus)
         {
             /** @var Group $schema by default - on product update event - the main variant is also exported*/
-            $schema = $this->getDocPropertySchema(
+            $schema = $this->getDocSchemaGenerator(
                 DocProductHandlerInterface::DOC_PRODUCT_LEVEL_GROUP,
                 [DocSchemaInterface::FIELD_INTERNAL_ID => $parentId]
             );
@@ -146,7 +146,7 @@ class DocHandler extends DocProduct
      */
     public function generateDocData() : array
     {
-        $this->addPropertiesOnHandlers();
+        $this->addSystemConfigurationOnHandlers();
         return parent::generateDocData();
     }
 

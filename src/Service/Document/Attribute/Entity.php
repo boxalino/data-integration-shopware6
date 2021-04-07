@@ -44,7 +44,7 @@ class Entity extends IntegrationSchemaPropertyHandler
     public function getValues() : array
     {
         $content = [];
-        $languages = $this->getConfiguration()->getLanguages();
+        $languages = $this->getSystemConfiguration()->getLanguages();
         foreach ($this->getData() as $item)
         {
             $propertyName = $item[$this->getDiIdField()];

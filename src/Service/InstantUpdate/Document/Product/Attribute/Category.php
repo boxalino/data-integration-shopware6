@@ -36,7 +36,7 @@ class Category extends AttributeHandler
             }
 
             $categoryzation = new CategorySchema();
-            foreach($this->getConfiguration()->getLanguages() as $language)
+            foreach($this->getSystemConfiguration()->getLanguages() as $language)
             {
                 foreach(explode(",", $item[$propertyName]) as $categoryId)
                 {

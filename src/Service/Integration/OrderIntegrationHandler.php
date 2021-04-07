@@ -19,19 +19,25 @@ class OrderIntegrationHandler extends IntegrationHandler
 
     use IntegrationDocHandlerTrait;
 
+    public function integrate(): void
+    {
+        $this->addSystemConfigurationOnHandlers();
+        parent::integrate();
+    }
+
     /**
      * @return \ArrayIterator
      */
     public function getDocs(): \ArrayIterator
     {
-        $this->addPropertiesOnHandlers();
+        $this->addSystemConfigurationOnHandlers();
         return parent::getDocs();
     }
 
     /**
      * @return string
      */
-    public function getIntegrationStrategy(): string
+    public function getIntegrationMode(): string
     {
         return OrderIntegrationHandlerInterface::INTEGRATION_MODE;
     }

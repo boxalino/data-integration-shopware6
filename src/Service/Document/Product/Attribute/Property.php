@@ -38,7 +38,7 @@ class Property extends IntegrationSchemaPropertyHandler
     public function getValues() : array
     {
         $content = [];
-        $languages = $this->getConfiguration()->getLanguages();
+        $languages = $this->getSystemConfiguration()->getLanguages();
         foreach($this->getPropertyNames() as $property)
         {
             $propertyName = $property['name'];
@@ -86,7 +86,7 @@ class Property extends IntegrationSchemaPropertyHandler
             #->addGroupBy('property_group_option.id')
             ->andWhere("LOWER(HEX(pgo.property_group_id)) = '$propertyName'")
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
-            ->setParameter('channelRootCategoryId', $this->getConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
+            ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('propertyGroupId', Uuid::fromHexToBytes($propertyName), ParameterType::BINARY);
 
         return $query;

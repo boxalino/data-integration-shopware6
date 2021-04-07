@@ -30,9 +30,9 @@ class Pricing extends IntegrationSchemaPropertyHandler
     public function getValues() : array
     {
         $content = [];
-        $currencyFactors = $this->getConfiguration()->getCurrencyFactorMap();
-        $languages = $this->getConfiguration()->getLanguages();
-        $currencyCodes = $this->getConfiguration()->getCurrencies();
+        $currencyFactors = $this->getSystemConfiguration()->getCurrencyFactorMap();
+        $languages = $this->getSystemConfiguration()->getLanguages();
+        $currencyCodes = $this->getSystemConfiguration()->getCurrencies();
         foreach ($this->getData() as $item)
         {
             $label = ($item['min_price'] < $item['max_price']) ? "from" : "";
@@ -63,7 +63,7 @@ class Pricing extends IntegrationSchemaPropertyHandler
             ->from("(" .$this->getPriceQuery()->__toString().")", "product")
             ->groupBy('parent_id')
             #->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
-            ->setParameter("channelRootCategoryId", $this->getConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
+            ->setParameter("channelRootCategoryId", $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 
         return $query;
@@ -99,7 +99,7 @@ class Pricing extends IntegrationSchemaPropertyHandler
             "IF(parent_id IS NULL, LOWER(HEX(id)), LOWER(HEX(parent_id))) AS parent_id"
         ];
 
-        if ($this->getConfiguration()->getSalesChannelTaxState() === CartPrice::TAX_STATE_GROSS) {
+        if ($this->getSystemConfiguration()->getSalesChannelTaxState() === CartPrice::TAX_STATE_GROSS) {
             return array_merge($baseFields, [
                 'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(price, \'$.*.gross\'),\'$[0]\'), 2), ",", "") AS price',
             ]);

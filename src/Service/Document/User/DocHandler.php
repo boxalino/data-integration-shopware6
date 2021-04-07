@@ -24,12 +24,12 @@ class DocHandler extends DocUser
     /**
      * @return string
      */
-    public function getDoc(): string
+    public function getDocContent(): string
     {
         /** @var User | DocHandlerInterface $doc */
-        $doc = $this->getDocPropertySchema(DocUserHandlerInterface::DOC_TYPE);
+        $doc = $this->getDocSchemaGenerator();
         $this->addDocLine($doc);
-        return parent::getDoc();
+        return parent::getDocContent();
     }
 
 

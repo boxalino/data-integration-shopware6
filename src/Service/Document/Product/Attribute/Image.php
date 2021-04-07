@@ -51,7 +51,7 @@ class Image extends IntegrationSchemaPropertyHandler
     public function getValues() : array
     {
         $content = [];
-        $languages = $this->getConfiguration()->getLanguages();
+        $languages = $this->getSystemConfiguration()->getLanguages();
         foreach ($this->getData() as $item)
         {
             if($item[DocSchemaInterface::FIELD_INTERNAL_ID])
@@ -87,7 +87,7 @@ class Image extends IntegrationSchemaPropertyHandler
             ->andWhere('product.version_id = :live')
             ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
             ->addGroupBy('product.id')
-            ->setParameter('channelRootCategoryId', $this->getConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
+            ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
         #->setFirstResult(($page - 1) * \Boxalino\Exporter\Service\Component\ProductComponentInterface::EXPORTER_STEP)
         #->setMaxResults(ProductComponentInterface::EXPORTER_STEP);

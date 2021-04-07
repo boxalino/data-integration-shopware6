@@ -29,14 +29,14 @@ class InstantIntegrationHandler extends IntegrationHandler
      */
     public function getDocs(): \ArrayIterator
     {
-        $this->addPropertiesOnHandlers();
+        $this->addSystemConfigurationOnHandlers();
         return parent::getDocs();
     }
 
     /**
      * @return string
      */
-    public function getIntegrationStrategy(): string
+    public function getIntegrationMode(): string
     {
         return ProductInstantIntegrationHandlerInterface::INTEGRATION_MODE;
     }

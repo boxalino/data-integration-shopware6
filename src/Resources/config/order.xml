@@ -20,8 +20,9 @@
         <!-- A: CLI command -->
         <service id="Boxalino\DataIntegration\Service\OrderCliCommand">
             <argument type="service" id="boxalino.di.configurator"/>
-            <argument type="service" id="Boxalino\DataIntegrationDoc\Service\GcpClientInterface"/>
             <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\OrderIntegrationHandlerInterface"/>
+            <argument type="service" id="monolog.logger.boxalino-di-order"/>
+            <argument>%kernel.environment%</argument>
             <tag name="console.command"/>
         </service>
 

@@ -34,10 +34,10 @@ class DocHandler extends DocAttributeValues
     /**
      * @return string
      */
-    public function getDoc(): string
+    public function getDocContent(): string
     {
         $this->createDocLines();
-        return parent::getDoc();
+        return parent::getDocContent();
     }
 
     /**
@@ -45,7 +45,7 @@ class DocHandler extends DocAttributeValues
      */
     protected function createDocLines() : self
     {
-        $this->addPropertiesOnHandlers();
+        $this->addSystemConfigurationOnHandlers();
         $data = [];
         try {
             foreach($this->getHandlers() as $handler)
@@ -59,7 +59,7 @@ class DocHandler extends DocAttributeValues
                         foreach($content as $schema)
                         {
                             /** @var AttributeValue | DocHandlerInterface $doc */
-                            $doc = $this->getDocPropertySchema(DocAttributeValuesHandlerInterface::DOC_TYPE, $schema);
+                            $doc = $this->getDocSchemaGenerator($schema);
                             $doc->setAttributeName($propertyName)->setCreationTm(date("Y-m-d H:i:s"));
 
                             $this->addDocLine($doc);

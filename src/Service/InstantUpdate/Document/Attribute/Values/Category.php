@@ -60,7 +60,7 @@ class Category extends AttributeHandler
                 $schema['parent_value_ids'][] = $parentId;
             }
 
-            foreach($this->getConfiguration()->getLanguages() as $language)
+            foreach($this->getSystemConfiguration()->getLanguages() as $language)
             {
                 $localized = new Localized();
                 $localized->setValue($item[$language])->setLanguage($language);
@@ -81,7 +81,7 @@ class Category extends AttributeHandler
      */
     public function getQuery()
     {
-        $rootCategoryId = $this->getConfiguration()->getNavigationCategoryId();
+        $rootCategoryId = $this->getSystemConfiguration()->getNavigationCategoryId();
         $query = $this->connection->createQueryBuilder();
         $query->select($this->getFields())
             ->from("category")
@@ -101,7 +101,7 @@ class Category extends AttributeHandler
 
     protected function getFields() : array
     {
-        $translationFields = preg_filter('/^/', 'translations.', $this->getConfiguration()->getLanguages());
+        $translationFields = preg_filter('/^/', 'translations.', $this->getSystemConfiguration()->getLanguages());
         return array_merge($translationFields,
             [
                 'LOWER(HEX(category.id)) AS ' . $this->getDiIdField(),
@@ -130,7 +130,7 @@ class Category extends AttributeHandler
 
     protected function getLocalizedFields() : array
     {
-        $translationFields = preg_filter('/^/', 'translation.', $this->getConfiguration()->getLanguages());
+        $translationFields = preg_filter('/^/', 'translation.', $this->getSystemConfiguration()->getLanguages());
         return array_merge($translationFields,
             [
                 'product_category_tree.category_id'
@@ -150,7 +150,7 @@ class Category extends AttributeHandler
     {
         return $this->localizedStringBuilder->getLocalizedFields('category_translation','category_id', 'category_id',
             'category_version_id','name',['category_translation.category_id', 'category_translation.category_version_id'],
-            $this->getConfiguration()->getLanguagesMap(), $this->getConfiguration()->getDefaultLanguageId()
+            $this->getSystemConfiguration()->getLanguagesMap(), $this->getSystemConfiguration()->getDefaultLanguageId()
         );
     }
 

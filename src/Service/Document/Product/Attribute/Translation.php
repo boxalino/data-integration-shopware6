@@ -36,7 +36,7 @@ class Translation extends IntegrationSchemaPropertyHandler
     public function getValues() : array
     {
         $content = [];
-        $languages = $this->getConfiguration()->getLanguages();
+        $languages = $this->getSystemConfiguration()->getLanguages();
         foreach($this->getProperties() as $propertyName => $docAttributeName)
         {
             foreach ($this->getData($propertyName) as $item)
@@ -71,7 +71,7 @@ class Translation extends IntegrationSchemaPropertyHandler
             #->andWhere('product.id IN (:ids)')
             ->addGroupBy('product.id')
             #->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
-            ->setParameter('channelRootCategoryId', $this->getConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
+            ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 
         return $query;
@@ -85,7 +85,7 @@ class Translation extends IntegrationSchemaPropertyHandler
     {
         return $this->localizedStringBuilder->getLocalizedFields('product_translation', 'product_id', 'product_id',
             'product_version_id', $propertyName, ['product_translation.product_id', 'product_translation.product_version_id'],
-            $this->getConfiguration()->getLanguagesMap(), $this->getConfiguration()->getDefaultLanguageId()
+            $this->getSystemConfiguration()->getLanguagesMap(), $this->getSystemConfiguration()->getDefaultLanguageId()
         );
     }
 

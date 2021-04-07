@@ -63,7 +63,7 @@ class Entity extends AttributeHandler
 
                         if(in_array($docAttributeName, $this->getProductLocalizedSchemaProperties()))
                         {
-                            foreach($this->getConfiguration()->getLanguages() as $language)
+                            foreach($this->getSystemConfiguration()->getLanguages() as $language)
                             {
                                 $localized = new Localized();
                                 $localized->setLanguage($language)->setValue($value);
@@ -93,7 +93,7 @@ class Entity extends AttributeHandler
                             if($typedProperty)
                             {
                                 $typedProperty->setName($propertyName);
-                                foreach($this->getConfiguration()->getLanguages() as $language)
+                                foreach($this->getSystemConfiguration()->getLanguages() as $language)
                                 {
                                     $localized = new Localized();
                                     $localized->setLanguage($language)->setValue($value);
@@ -141,7 +141,7 @@ class Entity extends AttributeHandler
             ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
             ->orderBy("product.created_at", "DESC")
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
-            ->setParameter('channelRootCategoryId', $this->getConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
+            ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY);
 
         return $query;

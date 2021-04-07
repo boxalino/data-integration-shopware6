@@ -27,12 +27,12 @@ interface IntegrationDocHandlerInterface
     /**
      * @return ConfigurationDataObject
      */
-    public function getConfiguration() : ConfigurationDataObject;
+    public function getSystemConfiguration() : ConfigurationDataObject;
 
     /**
      * @param ConfigurationDataObject $configuration
      * @return IntegrationDocHandlerInterface
      */
-    public function setConfiguration(ConfigurationDataObject $configuration) : IntegrationDocHandlerInterface;
+    public function setSystemConfiguration(ConfigurationDataObject $configuration) : IntegrationDocHandlerInterface;
 
 }

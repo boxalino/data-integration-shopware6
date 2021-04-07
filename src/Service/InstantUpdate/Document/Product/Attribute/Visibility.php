@@ -29,7 +29,7 @@ class Visibility extends AttributeHandler
         foreach ($this->getData(DocSchemaInterface::FIELD_VISIBILITY) as $item)
         {
             $schema = new VisibilitySchema();
-            foreach($this->getConfiguration()->getLanguages() as $language)
+            foreach($this->getSystemConfiguration()->getLanguages() as $language)
             {
                 $localized = new Localized();
                 $localized->setLanguage($language)->setValue($item[DocSchemaInterface::FIELD_VISIBILITY]);
@@ -57,7 +57,7 @@ class Visibility extends AttributeHandler
             ->andWhere('product.id IN (:ids)')
             ->addGroupBy('product.id')
             ->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
-            ->setParameter("channel", Uuid::fromHexToBytes($this->getConfiguration()->getSalesChannelId()), ParameterType::BINARY)
+            ->setParameter("channel", Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 
         return $query;

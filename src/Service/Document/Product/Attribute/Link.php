@@ -37,7 +37,7 @@ class Link extends IntegrationSchemaPropertyHandler
     public function getValues() : array
     {
         $content = [];
-        $languages = $this->getConfiguration()->getLanguages();
+        $languages = $this->getSystemConfiguration()->getLanguages();
         foreach ($this->getData(DocSchemaInterface::FIELD_LINK) as $item)
         {
             if(!isset($content[$item[$this->getDiIdField()]]))
@@ -66,7 +66,7 @@ class Link extends IntegrationSchemaPropertyHandler
             ->andWhere('product.version_id = :live')
             ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
             ->addGroupBy('product.id')
-            ->setParameter('channelRootCategoryId', $this->getConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
+            ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION));
 
         return $query;
@@ -84,8 +84,8 @@ class Link extends IntegrationSchemaPropertyHandler
     {
         return $this->localizedStringBuilder->getLocalizedFields('seo_url', 'id', 'id',
             'foreign_key','seo_path_info', ['seo_url.foreign_key', 'seo_url.sales_channel_id'],
-            $this->getConfiguration()->getLanguagesMap(), $this->getConfiguration()->getDefaultLanguageId(),
-            ["seo_url.route_name='frontend.detail.page'", "seo_url.is_canonical='1'", "LOWER(HEX(seo_url.sales_channel_id))='{$this->getConfiguration()->getSalesChannelId()}' OR seo_url.sales_channel_id IS NULL"]
+            $this->getSystemConfiguration()->getLanguagesMap(), $this->getSystemConfiguration()->getDefaultLanguageId(),
+            ["seo_url.route_name='frontend.detail.page'", "seo_url.is_canonical='1'", "LOWER(HEX(seo_url.sales_channel_id))='{$this->getSystemConfiguration()->getSalesChannelId()}' OR seo_url.sales_channel_id IS NULL"]
         );
     }
 

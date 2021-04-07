@@ -31,13 +31,13 @@ class Price extends AttributeHandler
     public function getValues() : array
     {
         $content = [];
-        $currencyFactor = $this->getConfiguration()->getCurrencyFactorMap();
+        $currencyFactor = $this->getSystemConfiguration()->getCurrencyFactorMap();
         foreach ($this->getData(DocSchemaInterface::FIELD_PRICE) as $item)
         {
             $listPrices = []; $prices = [];
-            foreach($this->getConfiguration()->getLanguages() as $language)
+            foreach($this->getSystemConfiguration()->getLanguages() as $language)
             {
-                foreach($this->getConfiguration()->getCurrencies() as $currencyCode)
+                foreach($this->getSystemConfiguration()->getCurrencies() as $currencyCode)
                 {
                     if($item['price'])
                     {
@@ -78,7 +78,7 @@ class Price extends AttributeHandler
             ->andWhere("JSON_SEARCH(category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
             ->andWhere('id IN (:ids)')
             ->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
-            ->setParameter("channelRootCategoryId", $this->getConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
+            ->setParameter("channelRootCategoryId", $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 
         return $query;
@@ -93,7 +93,7 @@ class Price extends AttributeHandler
      */
     protected function getRequiredFields(): array
     {
-        if ($this->getConfiguration()->getSalesChannelTaxState() === CartPrice::TAX_STATE_GROSS) {
+        if ($this->getSystemConfiguration()->getSalesChannelTaxState() === CartPrice::TAX_STATE_GROSS) {
             return [
                 'LOWER(HEX(id)) AS ' . $this->getDiIdField(),
                 'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(price, \'$.*.gross\'),\'$[0]\'), 2), ",", "") AS price',

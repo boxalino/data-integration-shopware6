@@ -20,7 +20,7 @@ trait IntegrationDocHandlerTrait
     /**
      * @var ConfigurationDataObject
      */
-    protected $configuration;
+    protected $systemConfiguration;
 
     /**
      * @return array
@@ -43,32 +43,32 @@ trait IntegrationDocHandlerTrait
     /**
      * @return ConfigurationDataObject
      */
-    public function getConfiguration(): ConfigurationDataObject
+    public function getSystemConfiguration(): ConfigurationDataObject
     {
-        return $this->configuration;
+        return $this->systemConfiguration;
     }
 
     /**
      * @param ConfigurationDataObject $configuration
      * @return IntegrationDocHandlerInterface
      */
-    public function setConfiguration(ConfigurationDataObject $configuration): IntegrationDocHandlerInterface
+    public function setSystemConfiguration(ConfigurationDataObject $configuration): IntegrationDocHandlerInterface
     {
-        $this->configuration = $configuration;
+        $this->systemConfiguration = $configuration;
         return $this;
     }
 
     /**
-     * setIds and setConfiguration to all of the Attribute elements
+     * setIds and setSystemConfiguration to all of the Attribute elements
      * for data access purposes
      */
-    public function addPropertiesOnHandlers()
+    public function addSystemConfigurationOnHandlers()
     {
         foreach($this->getHandlers() as $handler)
         {
             if($handler instanceof IntegrationDocHandlerInterface)
             {
-                $handler->setConfiguration($this->getConfiguration())->setIds($this->getIds());
+                $handler->setSystemConfiguration($this->getSystemConfiguration())->setIds($this->getIds());
             }
         }
 

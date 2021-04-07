@@ -86,9 +86,9 @@ abstract class Contact extends IntegrationSchemaPropertyHandler
             ->andWhere("o.version_id = :live")
             ->andWhere("src.version_id = :live")
             ->groupBy("o.id")
-            //->setParameter('channelId', Uuid::fromHexToBytes($this->getConfiguration()->getSalesChannelId()), ParameterType::BINARY)
+            //->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter('stateMachineId', $stateMachineId, ParameterType::BINARY)
-            ->setParameter('defaultLanguageId', Uuid::fromHexToBytes($this->getConfiguration()->getDefaultLanguageId()), ParameterType::BINARY)
+            ->setParameter('defaultLanguageId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getDefaultLanguageId()), ParameterType::BINARY)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 //                ->setFirstResult(($page - 1) * OrderComponentInterface::EXPORTER_STEP)
 //                ->setMaxResults(OrderComponentInterface::EXPORTER_STEP);

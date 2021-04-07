@@ -37,28 +37,15 @@ class DocHandler extends DocProduct
     use IntegrationDocHandlerTrait;
 
     /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    public function __construct(LoggerInterface $logger)
-    {
-        parent::__construct();
-        $this->logger = $logger;
-    }
-
-    /**
      * @return string
      */
-    public function getDoc() : string
+    public function getDocContent() : string
     {
-        if(empty($this->docs))
-        {
-            $this->generateDocData();
-            $this->createDocLines();
-        }
+        $this->addSystemConfigurationOnHandlers();
+        $this->generateDocData();
+        $this->createDocLines();
 
-        return parent::getDoc();
+        return parent::getDocContent();
     }
 
     /**
@@ -75,9 +62,9 @@ class DocHandler extends DocProduct
         $productGroups = $this->getDocProductGroups();
         foreach($productGroups as $productGroup)
         {
-            $document = $this->getDocPropertySchema(DocProductHandlerInterface::DOC_TYPE);
+            $document = $this->getDocSchemaGenerator();
 
-            $productLine = $this->getDocPropertySchema(DocProductHandlerInterface::DOC_PRODUCT_LEVEL_LINE);
+            $productLine = $this->getSchemaGeneratorByType(DocProductHandlerInterface::DOC_PRODUCT_LEVEL_LINE);
             $productLine->addProductGroup($productGroup);
 
             $document->setProductLine($productLine)->setCreationTm(date("Y-m-d H:i:s"));
@@ -97,7 +84,7 @@ class DocHandler extends DocProduct
         foreach($this->getDocData() as $id => $content)
         {
             try{
-                $schema = $this->getDocPropertySchema($content[DocSchemaInterface::DI_DOC_TYPE_FIELD], $content);
+                $schema = $this->getSchemaGeneratorByType($content[DocSchemaInterface::DI_DOC_TYPE_FIELD], $content);
                 $parentId = $content[DocSchemaInterface::DI_PARENT_ID_FIELD];
                 if(is_null($parentId))
                 {
@@ -129,7 +116,7 @@ class DocHandler extends DocProduct
         foreach($productSkus as $parentId => $skus)
         {
             /** @var Group $schema by default - on product update event - the main variant is also exported*/
-            $schema = $this->getDocPropertySchema(
+            $schema = $this->getSchemaGeneratorByType(
                 DocProductHandlerInterface::DOC_PRODUCT_LEVEL_GROUP,
                 [DocSchemaInterface::FIELD_INTERNAL_ID => $parentId]
             );
@@ -142,17 +129,6 @@ class DocHandler extends DocProduct
         }
 
         return $productGroups;
-    }
-
-    /**
-     * Create the product groups content (based on the IDs to be updated)
-     *
-     * @return array
-     */
-    public function generateDocData() : array
-    {
-        $this->addPropertiesOnHandlers();
-        return parent::generateDocData();
     }
 
 

@@ -37,7 +37,7 @@ class Option extends IntegrationSchemaPropertyHandler
     public function getValues() : array
     {
         $content = [];
-        $languages = $this->getConfiguration()->getLanguages();
+        $languages = $this->getSystemConfiguration()->getLanguages();
         foreach($this->getPropertyNames() as $property)
         {
             $propertyName = $property['name'];
@@ -85,7 +85,7 @@ class Option extends IntegrationSchemaPropertyHandler
             ->andWhere("LOWER(HEX(pgo.property_group_id)) = '$propertyName'")
             ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
-            ->setParameter('channelRootCategoryId', $this->getConfiguration()->getNavigationCategoryId(), ParameterType::STRING);
+            ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING);
 
         return $query;
     }

@@ -31,14 +31,14 @@ class Pricing extends AttributeHandler
     public function getValues() : array
     {
         $content = [];
-        $currencyFactor = $this->getConfiguration()->getCurrencyFactorMap();
+        $currencyFactor = $this->getSystemConfiguration()->getCurrencyFactorMap();
         foreach ($this->getData(DocSchemaInterface::FIELD_PRICING) as $item)
         {
             $schema = new PricingSchema();
             $label = ($item['min_price'] < $item['max_price']) ? "from" : "";
-            foreach($this->getConfiguration()->getLanguages() as $language)
+            foreach($this->getSystemConfiguration()->getLanguages() as $language)
             {
-                foreach($this->getConfiguration()->getCurrencies() as $currencyCode)
+                foreach($this->getSystemConfiguration()->getCurrencies() as $currencyCode)
                 {
                     $schema->addValue($this->getPrice($language, $currencyCode, $item['min_price'], $currencyFactor[$currencyCode], $label));
                 }
@@ -64,7 +64,7 @@ class Pricing extends AttributeHandler
             ->from("(" .$this->getPriceQuery()->__toString().")", "product")
             ->groupBy('parent_id')
             ->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
-            ->setParameter("channelRootCategoryId", $this->getConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
+            ->setParameter("channelRootCategoryId", $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 
         return $query;
@@ -113,7 +113,7 @@ class Pricing extends AttributeHandler
             "IF(parent_id IS NULL, LOWER(HEX(id)), LOWER(HEX(parent_id))) AS parent_id"
         ];
 
-        if ($this->getConfiguration()->getSalesChannelTaxState() === CartPrice::TAX_STATE_GROSS) {
+        if ($this->getSystemConfiguration()->getSalesChannelTaxState() === CartPrice::TAX_STATE_GROSS) {
             return array_merge($baseFields, [
                 'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(price, \'$.*.gross\'),\'$[0]\'), 2), ",", "") AS price',
             ]);

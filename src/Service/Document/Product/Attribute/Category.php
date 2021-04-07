@@ -25,7 +25,7 @@ class Category extends IntegrationSchemaPropertyHandler
     public function getValues() : array
     {
         $content = [];
-        $languages = $this->getConfiguration()->getLanguages();
+        $languages = $this->getSystemConfiguration()->getLanguages();
         foreach($this->getData() as $item)
         {
             if(!isset($content[$item[$this->getDiIdField()]]))

@@ -130,7 +130,7 @@ class Brand extends IntegrationSchemaPropertyHandler
         return $this->localizedStringBuilder->getLocalizedFields('product_manufacturer_translation', 'product_manufacturer_id',
             'product_manufacturer_id','product_manufacturer_version_id', $propertyName,
             ['product_manufacturer_translation.product_manufacturer_id', 'product_manufacturer_translation.product_manufacturer_version_id'],
-            $this->getConfiguration()->getLanguagesMap(), $this->getConfiguration()->getDefaultLanguageId()
+            $this->getSystemConfiguration()->getLanguagesMap(), $this->getSystemConfiguration()->getDefaultLanguageId()
         );
     }
 

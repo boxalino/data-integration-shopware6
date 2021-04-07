@@ -1,6 +1,7 @@
 <?php
 namespace Boxalino\DataIntegration\Service\Util;
 
+use Boxalino\DataIntegrationDoc\Service\GcpClientInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\ParameterType;
@@ -125,6 +126,7 @@ class Configuration
                 "languagesCountryCodeMap" => $languagesCodeMap,
                 "currencies" => array_unique(explode(",", $configuration['sales_channel_currencies_code'])),
                 "currenciesMap" => $currenciesMap,
+                "mode" => GcpClientInterface::GCP_MODE_INSTANT_UPDATE,
                 "currencyFactorMap" => $currencyFactorMap
             ]);
         }
@@ -185,7 +187,8 @@ class Configuration
                 "currencies" => array_unique(explode(",", $configuration['sales_channel_currencies_code'])),
                 "currenciesMap" => $currenciesMap,
                 "currencyFactorMap" => $currencyFactorMap,
-                "type"=>""
+                "mode" => GcpClientInterface::GCP_MODE_FULL,
+                "batchSize" => (int) $configuration['batchSize']
             ]);
         }
 
@@ -242,7 +245,9 @@ class Configuration
                 "languagesCountryCodeMap" => $languagesCodeMap,
                 "currencies" => array_unique(explode(",", $configuration['sales_channel_currencies_code'])),
                 "currenciesMap" => $currenciesMap,
-                "currencyFactorMap" => $currencyFactorMap
+                "currencyFactorMap" => $currencyFactorMap,
+                "mode" => GcpClientInterface::GCP_MODE_DELTA,
+                "batchSize" => (int) $configuration['batchSize']
             ]);
         }
 

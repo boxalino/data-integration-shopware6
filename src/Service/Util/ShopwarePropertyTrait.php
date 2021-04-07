@@ -54,7 +54,7 @@ trait ShopwarePropertyTrait
             ->leftJoin("property_group", "property_group_translation", "pgtl",
                 "property_group.id = pgtl.property_group_id AND pgtl.language_id=:languageId")
             ->groupBy("property_group.id")
-            ->setParameter("languageId", Uuid::fromHexToBytes($this->getConfiguration()->getDefaultLanguageId()), ParameterType::STRING);
+            ->setParameter("languageId", Uuid::fromHexToBytes($this->getSystemConfiguration()->getDefaultLanguageId()), ParameterType::STRING);
 
         return $query->execute()->fetchAll(FetchMode::ASSOCIATIVE);
     }
@@ -72,7 +72,7 @@ trait ShopwarePropertyTrait
         return $this->localizedStringBuilder->getLocalizedFields('property_group_option_translation',
             'property_group_option_id', 'property_group_option_id','property_group_option_id',
             'name', ['property_group_option_translation.property_group_option_id'],
-            $this->getConfiguration()->getLanguagesMap(), $this->getConfiguration()->getDefaultLanguageId()
+            $this->getSystemConfiguration()->getLanguagesMap(), $this->getSystemConfiguration()->getDefaultLanguageId()
         );
     }
 

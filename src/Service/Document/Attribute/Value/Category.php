@@ -98,7 +98,7 @@ class Category extends IntegrationSchemaPropertyHandler
      */
     public function getQuery(?string $propertyName = null) : QueryBuilder
     {
-        $rootCategoryId = $this->getConfiguration()->getNavigationCategoryId();
+        $rootCategoryId = $this->getSystemConfiguration()->getNavigationCategoryId();
         $query = $this->connection->createQueryBuilder();
         $query->select([
             "LOWER(HEX(category.id)) AS " . $this->getDiIdField(),
@@ -156,11 +156,11 @@ class Category extends IntegrationSchemaPropertyHandler
         {
             return $this->localizedStringBuilder->getLocalizedFields('seo_url', 'id', 'id',
                 'foreign_key','seo_path_info', ['seo_url.foreign_key', 'seo_url.sales_channel_id'],
-                $this->getConfiguration()->getLanguagesMap(), $this->getConfiguration()->getDefaultLanguageId(),
+                $this->getSystemConfiguration()->getLanguagesMap(), $this->getSystemConfiguration()->getDefaultLanguageId(),
                 [
                     "seo_url.is_canonical=1",
                     "seo_url.route_name='frontend.navigation.page'",
-                    "LOWER(HEX(seo_url.sales_channel_id))='{$this->getConfiguration()->getSalesChannelId()}' OR seo_url.sales_channel_id IS NULL"
+                    "LOWER(HEX(seo_url.sales_channel_id))='{$this->getSystemConfiguration()->getSalesChannelId()}' OR seo_url.sales_channel_id IS NULL"
                 ]
             );
         }
@@ -168,7 +168,7 @@ class Category extends IntegrationSchemaPropertyHandler
         return $this->localizedStringBuilder->getLocalizedFields('category_translation','category_id',
             'category_id','category_version_id', $propertyName,
             ['category_translation.category_id', 'category_translation.category_version_id'],
-            $this->getConfiguration()->getLanguagesMap(), $this->getConfiguration()->getDefaultLanguageId(),
+            $this->getSystemConfiguration()->getLanguagesMap(), $this->getSystemConfiguration()->getDefaultLanguageId(),
             ["category_translation.category_version_id = :live"]
         );
     }

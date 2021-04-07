@@ -54,7 +54,7 @@ class Tag extends IntegrationSchemaPropertyHandler
     {
         $fields = array_merge(
             ["LOWER(HEX(id)) AS {$this->getDiIdField()}"],
-            preg_filter('/^/', 'name AS ', $this->getConfiguration()->getLanguages())
+            preg_filter('/^/', 'name AS ', $this->getSystemConfiguration()->getLanguages())
         );
 
         $query = $this->connection->createQueryBuilder();

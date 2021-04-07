@@ -1,19 +1,20 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service;
 
+use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
 use Boxalino\DataIntegration\Service\Util\Configuration;
 use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailDocLoadException;
 use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailSyncException;
-use Boxalino\DataIntegrationDoc\Service\GcpClientInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\ProductIntegrationHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class FullCliCommand
+ * Class ProductCliCommand
  *
  * Use to trigger the data integration processes
  * ex: php bin/console boxalino:data-integration:product [mode] [account]
@@ -24,12 +25,10 @@ class ProductCliCommand extends Command
 {
     protected static $defaultName = 'boxalino:data-integration:product';
 
-
     /**
-     * @var GcpClientInterface
+     * @var LoggerInterface
      */
-    protected $client;
-
+    protected $logger;
     /**
      * @var ProductIntegrationHandlerInterface
      */
@@ -40,14 +39,21 @@ class ProductCliCommand extends Command
      */
     protected $configurationManager;
 
+    /**
+     * @var string
+     */
+    protected $environment;
+
     public function __construct(
         Configuration $configurationManager,
-        GcpClientInterface $client,
-        ProductIntegrationHandlerInterface $integrationHandler
+        ProductIntegrationHandlerInterface $integrationHandler,
+        LoggerInterface $logger,
+        string $environment
     ){
         $this->configurationManager = $configurationManager;
-        $this->client = $client;
         $this->integrationHandler = $integrationHandler;
+        $this->logger = $logger;
+        $this->environment = $environment;
 
         parent::__construct();
     }
@@ -75,28 +81,26 @@ class ProductCliCommand extends Command
         $output->writeln('Start of Boxalino Product Data Integration (DI) for '. $type .'...');
 
         try{
-            if(!empty($account))
+            /** @var ConfigurationDataObject $configuration */
+            foreach($this->configurationManager->getFullConfigurations() as $configuration)
             {
-                /** @var ConfigurationDataObject $configuration */
-                foreach($this->configurationManager->getFullConfigurations() as $configuration)
+                try {
+                    $this->integrationHandler->setSystemConfiguration($configuration);
+
+                    $this->integrationHandler
+                        ->addConfigurationScope($configuration)
+                        ->integrate();
+                } catch (FailDocLoadException $exception)
                 {
-                    try {
-                        $configuration->setData("type", $this->integrationHandler->getIntegrationType());
-                        $this->integrationHandler->setConfiguration($configuration);
-                        $documents = $this->integrationHandler->getDocs();
-                        $this->client->send($configuration, $documents, $this->integrationHandler->getIntegrationStrategy());
-                    } catch (FailDocLoadException $exception)
-                    {
-                        //maybe a fallback to save the content of the documents and try again later or have the integration team review
-                        $this->client->logOrThrowException($exception);
-                    } catch (FailSyncException $exception)
-                    {
-                        //save that the product id was not synced (relevant for full error data sync alerts)
-                        $this->client->logOrThrowException($exception);
-                    } catch (\Throwable $exception)
-                    {
-                        $this->client->logOrThrowException($exception);
-                    }
+                    //maybe a fallback to save the content of the documents and try again later or have the integration team review
+                    $this->logOrThrowException($exception);
+                } catch (FailSyncException $exception)
+                {
+                    //save that the product id was not synced (relevant for full error data sync alerts)
+                    $this->logOrThrowException($exception);
+                } catch (\Throwable $exception)
+                {
+                    $this->logOrThrowException($exception);
                 }
             }
         } catch (\Exception $exc)
@@ -106,6 +110,24 @@ class ProductCliCommand extends Command
 
         $output->writeln("End of Boxalino Product Data Integration Process.");
         return 0;
+    }
+
+    /**
+     * Do not throw exception, the product update must not be blocked if the SOLR SYNC update does not work
+     *
+     * @param \Throwable $exception
+     * @return bool
+     * @throws \Throwable
+     */
+    public function logOrThrowException(\Throwable $exception)
+    {
+        if ($this->environment === 'prod') {
+            $this->logger->warning("Boxalino API Data Integration error: " . $exception->getMessage());
+            throw $exception;
+        }
+
+        $this->logger->info("Boxalino API Data Integration error: " . $exception->getMessage());
+        throw $exception;
     }
 
 }
