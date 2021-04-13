@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Order;
 
-use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Service\GcpRequestInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Doctrine\DBAL\Query\QueryBuilder;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Order\Contact as OrderContactSchema;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Order\Contact as OrderContactSchema;
 
 /**
  * Class Contact
@@ -18,9 +18,8 @@ use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Order\Contact as OrderContact
  *
  * @package Boxalino\DataIntegration\Service\Document\Order
  */
-abstract class Contact extends IntegrationSchemaPropertyHandler
+abstract class Contact extends ModeIntegrator
 {
-
     /**
      * @return array
      */
@@ -49,20 +48,20 @@ abstract class Contact extends IntegrationSchemaPropertyHandler
     /**
      * @return \Doctrine\DBAL\Query\QueryBuilder
      */
-    public function getQuery(?string $propertyName = null) : QueryBuilder
+    public function _getQuery() : QueryBuilder
     {
         $stateMachineId = $this->getStateId();
         $query = $this->connection->createQueryBuilder();
         $query->select($this->getFields())
             ->from("`order`", "o")
             ->leftJoin(
-                "o", $this->getSourceTable(), 'src', "src.order_id = o.id AND src.order_version_id = o.version_id AND src.version_id=:live"
+                "o", $this->getSourceTable(), 'src', "src.order_id = o.id AND src.order_version_id = o.version_id"
             )
             ->leftJoin(
                 "src", 'state_machine_state', 'sms', "sms.id=src.state_id AND sms.state_machine_id = :stateMachineId"
             )
             ->leftJoin(
-                "o", 'order_customer', 'oc', "oc.order_id = o.id AND oc.order_version_id = o.version_id AND oc.version_id=:live"
+                "o", 'order_customer', 'oc', "oc.order_id = o.id AND oc.order_version_id = o.version_id"
             )
             ->leftJoin(
                 "oc", 'customer', 'c', "oc.customer_id = c.id AND oc.customer_number=c.customer_number"
@@ -84,14 +83,14 @@ abstract class Contact extends IntegrationSchemaPropertyHandler
             )
             //->andWhere("o.sales_channel_id=:channelId")
             ->andWhere("o.version_id = :live")
-            ->andWhere("src.version_id = :live")
+            ->addOrderBy("o.order_date_time", 'DESC')
             ->groupBy("o.id")
-            //->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
+            ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter('stateMachineId', $stateMachineId, ParameterType::BINARY)
             ->setParameter('defaultLanguageId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getDefaultLanguageId()), ParameterType::BINARY)
-            ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
-//                ->setFirstResult(($page - 1) * OrderComponentInterface::EXPORTER_STEP)
-//                ->setMaxResults(OrderComponentInterface::EXPORTER_STEP);
+            ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
+            ->setFirstResult($this->getFirstResultByBatch())
+            ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
 
         return $query;
     }

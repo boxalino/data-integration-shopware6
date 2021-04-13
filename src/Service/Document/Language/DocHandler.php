@@ -2,12 +2,14 @@
 namespace Boxalino\DataIntegration\Service\Document\Language;
 
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
-use Boxalino\DataIntegrationDoc\Service\Doc\Language;
-use Boxalino\DataIntegrationDoc\Service\Generator\DocGeneratorInterface;
+use Boxalino\DataIntegrationDoc\Doc\Language;
+use Boxalino\DataIntegrationDoc\Generator\DocGeneratorInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocLanguagesHandlerInterface;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocLanguages;
+use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocInstantIntegrationInterface;
+use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocInstantIntegrationTrait;
 
 /**
  * Class DocHandler
@@ -17,22 +19,21 @@ use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocLanguages;
  * @package Boxalino\DataIntegration\Service\Document\Language
  */
 class DocHandler extends DocLanguages
-    implements DocLanguagesHandlerInterface, IntegrationDocHandlerInterface
+    implements DocLanguagesHandlerInterface, IntegrationDocHandlerInterface, DocInstantIntegrationInterface
 {
 
     use IntegrationDocHandlerTrait;
+    use DocInstantIntegrationTrait;
 
-    /**
-     * @return string
-     */
-    public function getDocContent(): string
+    public function integrate(): void
     {
-        if(empty($this->docs))
+        if($this->getSystemConfiguration()->isTest())
         {
-            $this->createDocLines();
+            $this->getLogger()->info("Boxalino DI: sync for {$this->getDocType()}");
         }
 
-        return parent::getDocContent();
+        $this->createDocLines();
+        parent::integrate();
     }
 
     /**

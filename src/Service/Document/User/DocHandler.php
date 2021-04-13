@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\User;
 
-use Boxalino\DataIntegrationDoc\Service\Doc\User;
-use Boxalino\DataIntegrationDoc\Service\Generator\DocGeneratorInterface;
+use Boxalino\DataIntegrationDoc\Doc\User;
+use Boxalino\DataIntegrationDoc\Generator\DocGeneratorInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocUserHandlerInterface;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Product\Attribute;
 
-use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\PricingLocalized;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Pricing as PricingSchema;
+use Boxalino\DataIntegration\Service\Document\Product\ModeIntegrator;
+use Boxalino\DataIntegrationDoc\Doc\Schema\PricingLocalized;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Pricing as PricingSchema;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -21,8 +21,10 @@ use Shopware\Core\Framework\Uuid\Uuid;
  *
  * @package Boxalino\DataIntegration\Service\Document\Product\Attribute
  */
-class Pricing extends IntegrationSchemaPropertyHandler
+class Pricing extends ModeIntegrator
 {
+
+    use DeltaInstantAddTrait;
 
     /**
      * @return array
@@ -51,22 +53,29 @@ class Pricing extends IntegrationSchemaPropertyHandler
      * @param string $propertyName
      * @return QueryBuilder
      */
-    public function getQuery(?string $propertyName = null): QueryBuilder
+    public function _getQuery(?string $propertyName = null): QueryBuilder
     {
-        $fields =  [
-            "parent_id AS {$this->getDiIdField()}",
-            'MIN(price) AS min_price',
-            'MAX(price) AS max_price'
-        ];
         $query = $this->connection->createQueryBuilder();
-        $query->select($fields)
+        $query->select($this->_getQueryFields())
             ->from("(" .$this->getPriceQuery()->__toString().")", "product")
+            ->where('active=1')
             ->groupBy('parent_id')
-            #->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
             ->setParameter("channelRootCategoryId", $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 
         return $query;
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function _getQueryFields() : array
+    {
+        return [
+            "parent_id AS {$this->getDiIdField()}",
+            'MIN(price) AS min_price',
+            'MAX(price) AS max_price'
+        ];
     }
 
     /**
@@ -79,8 +88,10 @@ class Pricing extends IntegrationSchemaPropertyHandler
             ->from("product")
             ->andWhere('version_id = :live')
             ->andWhere("JSON_SEARCH(category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
-            ->andWhere("active = 1 OR parent_id IS NULL");
-        #->andWhere('id IN (:ids)');
+            ->orderBy("created_at", "DESC")
+            ->addOrderBy("auto_increment", "DESC")
+            ->setFirstResult($this->getFirstResultByBatch())
+            ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
 
         return $query;
     }
@@ -96,7 +107,8 @@ class Pricing extends IntegrationSchemaPropertyHandler
     {
         $baseFields = [
             'LOWER(HEX(id)) AS ' . $this->getDiIdField(),
-            "IF(parent_id IS NULL, LOWER(HEX(id)), LOWER(HEX(parent_id))) AS parent_id"
+            "IF(parent_id IS NULL, LOWER(HEX(id)), LOWER(HEX(parent_id))) AS parent_id",
+            "updated_at", "created_at", "active"
         ];
 
         if ($this->getSystemConfiguration()->getSalesChannelTaxState() === CartPrice::TAX_STATE_GROSS) {

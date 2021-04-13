@@ -18,18 +18,27 @@
 
     <services>
 
-        <!-- A: CLI command -->
-        <service id="Boxalino\DataIntegration\Service\ProductCliCommand">
-            <argument type="service" id="boxalino.di.configurator"/>
-            <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\ProductIntegrationHandlerInterface"/>
-            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+        <!-- A.1: FULL CLI command -->
+        <service id="Boxalino\DataIntegration\Console\Product\FullDataIntegration">
             <argument>%kernel.environment%</argument>
+            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Boxalino\DataIntegration\Service\Util\DiConfigurationInterface"/>
+            <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\ProductIntegrationHandlerInterface"/>
             <tag name="console.command"/>
         </service>
 
-        <!-- B.1: DI handler - generates each file tyle (handler) required for data type integration -->
+        <!-- A.2: DELTA CLI command -->
+        <service id="Boxalino\DataIntegration\Console\Product\DeltaDataIntegration">
+            <argument>%kernel.environment%</argument>
+            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Boxalino\DataIntegration\Service\Util\DiConfigurationInterface"/>
+            <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\ProductDeltaIntegrationHandlerInterface"/>
+            <tag name="console.command"/>
+        </service>
+
+        <!-- B.1: DI handler - generates each file tyle (handler) required for FULL data integration -->
         <service id="Boxalino\DataIntegrationDoc\Service\Integration\ProductIntegrationHandlerInterface"
-                 class="Boxalino\DataIntegration\Service\Integration\ProductIntegrationHandler">
+                 class="Boxalino\DataIntegration\Service\Integration\Product\FullIntegrationHandler">
             <call method="addHandler">
                 <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocLanguagesHandlerInterface"/>
             </call>
@@ -44,7 +53,24 @@
             </call>
         </service>
 
-        <!-- B.2: DI handler - generates each file tyle (handler) required for data type integration -->
+        <!-- B.2: DI handler - generates each file tyle (handler) required for DELTA integration -->
+        <service id="Boxalino\DataIntegrationDoc\Service\Integration\ProductDeltaIntegrationHandlerInterface"
+                 class="Boxalino\DataIntegration\Service\Integration\Product\DeltaIntegrationHandler">
+            <call method="addHandler">
+                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocLanguagesHandlerInterface"/>
+            </call>
+            <call method="addHandler">
+                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocAttributeHandlerInterface"/>
+            </call>
+            <call method="addHandler">
+                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocAttributeValuesHandlerInterface"/>
+            </call>
+            <call method="addHandler">
+                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocProductHandlerInterface"/>
+            </call>
+        </service>
+
+        <!-- B.3: DI handler - generates each file tyle (handler) required for INSTANT data integration -->
         <service id="Boxalino\DataIntegrationDoc\Service\Integration\ProductInstantIntegrationHandlerInterface"
                  class="Boxalino\DataIntegration\Service\Integration\Product\InstantIntegrationHandler">
             <call method="addHandler">
@@ -58,37 +84,49 @@
             </call>
         </service>
 
-        <!-- A: Brand Doc Attribute Handler -->
-        <service id="boxalino.di.product.brand" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Brand">
+        <!-- C: Use this interface to set the logic for the instant/delta data syncs for product -->
+        <service id="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface"
+                 class="Boxalino\DataIntegration\Service\Document\Product\ModeIntegrator" abstract="true">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
+
+        <!-- D: Brand Doc Attribute Handler -->
+        <service id="boxalino.di.product.brand" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Brand"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
             <argument type="service" id="boxalino.di.util.localized"/>
         </service>
 
-        <!-- C: Link Doc Attribute Handler -->
-        <service id="boxalino.di.product.link" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Link">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        <!-- E: Link Doc Attribute Handler -->
+        <service id="boxalino.di.product.link" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Link"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
             <argument type="service" id="boxalino.di.util.localized"/>
         </service>
 
-        <!-- D: Properties Doc Attribute Handler -->
-        <service id="boxalino.di.product.property" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Property">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        <!-- F: Properties Doc Attribute Handler -->
+        <service id="boxalino.di.product.property" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Property"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
             <argument type="service" id="boxalino.di.util.localized"/>
         </service>
 
-        <!-- E: Properties Doc Attribute Handler -->
-        <service id="boxalino.di.product.option" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Option">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        <!-- G: Properties Doc Attribute Handler -->
+        <service id="boxalino.di.product.option" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Option"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
             <argument type="service" id="boxalino.di.util.localized"/>
         </service>
 
-        <!-- F: product translation Doc Attribute Handler -->
-        <service id="boxalino.di.product.translation" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Translation">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        <!-- H: product translation Doc Attribute Handler -->
+        <service id="boxalino.di.product.translation" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Translation"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
             <argument type="service" id="boxalino.di.util.localized"/>
             <call method="addPropertyNameDocAttributeMapping">
                 <argument>name</argument>
                 <argument>title</argument>
+            </call>
+            <call method="allowPropertyOnInstantMode">
+                <argument>name</argument>
+            </call>
+            <call method="allowInstantMode">
+                <argument type="string">true</argument>
             </call>
             <call method="addPropertyNameDocAttributeMapping">
                 <argument>description</argument>
@@ -108,25 +146,39 @@
             </call>
         </service>
 
-        <!-- G: Visibility Doc Attribute Handler -->
-        <service id="boxalino.di.product.visibility" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Visibility">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        <!-- I: Visibility Doc Attribute Handler -->
+        <service id="boxalino.di.product.visibility" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Visibility"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
             <call method="addPropertyNameDocAttributeMapping">
                 <argument>visibility</argument>
             </call>
-        </service>
-
-        <!-- H: SKU Price Attribute Handler -->
-        <service id="boxalino.di.product.price" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Price">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
-            <call method="addPropertyNameDocAttributeMapping">
-                <argument>price</argument>
+            <call method="allowInstantMode">
+                <argument type="string">true</argument>
             </call>
         </service>
 
-        <!-- I: Image Attribute Handler -->
-        <service id="boxalino.di.product.images" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Image">
+        <!-- J: SKU Price Attribute Handler -->
+        <service id="boxalino.di.product.price" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Price"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>price</argument>
+            </call>
+            <call method="allowInstantMode">
+                <argument type="string">true</argument>
+            </call>
+        </service>
+
+        <!-- K: Pricing handler -->
+        <service id="boxalino.di.product.pricing" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Pricing">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>pricing</argument>
+            </call>
+        </service>
+
+        <!-- L: Image Attribute Handler -->
+        <service id="boxalino.di.product.images" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Image"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
             <argument type="service" id="monolog.logger.boxalino-di-product"/>
             <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
             <argument type="service" id="media.repository"/>
@@ -135,37 +187,43 @@
             </call>
         </service>
 
-        <!-- J: Stock Attribute Handler -->
-        <service id="boxalino.di.product.stock" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Stock">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        <!-- M: Stock Attribute Handler -->
+        <service id="boxalino.di.product.stock" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Stock"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
             <call method="addPropertyNameDocAttributeMapping">
                 <argument>stock</argument>
             </call>
+            <call method="allowInstantMode">
+                <argument type="string">true</argument>
+            </call>
         </service>
 
-        <!-- K: Categorization Attribute Handler -->
-        <service id="boxalino.di.product.category" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Category">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        <!-- N: Categorization Attribute Handler -->
+        <service id="boxalino.di.product.category" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Category"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
             <argument type="service" id="boxalino.di.values.category"/>
             <call method="addPropertyNameDocAttributeMapping">
                 <argument>categories</argument>
             </call>
+            <call method="allowInstantMode">
+                <argument type="string">true</argument>
+            </call>
         </service>
 
-        <!-- K: Product tags -->
-        <service id="boxalino.di.product.tags" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Tag">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        <!-- O: Product tags -->
+        <service id="boxalino.di.product.tags" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Tag"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
         </service>
 
-        <!-- K: Product Delivery Time -->
-        <service id="boxalino.di.product.delivery" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\DeliveryTime">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        <!-- P: Product Delivery Time -->
+        <service id="boxalino.di.product.delivery" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\DeliveryTime"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
             <argument type="service" id="boxalino.di.util.localized"/>
         </service>
 
-        <!-- L: Generic product attributes from product table Attribute Handler -->
-        <service id="boxalino.di.product.entity" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Entity">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        <!-- Q: Generic product attributes from product table Attribute Handler -->
+        <service id="boxalino.di.product.entity" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Entity"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
             <call method="addPropertyNameDocAttributeMapping">
                 <argument>id</argument>
                 <argument>internal_id</argument>
@@ -297,83 +355,35 @@
             </call>
             <call method="addSchemaDefinition">
                 <argument>status</argument>
-                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Status</argument>
+                <argument>Boxalino\DataIntegrationDoc\Doc\Schema\Status</argument>
             </call>
             <call method="addSchemaDefinition">
                 <argument>string_attributes</argument>
-                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\StringAttribute</argument>
+                <argument>Boxalino\DataIntegrationDoc\Doc\Schema\Typed\StringAttribute</argument>
             </call>
             <call method="addSchemaDefinition">
                 <argument>localized_string_attributes</argument>
-                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\StringLocalizedAttribute</argument>
+                <argument>Boxalino\DataIntegrationDoc\Doc\Schema\Typed\StringLocalizedAttribute</argument>
             </call>
             <call method="addSchemaDefinition">
                 <argument>numeric_attributes</argument>
-                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\NumericAttribute</argument>
+                <argument>Boxalino\DataIntegrationDoc\Doc\Schema\Typed\NumericAttribute</argument>
             </call>
             <call method="addSchemaDefinition">
                 <argument>localized_numeric_attributes</argument>
-                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\NumericLocalizedAttribute</argument>
+                <argument>Boxalino\DataIntegrationDoc\Doc\Schema\Typed\NumericLocalizedAttribute</argument>
             </call>
             <call method="addSchemaDefinition">
                 <argument>datetime_attributes</argument>
-                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\DatetimeAttribute</argument>
+                <argument>Boxalino\DataIntegrationDoc\Doc\Schema\Typed\DatetimeAttribute</argument>
             </call>
             <call method="addSchemaDefinition">
                 <argument>localized_datetime_attributes</argument>
-                <argument>Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\DatetimeLocalizedAttribute</argument>
+                <argument>Boxalino\DataIntegrationDoc\Doc\Schema\Typed\DatetimeLocalizedAttribute</argument>
             </call>
-        </service>
-
-        <!-- M: Attribute Handler for the category values (hierarchical) -->
-        <service id="boxalino.di.values.category" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\Category">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
-            <argument type="service" id="boxalino.di.util.localized"/>
-            <argument type="service" id="monolog.logger.boxalino-di-product"/>
-            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
-            <argument type="service" id="media.repository"/>
-        </service>
-
-        <!-- N: Attribute Handler for the brand -->
-        <service id="boxalino.di.values.brand" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\Brand">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
-            <argument type="service" id="boxalino.di.util.localized"/>
-            <argument type="service" id="monolog.logger.boxalino-di-product"/>
-            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
-            <argument type="service" id="media.repository"/>
-        </service>
-
-        <!-- O: Attribute Handler for the properties -->
-        <service id="boxalino.di.values.property" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\Property">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
-            <argument type="service" id="boxalino.di.util.localized"/>
-            <argument type="service" id="monolog.logger.boxalino-di-product"/>
-            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
-            <argument type="service" id="media.repository"/>
-        </service>
-
-        <!-- P: Attribute Handler for the tags -->
-        <service id="boxalino.di.values.tags" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\Tag">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
-        </service>
-
-        <!-- S: Attribute Handler for the delivery times -->
-        <service id="boxalino.di.values.delivery" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\DeliveryTime">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
-            <argument type="service" id="boxalino.di.util.localized"/>
-        </service>
-
-        <!-- T: Attribute info handler for SW6 properties -->
-        <service id="boxalino.di.attribute.property" class="Boxalino\DataIntegration\Service\Document\Attribute\Property">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
-            <argument type="service" id="boxalino.di.util.localized"/>
-            <argument type="service" id="monolog.logger.boxalino-di-product"/>
-        </service>
-
-        <!-- U: Attribute info handler for GENERIC attributes from ENTITY -->
-        <service id="boxalino.di.attribute.entity" class="Boxalino\DataIntegration\Service\Document\Attribute\Entity">
-            <argument type="service" id="Doctrine\DBAL\Connection"/>
-            <argument type="service" id="boxalino.di.product.entity"/>
+            <call method="allowInstantMode">
+                <argument type="string">true</argument>
+            </call>
         </service>
 
     </services>

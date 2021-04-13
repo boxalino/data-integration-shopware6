@@ -2,10 +2,9 @@
 namespace Boxalino\DataIntegration\Service\Document\Attribute\Value;
 
 use Boxalino\DataIntegration\Service\Document\Attribute\Value\DocAttributeValueTrait;
-use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
 use Boxalino\DataIntegration\Service\Util\ShopwareMediaTrait;
 use Boxalino\DataIntegration\Service\Util\ShopwarePropertyTrait;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Boxalino\Exporter\Service\Component\ProductComponentInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
@@ -26,7 +25,7 @@ use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
  *
  * @package Boxalino\DataIntegration\Service\Document\Attribute\Value
  */
-class Tag extends IntegrationSchemaPropertyHandler
+class Tag extends ModeIntegrator
 {
 
     use DocAttributeValueTrait;
@@ -50,19 +49,44 @@ class Tag extends IntegrationSchemaPropertyHandler
     /**
      * Get the options translation per property group
      */
-    public function getQuery(?string $propertyName = null) : QueryBuilder
+    public function _getQuery(?string $propertyName = null) : QueryBuilder
     {
-        $fields = array_merge(
-            ["LOWER(HEX(id)) AS {$this->getDiIdField()}"],
-            preg_filter('/^/', 'name AS ', $this->getSystemConfiguration()->getLanguages())
-        );
-
         $query = $this->connection->createQueryBuilder();
-        $query->select($fields)
+        $query->select($this->_getQueryFields())
             ->from("tag");
 
         return $query;
     }
+
+    public function getQueryInstant(?string $propertyName = null): QueryBuilder
+    {
+        $mainQuery = $this->_getQuery($propertyName);
+        $mainQuery->leftJoin("tag", "product_tag", "product_tag",
+            "product_tag.tag_id=tag.id")
+            ->leftJoin("product_tag", "product", "product",
+                "product_tag.product_id=product.id AND product_tag.product_version_id=product.version_id")
+            ->andWhere('product.version_id = :live')
+            ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
+            ->andWhere("product_tag.product_id IN (:ids)")
+            ->addGroupBy("tag.id")
+            ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
+            ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION))
+            ->setParameter("ids", Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY);
+
+        return $mainQuery;
+    }
+
+    /**
+     * @return array
+     */
+    protected function _getQueryFields() : array
+    {
+        return array_merge(
+            ["LOWER(HEX(tag.id)) AS {$this->getDiIdField()}"],
+            preg_filter('/^/', 'name AS ', $this->getSystemConfiguration()->getLanguages())
+        );
+    }
+
 
 
 }

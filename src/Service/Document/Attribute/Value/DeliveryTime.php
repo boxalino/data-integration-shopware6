@@ -2,7 +2,6 @@
 namespace Boxalino\DataIntegration\Service\Document\Attribute\Value;
 
 use Boxalino\DataIntegration\Service\Document\Attribute\Value\DocAttributeValueTrait;
-use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
 use Boxalino\DataIntegration\Service\Util\ShopwareLocalizedTrait;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
@@ -20,7 +19,7 @@ use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
  *
  * @package Boxalino\DataIntegration\Service\Document\Attribute\Value
  */
-class DeliveryTime extends IntegrationSchemaPropertyHandler
+class DeliveryTime extends ModeIntegrator
 {
 
     use DocAttributeValueTrait;
@@ -57,7 +56,7 @@ class DeliveryTime extends IntegrationSchemaPropertyHandler
     /**
      * Get the options translation per property group
      */
-    public function getQuery(?string $propertyName = null) : QueryBuilder
+    public function _getQuery(?string $propertyName = null) : QueryBuilder
     {
         $groupBy = "$this->prefix.delivery_time_id";
         $query = $this->connection->createQueryBuilder();

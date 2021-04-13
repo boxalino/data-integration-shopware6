@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Product\Attribute;
 
-use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
+use Boxalino\DataIntegration\Service\Document\Product\ModeIntegrator;
 use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
 use Boxalino\DataIntegration\Service\Util\ShopwareLocalizedTrait;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Localized;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Localized;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -18,9 +18,10 @@ use Shopware\Core\Framework\Uuid\Uuid;
  *
  * @package Boxalino\DataIntegration\Service\Document\Product\Attribute
  */
-class Translation extends IntegrationSchemaPropertyHandler
+class Translation extends ModeIntegrator
 {
     use ShopwareLocalizedTrait;
+    use DeltaInstantTrait;
 
     public function __construct(
         Connection $connection,
@@ -39,6 +40,12 @@ class Translation extends IntegrationSchemaPropertyHandler
         $languages = $this->getSystemConfiguration()->getLanguages();
         foreach($this->getProperties() as $propertyName => $docAttributeName)
         {
+            /** on instant mode - export only the allowed properties */
+            if(!$this->isPropertyAllowedOnInstantMode($propertyName) && $this->filterByIds())
+            {
+                continue;
+            }
+
             foreach ($this->getData($propertyName) as $item)
             {
                 if(!isset($content[$item[$this->getDiIdField()]]))
@@ -58,19 +65,16 @@ class Translation extends IntegrationSchemaPropertyHandler
      * @return QueryBuilder
      * @throws \Shopware\Core\Framework\Uuid\Exception\InvalidUuidException
      */
-    public function getQuery(?string $propertyName = null) : QueryBuilder
+    public function _getQuery(?string $propertyName = null) : QueryBuilder
     {
         $query = $this->connection->createQueryBuilder();
         $query->select($this->getFields())
-            ->from("product")
+            ->from( "( " . $this->_getProductQuery()->__toString() . " )", "product")
             ->leftJoin('product', '( ' . $this->getLocalizedFieldsQuery($propertyName)->__toString() . ') ',
                 $this->getPrefix(), "$this->prefix.product_id = product.id AND product.version_id = $this->prefix.product_version_id")
             ->andWhere('product.version_id = :live')
             ->andWhere($this->getLanguageHeaderConditional())
-            ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
-            #->andWhere('product.id IN (:ids)')
             ->addGroupBy('product.id')
-            #->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
             ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 
@@ -88,5 +92,6 @@ class Translation extends IntegrationSchemaPropertyHandler
             $this->getSystemConfiguration()->getLanguagesMap(), $this->getSystemConfiguration()->getDefaultLanguageId()
         );
     }
+
 
 }

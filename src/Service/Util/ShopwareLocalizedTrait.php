@@ -2,11 +2,11 @@
 namespace Boxalino\DataIntegration\Service\Util;
 
 use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Localized;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Repeated;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\RepeatedLocalized;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\StringAttribute;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Localized;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Repeated;
+use Boxalino\DataIntegrationDoc\Doc\Schema\RepeatedLocalized;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Typed\StringAttribute;
 
 /**
  * Trait for storing common logic for localized content access

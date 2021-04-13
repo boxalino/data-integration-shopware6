@@ -3,11 +3,12 @@ namespace Boxalino\DataIntegration\Service\Document;
 
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocOrderAttributeTrait;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocProductAttributeTrait;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocPropertiesTrait;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaPropertyHandler;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaPropertyHandlerInterface;
+use Boxalino\DataIntegrationDoc\Doc\DocOrderAttributeTrait;
+use Boxalino\DataIntegrationDoc\Doc\DocProductAttributeTrait;
+use Boxalino\DataIntegrationDoc\Doc\DocPropertiesTrait;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaPropertyHandler;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaPropertyHandlerInterface;
+use Boxalino\DataIntegrationDoc\Service\ErrorHandler\ModeDisabledException;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
 
@@ -44,8 +45,11 @@ abstract class IntegrationSchemaPropertyHandler extends DocSchemaPropertyHandler
      */
     public function getData(?string $propertyName = null) : array
     {
-        try{
+        try {
             return $this->getQuery($propertyName)->execute()->fetchAll();
+        } catch (ModeDisabledException $exception)
+        {
+            return [];
         } catch (\Throwable $exception)
         {
             throw new \Exception($exception->getMessage());
@@ -58,5 +62,14 @@ abstract class IntegrationSchemaPropertyHandler extends DocSchemaPropertyHandler
      * @return QueryBuilder
      */
     abstract function getQuery(?string $propertyName = null) : QueryBuilder;
+
+    /**
+     * @return int
+     */
+    public function getFirstResultByBatch() : int
+    {
+        return (int)$this->getSystemConfiguration()->getBatchSize()*$this->getSystemConfiguration()->getChunk();
+    }
+
 
 }

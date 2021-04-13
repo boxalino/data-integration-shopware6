@@ -2,8 +2,9 @@
 namespace Boxalino\DataIntegration\Service\Document\Order;
 
 use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Localized;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Localized;
+use Boxalino\DataIntegrationDoc\Service\GcpRequestInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Shopware\Core\Defaults;
@@ -17,9 +18,8 @@ use Doctrine\DBAL\Query\QueryBuilder;
  *
  * @package Boxalino\DataIntegration\Service\Document\Order
  */
-class Entity extends IntegrationSchemaPropertyHandler
+class Entity extends ModeIntegrator
 {
-
     /**
      * @return array
      */
@@ -117,9 +117,10 @@ class Entity extends IntegrationSchemaPropertyHandler
     }
 
     /**
-     * @return \Doctrine\DBAL\Query\QueryBuilder
+     * @return QueryBuilder
+     * @throws \Doctrine\DBAL\DBALException
      */
-    public function getQuery(?string $propertyName = null) : QueryBuilder
+    public function _getQuery() : QueryBuilder
     {
         $properties = $this->getFields();
         $orderStateId = $this->getStateId();
@@ -160,21 +161,14 @@ class Entity extends IntegrationSchemaPropertyHandler
             )
             //->andWhere("o.sales_channel_id=:channelId")
             ->andWhere("o.version_id = :live")
-            ->orderBy("o.order_date_time", 'DESC')
+            ->addOrderBy("o.order_date_time", 'DESC')
             ->groupBy("o.id")
-            //->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
+            ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
             ->setParameter('defaultLanguageId', Uuid::fromHexToBytes($defaultLanguageId), ParameterType::BINARY)
-            ->setParameter('orderStateMachineId', $orderStateId, ParameterType::BINARY);
-//                ->setFirstResult(($page - 1) * OrderComponentInterface::EXPORTER_STEP)
-//                ->setMaxResults(OrderComponentInterface::EXPORTER_STEP);
-
-        /**
-        if ($isIncremental == 1)
-        {
-        $query->andWhere('`order`.order_time >= ?', date("Y-m-d", strtotime("-1 month")));
-        }
-         */
+            ->setParameter('orderStateMachineId', $orderStateId, ParameterType::BINARY)
+            ->setFirstResult($this->getFirstResultByBatch())
+            ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
 
         return $query;
     }

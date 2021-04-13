@@ -3,10 +3,10 @@ namespace Boxalino\DataIntegration\Service\Document\Attribute\Value;
 
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 use Boxalino\DataIntegration\Service\Util\ShopwareLocalizedTrait;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Localized;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\RepeatedGenericLocalized;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\RepeatedLocalized;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Localized;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\Schema\RepeatedGenericLocalized;
+use Boxalino\DataIntegrationDoc\Doc\Schema\RepeatedLocalized;
 use Doctrine\DBAL\ParameterType;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;

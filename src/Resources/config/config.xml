@@ -43,13 +43,25 @@
         <title>Instant Update Configuration</title>
         <title lang="de-DE">Instant Update Konfiguration</title>
         <input-field type="bool">
-            <name>instantUpdateStatus</name>
+            <name>productInstantStatus</name>
             <defaultValue>0</defaultValue>
-            <label>Enable Instant Update</label>
-            <helpText>Activate / Disable the Instant Update Integration (delta replacement)</helpText>
+            <label>Allow Instant Product Update</label>
+            <helpText>Activate / Disable the Instant Update for products. Requires integration.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>userInstantStatus</name>
+            <defaultValue>0</defaultValue>
+            <label>Enable User Data Integration</label>
+            <helpText>Activate / Disable the Instant Update for users. Requires integration.</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>orderInstantStatus</name>
+            <defaultValue>0</defaultValue>
+            <label>Enable Order Data Integration</label>
+            <helpText>Activate / Disable the Instant Update for orders. Requires integration.</helpText>
         </input-field>
         <input-field type="text">
-            <name>instantUpdateEndpoint</name>
+            <name>instantDiEndpoint</name>
             <label>Instant Update Endpoint</label>
             <helpText>Endpoint for Instant Update requests</helpText>
         </input-field>
@@ -59,7 +71,7 @@
         <title lang="de-DE">Full Konfiguration</title>
         <input-field type="bool">
             <name>productDiStatus</name>
-            <defaultValue>0</defaultValue>
+            <defaultValue>1</defaultValue>
             <label>Allow Product Data Integration</label>
             <helpText>Activate / Disable the Full Data Integration</helpText>
         </input-field>
@@ -84,6 +96,24 @@
     <card>
         <title>Delta Data Integration Configuration</title>
         <title lang="de-DE">Delta Konfiguration</title>
+        <input-field type="bool">
+            <name>productDeltaStatus</name>
+            <defaultValue>1</defaultValue>
+            <label>Allow Product Delta Data Integration</label>
+            <helpText>Activate / Disable the Full Data Integration</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>userDeltaStatus</name>
+            <defaultValue>1</defaultValue>
+            <label>Enable User Delta Data Integration</label>
+            <helpText>Activate / Disable the Data Integration for doc_user document</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>orderDeltaStatus</name>
+            <defaultValue>1</defaultValue>
+            <label>Enable Order Delta Data Integration</label>
+            <helpText>Activate / Disable the Data Integration for the doc_order document</helpText>
+        </input-field>
         <input-field type="text">
             <name>deltaDiEndpoint</name>
             <label>Delta Data Integration Endpoint</label>

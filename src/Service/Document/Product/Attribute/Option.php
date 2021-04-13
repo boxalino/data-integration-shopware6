@@ -1,17 +1,17 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Product\Attribute;
 
-use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
+use Boxalino\DataIntegration\Service\Document\Product\ModeIntegrator;
 use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
 use Boxalino\DataIntegration\Service\Util\ShopwarePropertyTrait;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Repeated;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Repeated;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Localized;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Localized;
 
 /**
  * Class Option
@@ -19,9 +19,10 @@ use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Localized;
  *
  * @package Boxalino\DataIntegration\Service\Document\Product\Attribute
  */
-class Option extends IntegrationSchemaPropertyHandler
+class Option extends ModeIntegrator
 {
     use ShopwarePropertyTrait;
+    use DeltaInstantTrait;
 
     public function __construct(
         Connection $connection,
@@ -42,6 +43,13 @@ class Option extends IntegrationSchemaPropertyHandler
         {
             $propertyName = $property['name'];
             $this->setPropertyId($property[$this->getDiIdField()]);
+
+            /** on instant mode - export only the allowed properties */
+            if(!$this->isPropertyAllowedOnInstantMode($propertyName) && $this->filterByIds())
+            {
+                continue;
+            }
+
             foreach ($this->getData($property[$this->getDiIdField()]) as $item)
             {
                 if(is_null($item[DocSchemaInterface::FIELD_INTERNAL_ID]))
@@ -66,28 +74,37 @@ class Option extends IntegrationSchemaPropertyHandler
      * @param string $propertyName
      * @return QueryBuilder
      */
-    public function getQuery(?string $propertyName = null): QueryBuilder
+    public function _getQuery(?string $propertyName = null): QueryBuilder
     {
-        $fields = array_merge(
-            $this->getFields("product_option.product_id"),
-            ["LOWER(HEX($this->prefix.property_group_option_id)) AS " . DocSchemaInterface::FIELD_INTERNAL_ID]
-        );
-
         $query = $this->connection->createQueryBuilder();
-        $query->select($fields)
+        $query->select($this->_getQueryFields())
             ->from("product_option")
             ->leftJoin('product_option', '( ' . $this->getLocalizedFieldsQuery()->__toString() . ') ',
                 $this->getPrefix(), "$this->prefix.property_group_option_id = product_option.property_group_option_id")
-            ->leftJoin("product_option", "product", "product", "product.id=product_option.product_id AND product.version_id=product_option.product_version_id")
+            ->leftJoin("product_option", "( " . $this->_getProductQuery()->__toString() . " )", "product", "product.id=product_option.product_id")
             ->leftJoin("product_option", "property_group_option", "pgo", "product_option.property_group_option_id=pgo.id")
             ->andWhere($this->getLanguageHeaderConditional())
-            ->andWhere('product.version_id = :live')
+            ->andWhere("product.id IS NOT NULL")
+            ->andWhere("product_option.product_version_id = :live")
             ->andWhere("LOWER(HEX(pgo.property_group_id)) = '$propertyName'")
-            ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
-            ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING);
+            ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
+            ->setFirstResult($this->getFirstResultByBatch())
+            ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
 
         return $query;
+    }
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    protected function _getQueryFields() : array
+    {
+        return array_merge(
+            $this->getFields("product_option.product_id"),
+            ["LOWER(HEX($this->prefix.property_group_option_id)) AS " . DocSchemaInterface::FIELD_INTERNAL_ID]
+        );
     }
 
 

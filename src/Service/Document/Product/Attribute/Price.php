@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Product\Attribute;
 
-use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\PriceLocalized;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Price as PriceSchema;
+use Boxalino\DataIntegration\Service\Document\Product\ModeIntegrator;
+use Boxalino\DataIntegrationDoc\Doc\Schema\PriceLocalized;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Price as PriceSchema;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -21,8 +21,10 @@ use Shopware\Core\Framework\Uuid\Uuid;
  *
  * @package Boxalino\DataIntegration\Service\Document\Product\Attribute
  */
-class Price extends IntegrationSchemaPropertyHandler
+class Price extends ModeIntegrator
 {
+
+    use DeltaInstantTrait;
 
     /**
      * @return array
@@ -51,19 +53,11 @@ class Price extends IntegrationSchemaPropertyHandler
      * @param string $propertyName
      * @return QueryBuilder
      */
-    public function getQuery(?string $propertyName = null): QueryBuilder
+    public function _getQuery(?string $propertyName = null): QueryBuilder
     {
-        $query = $this->connection->createQueryBuilder();
-        $query->select($this->getRequiredFields())
-            ->from("product")
-            ->andWhere('version_id = :live')
-            ->andWhere("JSON_SEARCH(category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
-            #->andWhere('id IN (:ids)')
-            #->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
+        return $this->_getProductQuery($this->getFields())
             ->setParameter("channelRootCategoryId", $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
-
-        return $query;
     }
 
     /**
@@ -73,7 +67,7 @@ class Price extends IntegrationSchemaPropertyHandler
      * @return array
      * @throws \Exception
      */
-    public function getRequiredFields(): array
+    public function getFields(): array
     {
         if ($this->getSystemConfiguration()->getSalesChannelTaxState() === CartPrice::TAX_STATE_GROSS) {
             return [

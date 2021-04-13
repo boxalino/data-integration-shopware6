@@ -1,7 +1,8 @@
 <?php
 namespace Boxalino\DataIntegration\Service\Util;
 
-use Boxalino\DataIntegrationDoc\Service\GcpClientInterface;
+use Boxalino\DataIntegration\Service\Util\DiConfigurationInterface;
+use Boxalino\DataIntegrationDoc\Service\GcpRequestInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\ParameterType;
@@ -23,7 +24,7 @@ use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
  *
  * @package Boxalino\DataIntegration\Service\Util
  */
-class Configuration
+class Configuration implements DiConfigurationInterface
 {
 
     use ShopwareConfigurationTrait;
@@ -55,8 +56,8 @@ class Configuration
     ) {
         $this->salesChannelContextService = $salesChannelContextService;
         $this->systemConfigService = $systemConfigService;
-        $this->cache = $cache;
         $this->connection = $connection;
+        $this->cache = $cache;
     }
 
     /**
@@ -106,13 +107,15 @@ class Configuration
             $languagesMap = array_combine(explode(",", $configuration['sales_channel_languages_id']), explode(",", $configuration['sales_channel_languages_locale']));
             $currenciesMap = array_combine(explode(",", $configuration['sales_channel_currencies_id']), explode(",", $configuration['sales_channel_currencies_code']));
             $configurations[] = new ConfigurationDataObject([
-                "allowInstantUpdateRequests" => (bool) $configuration['instantUpdateStatus'],
+                "allowProductSync" => isset($configuration['productInstantStatus']) ? (bool)$configuration['productInstantStatus'] : false,
+                "allowUserSync" => isset($configuration['userInstantStatus']) ? (bool) $configuration['userInstantStatus'] : false,
+                "allowOrderSync" => isset($configuration['orderInstantStatus']) ? (bool) $configuration['orderInstantStatus'] : false,
                 "account" => $configuration['account'],
                 "isDev" => (bool) $configuration['devIndex'],
                 "isTest" => (bool) $configuration['isTest'],
                 "apiKey" => $configuration["apiKey"],
                 "apiSecret" => $configuration["apiSecret"],
-                "endpoint" => $configuration["instantUpdateEndpoint"],
+                "endpoint" => $configuration["instantDiEndpoint"],
                 "salesChannelId" => $configuration['sales_channel_id'],
                 "salesChannelTaxState" => $salesChannelContext->getTaxState(),
                 "defaultLanguageId" => $configuration['sales_channel_default_language_id'],
@@ -126,7 +129,7 @@ class Configuration
                 "languagesCountryCodeMap" => $languagesCodeMap,
                 "currencies" => array_unique(explode(",", $configuration['sales_channel_currencies_code'])),
                 "currenciesMap" => $currenciesMap,
-                "mode" => GcpClientInterface::GCP_MODE_INSTANT_UPDATE,
+                "mode" => GcpRequestInterface::GCP_MODE_INSTANT_UPDATE,
                 "currencyFactorMap" => $currencyFactorMap
             ]);
         }
@@ -187,7 +190,7 @@ class Configuration
                 "currencies" => array_unique(explode(",", $configuration['sales_channel_currencies_code'])),
                 "currenciesMap" => $currenciesMap,
                 "currencyFactorMap" => $currencyFactorMap,
-                "mode" => GcpClientInterface::GCP_MODE_FULL,
+                "mode" => GcpRequestInterface::GCP_MODE_FULL,
                 "batchSize" => (int) $configuration['batchSize']
             ]);
         }
@@ -225,7 +228,9 @@ class Configuration
             $languagesMap = array_combine(explode(",", $configuration['sales_channel_languages_id']), explode(",", $configuration['sales_channel_languages_locale']));
             $currenciesMap = array_combine(explode(",", $configuration['sales_channel_currencies_id']), explode(",", $configuration['sales_channel_currencies_code']));
             $configurations[] = new ConfigurationDataObject([
-                "allowProductDeltaSync" => (bool) $configuration['deltaProductDiStatus'],
+                "allowProductSync" => (bool) $configuration['productDeltaStatus'],
+                "allowOrderSync" => (bool) $configuration['orderDeltaStatus'],
+                "allowUserSync" => (bool) $configuration['userDeltaStatus'],
                 "account" => $configuration['account'],
                 "isDev" => (bool) $configuration['devIndex'],
                 "isTest" => (bool) $configuration['isTest'],
@@ -246,7 +251,7 @@ class Configuration
                 "currencies" => array_unique(explode(",", $configuration['sales_channel_currencies_code'])),
                 "currenciesMap" => $currenciesMap,
                 "currencyFactorMap" => $currencyFactorMap,
-                "mode" => GcpClientInterface::GCP_MODE_DELTA,
+                "mode" => GcpRequestInterface::GCP_MODE_DELTA,
                 "batchSize" => (int) $configuration['batchSize']
             ]);
         }

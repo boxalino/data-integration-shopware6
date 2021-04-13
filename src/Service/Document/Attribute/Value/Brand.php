@@ -1,10 +1,9 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Attribute\Value;
 
-use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
 use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
 use Boxalino\DataIntegration\Service\Util\ShopwareMediaTrait;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -23,7 +22,7 @@ use Boxalino\DataIntegration\Service\Util\ShopwareLocalizedTrait;
  *
  * @package Boxalino\DataIntegration\Service\Document\Attribute\Value
  */
-class Brand extends IntegrationSchemaPropertyHandler
+class Brand extends ModeIntegrator
 {
     use ShopwareMediaTrait;
     use DocAttributeValueTrait;
@@ -82,20 +81,51 @@ class Brand extends IntegrationSchemaPropertyHandler
      * @param string $propertyName
      * @return QueryBuilder
      */
-    public function getQuery(?string $propertyName = null): QueryBuilder
+    public function _getQuery(?string $propertyName = null): QueryBuilder
     {
         $query = $this->connection->createQueryBuilder();
-        $query->select([
-            "LOWER(HEX(product_manufacturer.id)) AS {$this->getDiIdField()}",
-            "product_manufacturer.link AS " . DocSchemaInterface::FIELD_LINK,
-            "LOWER(HEX(product_manufacturer.media_id)) AS " . DocSchemaInterface::FIELD_IMAGES
-        ])
+        $query->select($this->_getQueryFields())
             ->from('product_manufacturer')
             ->andWhere('product_manufacturer.version_id = :live')
             ->addGroupBy('product_manufacturer.id')
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 
         return $query;
+    }
+
+    /**
+     * @param string|null $propertyName
+     * @return QueryBuilder
+     */
+    public function getQueryInstant(?string $propertyName = null): QueryBuilder
+    {
+        $query = $this->connection->createQueryBuilder();
+        $query->select($this->_getQueryFields())
+            ->from("product")
+            ->leftJoin("product", "product_manufacturer", "product_manufacturer",
+                "product_manufacturer.id = product.product_manufacturer_id AND product.product_manufacturer_version_id=product_manufacturer.version_id" )
+            ->andWhere('product.version_id = :live')
+            ->andWhere('product.product_manufacturer_version_id = :live')
+            ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
+            ->andWhere("product.id IN (:ids)")
+            ->addGroupBy('product_manufacturer.id')
+            ->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
+            ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
+            ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
+
+        return $query;
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function _getQueryFields() : array
+    {
+        return [
+            "LOWER(HEX(product_manufacturer.id)) AS {$this->getDiIdField()}",
+            "product_manufacturer.link AS " . DocSchemaInterface::FIELD_LINK,
+            "LOWER(HEX(product_manufacturer.media_id)) AS " . DocSchemaInterface::FIELD_IMAGES
+        ];
     }
 
     /**

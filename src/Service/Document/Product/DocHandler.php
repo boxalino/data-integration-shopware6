@@ -1,17 +1,23 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Product;
 
-use Boxalino\DataIntegrationDoc\Service\Doc\DocPropertiesTrait;
-use Boxalino\DataIntegrationDoc\Service\Generator\DocGeneratorInterface;
-use Boxalino\DataIntegrationDoc\Service\Generator\Product\Doc;
-use Boxalino\DataIntegrationDoc\Service\Generator\Product\Group;
-use Boxalino\DataIntegrationDoc\Service\Generator\Product\Line;
-use Boxalino\DataIntegrationDoc\Service\Generator\Product\Sku;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\DocPropertiesTrait;
+use Boxalino\DataIntegrationDoc\Generator\DocGeneratorInterface;
+use Boxalino\DataIntegrationDoc\Generator\Product\Doc;
+use Boxalino\DataIntegrationDoc\Generator\Product\Group;
+use Boxalino\DataIntegrationDoc\Generator\Product\Line;
+use Boxalino\DataIntegrationDoc\Generator\Product\Sku;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
+use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailSyncException;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocProduct;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocProductHandlerInterface;
+use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocDeltaIntegrationInterface;
+use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocDeltaIntegrationTrait;
+use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocInstantIntegrationInterface;
+use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocInstantIntegrationTrait;
+use Boxalino\DataIntegrationDoc\Service\Integration\Mode\InstantIntegrationInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -31,22 +37,12 @@ use Psr\Log\LoggerInterface;
  * @package Boxalino\DataIntegration\Service\Document\Product
  */
 class DocHandler extends DocProduct
-    implements DocProductHandlerInterface, IntegrationDocHandlerInterface
+    implements DocProductHandlerInterface, IntegrationDocHandlerInterface, DocDeltaIntegrationInterface, DocInstantIntegrationInterface
 {
 
     use IntegrationDocHandlerTrait;
-
-    /**
-     * @return string
-     */
-    public function getDocContent() : string
-    {
-        $this->addSystemConfigurationOnHandlers();
-        $this->generateDocData();
-        $this->createDocLines();
-
-        return parent::getDocContent();
-    }
+    use DocDeltaIntegrationTrait;
+    use DocInstantIntegrationTrait;
 
     /**
      * The products are exported at the level of the product_groups
@@ -59,6 +55,9 @@ class DocHandler extends DocProduct
      */
     protected function createDocLines() : self
     {
+        $this->addSystemConfigurationOnHandlers();
+        $this->generateDocData();
+
         $productGroups = $this->getDocProductGroups();
         foreach($productGroups as $productGroup)
         {
@@ -84,6 +83,13 @@ class DocHandler extends DocProduct
         foreach($this->getDocData() as $id => $content)
         {
             try{
+                if(!isset($content[DocSchemaInterface::DI_DOC_TYPE_FIELD]))
+                {
+                    $this->getLogger()->warning("Boxalino DI: incomplete content for $id: "
+                        . json_encode($content) . ". This error usually means the property handlers are missconfigured."
+                    );
+                }
+
                 $schema = $this->getSchemaGeneratorByType($content[DocSchemaInterface::DI_DOC_TYPE_FIELD], $content);
                 $parentId = $content[DocSchemaInterface::DI_PARENT_ID_FIELD];
                 if(is_null($parentId))

@@ -1,10 +1,9 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Attribute\Value;
 
-use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
 use Boxalino\DataIntegration\Service\Util\ShopwareLocalizedTrait;
 use Boxalino\DataIntegration\Service\Util\ShopwareMediaTrait;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -15,7 +14,7 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Category as CategorySchema;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Category as CategorySchema;
 use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
 
 /**
@@ -24,7 +23,7 @@ use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
  *
  * @package Boxalino\DataIntegration\Service\Document\Attribute
  */
-class Category extends IntegrationSchemaPropertyHandler
+class Category extends ModeIntegrator
 {
 
     use ShopwareMediaTrait;
@@ -96,22 +95,56 @@ class Category extends IntegrationSchemaPropertyHandler
     /**
      * Main query for all categories export (linked to a given sales channel)
      */
-    public function getQuery(?string $propertyName = null) : QueryBuilder
+    public function _getQuery(?string $propertyName = null) : QueryBuilder
     {
         $rootCategoryId = $this->getSystemConfiguration()->getNavigationCategoryId();
         $query = $this->connection->createQueryBuilder();
-        $query->select([
-            "LOWER(HEX(category.id)) AS " . $this->getDiIdField(),
-            "LOWER(HEX(category.parent_id)) AS " . DocSchemaInterface::FIELD_PARENT_VALUE_IDS,
-            "category.active AS " . DocSchemaInterface::FIELD_STATUS,
-            "LOWER(HEX(category.media_id)) AS " . DocSchemaInterface::FIELD_IMAGES,
-        ])
+        $query->select($this->_getQueryFields())
             ->from("category")
             ->andWhere('category.version_id = :categoryLiveVersion')
             ->andWhere('category.path LIKE :rootCategoryId OR LOWER(HEX(category.id))=:root')
             ->addGroupBy("category.id")
             ->setParameter('root', $rootCategoryId, ParameterType::STRING)
             ->setParameter('rootCategoryId', "%|$rootCategoryId|%", ParameterType::STRING)
+            ->setParameter('categoryLiveVersion', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
+
+        return $query;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function _getQueryFields() :  array
+    {
+        return [
+            "LOWER(HEX(category.id)) AS " . $this->getDiIdField(),
+            "LOWER(HEX(category.parent_id)) AS " . DocSchemaInterface::FIELD_PARENT_VALUE_IDS,
+            "category.active AS " . DocSchemaInterface::FIELD_STATUS,
+            "LOWER(HEX(category.media_id)) AS " . DocSchemaInterface::FIELD_IMAGES,
+        ];
+    }
+
+    /**
+     * @param string|null $propertyName
+     * @return QueryBuilder
+     */
+    public function getQueryInstant(?string $propertyName = null) : QueryBuilder
+    {
+        $rootCategoryId = $this->getSystemConfiguration()->getNavigationCategoryId();
+        $query = $this->connection->createQueryBuilder();
+        $query->select($this->_getQueryFields())
+            ->from("category")
+            ->leftJoin("category", "product_category_tree", "product_category_tree",
+            "category.id = product_category_tree.category_id AND category.version_id=product_category_tree.category_version_id")
+            ->andWhere('product_category_tree.product_version_id = :productLiveVersion')
+            ->andWhere('category.version_id = :categoryLiveVersion')
+            ->andWhere('category.path LIKE :rootCategoryId OR LOWER(HEX(category.id))=:root')
+            ->andWhere('product_category_tree.product_id IN (:ids)')
+            ->addGroupBy("product_category_tree.category_id")
+            ->setParameter('root', $rootCategoryId, ParameterType::STRING)
+            ->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
+            ->setParameter('rootCategoryId', "%|$rootCategoryId|%", ParameterType::STRING)
+            ->setParameter('productLiveVersion', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
             ->setParameter('categoryLiveVersion', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 
         return $query;

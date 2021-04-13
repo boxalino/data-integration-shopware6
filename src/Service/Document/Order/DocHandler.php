@@ -2,14 +2,17 @@
 namespace Boxalino\DataIntegration\Service\Document\Order;
 
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaPropertyHandlerInterface;
-use Boxalino\DataIntegrationDoc\Service\Doc\Order;
-use Boxalino\DataIntegrationDoc\Service\Generator\DocGeneratorInterface;
+use Boxalino\DataIntegrationDoc\Doc\Order;
+use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailSyncException;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocOrderHandlerInterface;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocOrder;
-use Psr\Log\LoggerInterface;
+use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocDeltaIntegrationInterface;
+use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocDeltaIntegrationTrait;
+use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocInstantIntegrationInterface;
+use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocInstantIntegrationTrait;
+use Boxalino\DataIntegrationDoc\Service\Integration\Mode\InstantIntegrationInterface;
 
 /**
  * Class DocHandler
@@ -19,22 +22,12 @@ use Psr\Log\LoggerInterface;
  * @package Boxalino\DataIntegration\Service\Document\Order
  */
 class DocHandler extends DocOrder
-    implements DocOrderHandlerInterface, IntegrationDocHandlerInterface
+    implements DocOrderHandlerInterface, IntegrationDocHandlerInterface, DocDeltaIntegrationInterface, DocInstantIntegrationInterface
 {
 
     use IntegrationDocHandlerTrait;
-
-    /**
-     * @return string
-     */
-    public function getDocContent(): string
-    {
-        $this->addSystemConfigurationOnHandlers();
-        $this->generateDocData();
-        $this->createDocLines();
-
-        return parent::getDocContent();
-    }
+    use DocDeltaIntegrationTrait;
+    use DocInstantIntegrationTrait;
 
     /**
      * @return $this
@@ -42,6 +35,9 @@ class DocHandler extends DocOrder
     protected function createDocLines() : self
     {
         try {
+            $this->addSystemConfigurationOnHandlers();
+            $this->generateDocData();
+
             foreach($this->getDocData() as $id=>$content)
             {
                 /** @var Order | DocHandlerInterface $doc */
@@ -50,7 +46,6 @@ class DocHandler extends DocOrder
 
                 $this->addDocLine($doc);
             }
-
         } catch (\Throwable $exception)
         {
             $this->logger->info($exception->getMessage());

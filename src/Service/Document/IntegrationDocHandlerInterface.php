@@ -12,18 +12,6 @@ use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
  */
 interface IntegrationDocHandlerInterface
 {
-
-    /**
-     * @return arrau
-     */
-    public function getIds() : array;
-
-    /**
-     * @param array $ids
-     * @return IntegrationDocHandlerInterface
-     */
-    public function setIds(array $ids) : IntegrationDocHandlerInterface;
-
     /**
      * @return ConfigurationDataObject
      */

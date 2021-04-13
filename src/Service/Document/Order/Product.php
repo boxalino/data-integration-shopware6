@@ -1,15 +1,14 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Order;
 
-use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Doctrine\DBAL\Query\QueryBuilder;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Order\Product as OrderProductSchema;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Order\Product as OrderProductSchema;
 
 /**
  * Class Product
@@ -17,7 +16,7 @@ use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Order\Product as OrderProduct
  *
  * @package Boxalino\DataIntegration\Service\Document\Order
  */
-class Product extends IntegrationSchemaPropertyHandler
+class Product extends ModeIntegrator
 {
 
     /**
@@ -61,14 +60,12 @@ class Product extends IntegrationSchemaPropertyHandler
         $query->select($this->getFields())
             ->from("order_line_item", "oli")
             ->leftJoin(
-                "oli", '`order`', 'o', "oli.order_id = o.id AND oli.order_version_id = o.version_id"
+                "oli", '( ' . $this->getOrderJoinQuery()->__toString() . ') ', 'o',
+                "oli.order_id = o.id AND oli.order_version_id = o.version_id"
             )
-            //->andWhere("o.sales_channel_id=:channelId")
-            ->andWhere("o.version_id = :live")
-            //->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
+            ->andWhere("o.id IS NOT NULL")
+            ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
-//                ->setFirstResult(($page - 1) * OrderComponentInterface::EXPORTER_STEP)
-//                ->setMaxResults(OrderComponentInterface::EXPORTER_STEP);
 
         return $query;
     }
@@ -92,6 +89,43 @@ class Product extends IntegrationSchemaPropertyHandler
             "TRUNCATE(oli.unit_price - JSON_EXTRACT(oli.payload, '$.purchasePrice'),2) AS unit_gross_margin",  //get unit gross margin from unit_price-purchasePrice
             "TRUNCATE(JSON_EXTRACT(oli.payload, '$.purchasePrice')*oli.quantity,2) AS total_gross_margin" //calculate total gross margin from quantity*unit_gross_margin
         ];
+    }
+
+    /**
+     * @return QueryBuilder
+     */
+    protected function getOrderJoinQuery() : QueryBuilder
+    {
+        /** for delta requests */
+        if($this->filterByCriteria())
+        {
+            return $this->getQueryDelta();
+        }
+
+        /** for instant updates */
+        if($this->filterByIds())
+        {
+            return $this->getQueryInstant();
+        }
+
+        return $this->_getQuery();
+    }
+
+    /**
+     * @return QueryBuilder
+     */
+    public function _getQuery() : QueryBuilder
+    {
+        $query = $this->connection->createQueryBuilder();
+        $query->select("*")
+            ->from("`order`", "o")
+            //->andWhere("o.sales_channel_id=:channelId")
+            ->andWhere("o.version_id = :live")
+            ->addOrderBy("o.order_date_time", 'DESC')
+            ->setFirstResult($this->getFirstResultByBatch())
+            ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
+
+        return $query;
     }
 
 

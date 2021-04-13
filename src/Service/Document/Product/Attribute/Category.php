@@ -1,14 +1,14 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Product\Attribute;
 
-use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
+use Boxalino\DataIntegration\Service\Document\Product\ModeIntegrator;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Category as CategorySchema;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Category as CategorySchema;
 
 /**
  * Class Category
@@ -16,8 +16,10 @@ use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Category as CategorySchema;
  *
  * @package Boxalino\DataIntegration\Service\Document\Product\Attribute
  */
-class Category extends IntegrationSchemaPropertyHandler
+class Category extends ModeIntegrator
 {
+
+    use DeltaInstantTrait;
 
     /**
      * @return array
@@ -57,23 +59,35 @@ class Category extends IntegrationSchemaPropertyHandler
      * @param string $propertyName
      * @return QueryBuilder
      */
-    public function getQuery(?string $propertyName = null) : QueryBuilder
+    public function _getQuery(?string $propertyName = null) : QueryBuilder
     {
         $query = $this->connection->createQueryBuilder();
-        $query->select([
-                "LOWER(HEX(product_id)) AS {$this->getDiIdField()}",
-                "GROUP_CONCAT(LOWER(HEX(category_id)) SEPARATOR ',') AS " . DocSchemaInterface::FIELD_INTERNAL_ID
-            ]
-        )->from("product_category")
+        $query->select($this->_getQueryFields())
+            ->from("product_category")
+            ->leftJoin("product_category", "( " . $this->_getProductQuery()->__toString() . " )", 'product',
+                'product_category.product_id = product.id AND product_category.product_version_id = product.version_id')
             ->andWhere('product_category.category_version_id = :categoryLiveVersion')
             ->andWhere('product_category.product_version_id = :productLiveVersion')
-            #->andWhere('product_category.product_id IN (:ids)')
-            ->addGroupBy('product_id')
-            #->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
+            ->andWhere("product.id IS NOT NULL")
+            ->addGroupBy('product_category.product_id')
             ->setParameter('productLiveVersion', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
-            ->setParameter('categoryLiveVersion', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
+            ->setParameter('categoryLiveVersion', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
+            ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
+            ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING);
 
         return $query;
     }
+
+    /**
+     * @return string[]
+     */
+    protected function _getQueryFields() : array
+    {
+        return [
+            "LOWER(HEX(product_id)) AS {$this->getDiIdField()}",
+            "GROUP_CONCAT(LOWER(HEX(category_id)) SEPARATOR ',') AS " . DocSchemaInterface::FIELD_INTERNAL_ID
+        ];
+    }
+
 
 }

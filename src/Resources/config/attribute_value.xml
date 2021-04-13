@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:monolog="http://symfony.com/schema/dic/monolog"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd http://symfony.com/schema/dic/monolog http://symfony.com/schema/dic/monolog/monolog-1.0.xsd">
+
+    <services>
+        <!-- A: Attribute Handler for the category values (hierarchical) -->
+        <service id="boxalino.di.values.category" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\Category">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.util.localized"/>
+            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
+            <argument type="service" id="media.repository"/>
+            <call method="allowInstantMode">
+                <argument type="string">true</argument>
+            </call>
+        </service>
+
+        <!-- B: Attribute Handler for the brand -->
+        <service id="boxalino.di.values.brand" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\Brand">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.util.localized"/>
+            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
+            <argument type="service" id="media.repository"/>
+        </service>
+
+        <!-- C: Attribute Handler for the properties -->
+        <service id="boxalino.di.values.property" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\Property">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.util.localized"/>
+            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
+            <argument type="service" id="media.repository"/>
+        </service>
+
+        <!-- E: Attribute Handler for the tags -->
+        <service id="boxalino.di.values.tags" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\Tag">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
+
+        <!-- F: Attribute Handler for the delivery times -->
+        <service id="boxalino.di.values.delivery" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\DeliveryTime">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.util.localized"/>
+        </service>
+
+    </services>
+
+</container>

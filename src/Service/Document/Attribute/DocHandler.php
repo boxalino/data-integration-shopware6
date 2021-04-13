@@ -2,19 +2,21 @@
 namespace Boxalino\DataIntegration\Service\Document\Attribute;
 
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
-use Boxalino\DataIntegrationDoc\Service\Doc\Attribute;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaIntegrationTrait;
+use Boxalino\DataIntegrationDoc\Doc\Attribute;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaIntegrationTrait;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocAttribute;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocAttributeHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocHandlerInterface;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 use Psr\Log\LoggerInterface;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaPropertyHandlerInterface;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaPropertyHandlerInterface;
 
 /**
  * Class DocHandler
  * Generator for the doc_attribute document
  * https://boxalino.atlassian.net/wiki/spaces/BPKB/pages/252280945/doc+attribute
+ *
+ * The doc_attribute is exported only for FULL and INSTANT data integrations
  *
  * @package Boxalino\DataIntegration\Service\Document\Attribute
  */
@@ -24,18 +26,15 @@ class DocHandler extends DocAttribute
 
     use IntegrationDocHandlerTrait;
 
-    /**
-     * @return string
-     */
-    public function getDocContent(): string
+    public function integrate(): void
     {
-        if(empty($this->docs))
+        if($this->getSystemConfiguration()->isTest())
         {
-            $this->addSystemConfigurationOnHandlers();
-            $this->setLanguages($this->getSystemConfiguration()->getLanguages());
-            $this->createDocLines();
+            $this->getLogger()->info("Boxalino DI: sync for {$this->getDocType()}");
         }
-        return parent::getDocContent();
+
+        $this->createDocLines();
+        parent::integrate();
     }
 
     /**
@@ -45,6 +44,8 @@ class DocHandler extends DocAttribute
     {
         try {
             $data = [];
+            $this->addSystemConfigurationOnHandlers();
+            $this->setLanguages($this->getSystemConfiguration()->getLanguages());
             foreach($this->getHandlers() as $handler)
             {
                 if($handler instanceof DocSchemaPropertyHandlerInterface)

@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:monolog="http://symfony.com/schema/dic/monolog"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd http://symfony.com/schema/dic/monolog http://symfony.com/schema/dic/monolog/monolog-1.0.xsd">
+
+    <services>
+        <!-- A: Attribute info handler for SW6 properties -->
+        <service id="boxalino.di.attribute.property" class="Boxalino\DataIntegration\Service\Document\Attribute\Property">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.util.localized"/>
+            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+        </service>
+
+        <!-- B: Attribute info handler for GENERIC attributes from ENTITY -->
+        <service id="boxalino.di.attribute.entity" class="Boxalino\DataIntegration\Service\Document\Attribute\Entity">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="boxalino.di.product.entity"/>
+        </service>
+
+    </services>
+
+</container>

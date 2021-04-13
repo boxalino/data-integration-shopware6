@@ -1,12 +1,12 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Product\Attribute;
 
-use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
+use Boxalino\DataIntegration\Service\Document\Product\ModeIntegrator;
 use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
 use Boxalino\DataIntegration\Service\Util\ShopwareLocalizedTrait;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Repeated;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\RepeatedLocalized;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Repeated;
+use Boxalino\DataIntegrationDoc\Doc\Schema\RepeatedLocalized;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -20,10 +20,11 @@ use Shopware\Core\Framework\Uuid\Uuid;
  *
  * @package Boxalino\DataIntegration\Service\Document\Product\Attribute
  */
-class DeliveryTime extends IntegrationSchemaPropertyHandler
+class DeliveryTime extends ModeIntegrator
 {
 
     use ShopwareLocalizedTrait;
+    use DeltaInstantAddTrait;
 
     public function __construct(
         Connection $connection,
@@ -64,7 +65,7 @@ class DeliveryTime extends IntegrationSchemaPropertyHandler
      * @param string $propertyName
      * @return QueryBuilder
      */
-    public function getQuery(?string $propertyName = null): QueryBuilder
+    public function _getQuery(?string $propertyName = null): QueryBuilder
     {
         $fields = array_merge(
             $this->getFields(),
@@ -79,12 +80,15 @@ class DeliveryTime extends IntegrationSchemaPropertyHandler
             ->andWhere('product.version_id = :live')
             ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
             ->addGroupBy('product.id')
+            ->orderBy("product.created_at", "DESC")
+            ->addOrderBy("product.auto_increment", "DESC")
             ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
-            ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION));
+            ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION))
+            ->setFirstResult($this->getFirstResultByBatch())
+            ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
 
         return $query;
     }
-
 
     /**
      * @return \Doctrine\DBAL\Query\QueryBuilder

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Product\Attribute;
 
-use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
+use Boxalino\DataIntegration\Service\Document\Product\ModeIntegrator;
 use Boxalino\DataIntegration\Service\Util\ShopwareLocalizedTrait;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Typed\StringAttribute;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Typed\StringAttribute;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -18,10 +18,11 @@ use Shopware\Core\Framework\Uuid\Uuid;
  *
  * @package Boxalino\DataIntegration\Service\Document\Product\Attribute
  */
-class Tag extends IntegrationSchemaPropertyHandler
+class Tag extends ModeIntegrator
 {
 
     use ShopwareLocalizedTrait;
+    use DeltaInstantAddTrait;
 
     /**
      * @return array
@@ -53,7 +54,7 @@ class Tag extends IntegrationSchemaPropertyHandler
      * @param string $propertyName
      * @return QueryBuilder
      */
-    public function getQuery(?string $propertyName = null): QueryBuilder
+    public function _getQuery(?string $propertyName = null): QueryBuilder
     {
         $query = $this->connection->createQueryBuilder();
         $query->select(["LOWER(HEX(product.id)) AS {$this->getDiIdField()}", "GROUP_CONCAT(tag.name) AS " . DocSchemaInterface::FIELD_INTERNAL_ID])
@@ -64,8 +65,12 @@ class Tag extends IntegrationSchemaPropertyHandler
             ->andWhere('product.version_id = :live')
             ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
             ->addGroupBy('product.id')
+            ->orderBy("product.created_at", "DESC")
+            ->addOrderBy("product.auto_increment", "DESC")
             ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
-            ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION));
+            ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION))
+            ->setFirstResult($this->getFirstResultByBatch())
+            ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
 
         return $query;
     }

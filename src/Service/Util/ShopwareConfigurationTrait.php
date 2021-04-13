@@ -1,7 +1,7 @@
 <?php
 namespace Boxalino\DataIntegration\Service\Util;
 
-use Boxalino\DataIntegration\Service\DataIntegrationConfigurationInterface;
+use Boxalino\DataIntegration\Service\Util\DiConfigurationInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -41,7 +41,7 @@ trait ShopwareConfigurationTrait
         if(empty($this->config) || !isset($this->config[$id]))
         {
             $allConfig = $this->systemConfigService->all($id);
-            $this->config[$id] = $allConfig[DataIntegrationConfigurationInterface::BOXALINO_CONFIG_KEY]['config'];
+            $this->config[$id] = $allConfig[DiConfigurationInterface::BOXALINO_CONFIG_KEY]['config'];
         }
 
         return $this->config[$id];

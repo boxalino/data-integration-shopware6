@@ -5,7 +5,7 @@ use Boxalino\DataIntegration\Service\Document\Attribute\Value\DocAttributeValueT
 use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
 use Boxalino\DataIntegration\Service\Util\ShopwareMediaTrait;
 use Boxalino\DataIntegration\Service\Util\ShopwarePropertyTrait;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\ParameterType;
@@ -25,7 +25,7 @@ use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
  *
  * @package Boxalino\DataIntegration\Service\Document\Attribute\Value
  */
-class Property extends IntegrationSchemaPropertyHandler
+class Property extends ModeIntegrator
 {
 
     use ShopwarePropertyTrait;
@@ -68,6 +68,12 @@ class Property extends IntegrationSchemaPropertyHandler
             $content[$propertyName] = [];
             $this->setPropertyId($property[$this->getDiIdField()]);
 
+            /** on instant mode - export only the allowed properties */
+            if(!$this->isPropertyAllowedOnInstantMode($propertyName) && $this->filterByIds())
+            {
+                continue;
+            }
+
             foreach($this->getData($propertyName) as $item)
             {
                 $content[$propertyName][] = $this->initializeSchemaForRow($item);
@@ -80,14 +86,10 @@ class Property extends IntegrationSchemaPropertyHandler
     /**
      * Get the options translation per property group
      */
-    public function getQuery(?string $propertyName = null) : QueryBuilder
+    public function _getQuery(?string $propertyName = null) : QueryBuilder
     {
-        $fields = array_merge(
-            $this->getFields("property_group_option.id"),
-            ["LOWER(HEX(property_group_option.media_id)) AS " . DocSchemaInterface::FIELD_IMAGES]
-        );
         $query = $this->connection->createQueryBuilder();
-        $query->select($fields)
+        $query->select($this->_getQueryFields())
             ->from("property_group_option")
             ->leftJoin('property_group_option', '( ' . $this->getLocalizedFieldsQuery()->__toString() . ') ',
                 $this->prefix, "$this->prefix.property_group_option_id = property_group_option.id")
@@ -103,5 +105,33 @@ class Property extends IntegrationSchemaPropertyHandler
         return $query;
     }
 
+    /**
+     * @param string|null $propertyName
+     * @return QueryBuilder
+     */
+    public function getQueryInstant(?string $propertyName = null) : QueryBuilder
+    {
+        $mainQuery = $this->_getQuery($propertyName);
+        $query = $this->connection->createQueryBuilder();
+        $query->select($this->_getQueryFields())
+            ->from("product_property")
+            ->leftJoin("product_property", "( " . $mainQuery->__toString() . " )", "property",
+                "property.{$this->getDiIdField()} = product_property.property_id" )
+            ->andWhere('product_property.product_id IN (:ids)')
+            ->addGroupBy("product_property.property_id")
+            ->setParameter('ids', Uuid::fromHexToBytesList($this->getIds()), Connection::PARAM_STR_ARRAY)
+            ->setParameter('productLiveVersion', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
+            ->setParameter("propertyGroupId", Uuid::fromHexToBytes($this->propertyId), ParameterType::BINARY);
+
+        return $query;
+    }
+
+    protected function _getQueryFields() : array
+    {
+        return array_merge(
+            $this->getFields("property_group_option.id"),
+            ["LOWER(HEX(property_group_option.media_id)) AS " . DocSchemaInterface::FIELD_IMAGES]
+        );
+    }
 
 }

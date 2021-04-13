@@ -1,20 +1,20 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Product\Attribute;
 
-use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
+use Boxalino\DataIntegration\Service\Document\Product\ModeIntegrator;
 use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
 use Boxalino\DataIntegration\Service\Util\ShopwareLocalizedTrait;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Repeated;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Repeated;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\RepeatedLocalized;
-use Boxalino\DataIntegrationDoc\Service\Doc\Schema\Localized;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaInterface;
-use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaIntegrationTrait;
+use Boxalino\DataIntegrationDoc\Doc\Schema\RepeatedLocalized;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Localized;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaIntegrationTrait;
 
 /**
  * Class Brand
@@ -22,9 +22,10 @@ use Boxalino\DataIntegrationDoc\Service\Doc\DocSchemaIntegrationTrait;
  *
  * @package Boxalino\DataIntegration\Service\Document\Product\Attribute
  */
-class Brand extends IntegrationSchemaPropertyHandler
+class Brand extends ModeIntegrator
 {
     use ShopwareLocalizedTrait;
+    use DeltaInstantAddTrait;
 
     /**
      * @var array | null
@@ -63,24 +64,35 @@ class Brand extends IntegrationSchemaPropertyHandler
      * @param string $propertyName
      * @return QueryBuilder
      */
-    public function getQuery(?string $propertyName = null): QueryBuilder
+    public function _getQuery(?string $propertyName = null): QueryBuilder
     {
-        $fields = ["LOWER(HEX(p.id)) AS {$this->getDiIdField()}",
-            "IF(p.product_manufacturer_id IS NULL, LOWER(HEX(parent.product_manufacturer_id)), LOWER(HEX(p.product_manufacturer_id))) AS " . DocSchemaInterface::FIELD_INTERNAL_ID
-        ];
         $query = $this->connection->createQueryBuilder();
-        $query->select($fields)
-            ->from('product', 'p')
-            ->leftJoin("p", 'product', 'parent',
-                'p.parent_id = parent.id AND p.parent_version_id = parent.version_id')
-            ->andWhere('p.version_id = :live')
-            ->andWhere('p.product_manufacturer_version_id = :live OR parent.product_manufacturer_version_id = :live')
-            ->andWhere("JSON_SEARCH(p.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
-            ->addGroupBy('p.id')
+        $query->select($this->_getQueryFields())
+            ->from('product')
+            ->leftJoin("product", 'product', 'parent',
+                'product.parent_id = parent.id AND product.parent_version_id = parent.version_id')
+            ->andWhere('product.version_id = :live')
+            ->andWhere('product.product_manufacturer_version_id = :live OR parent.product_manufacturer_version_id = :live')
+            ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
+            ->addGroupBy('product.id')
+            ->orderBy("product.created_at", "DESC")
+            ->addOrderBy("product.auto_increment", "DESC")
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
-            ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING);
+            ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
+            ->setFirstResult($this->getFirstResultByBatch())
+            ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
 
         return $query;
+    }
+
+    /**
+     * @return string[]
+     */
+    protected function _getQueryFields() : array
+    {
+        return ["LOWER(HEX(product.id)) AS {$this->getDiIdField()}",
+            "IF(product.product_manufacturer_id IS NULL, LOWER(HEX(parent.product_manufacturer_id)), LOWER(HEX(product.product_manufacturer_id))) AS " . DocSchemaInterface::FIELD_INTERNAL_ID
+        ];
     }
 
     /**
