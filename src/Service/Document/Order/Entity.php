@@ -183,12 +183,13 @@ class Entity extends ModeIntegrator
         return [
             'LOWER(HEX(o.id)) AS ' . $this->getDiIdField(),
             'LOWER(HEX(o.id)) AS id', 'o.order_number', 'sct.name AS store',
-            'c.iso_code AS currency_cd', 'o.currency_factor',  'o.amount_total', 'o.amount_net',
+            'c.iso_code AS currency_cd', 'o.currency_factor',  'FORMAT(o.amount_total,2)', 'FORMAT(o.amount_net,2)',
             'o.tax_status', 'o.shipping_total', 'IF(o.tax_status="net",1,0) AS tax_free',
             'TRUNCATE(o.amount_total - o.amount_net, 2) AS tax_amnt', 'locale.code as language',
             'GROUP_CONCAT(od.tracking_codes) AS tracking_code', 'pmt.name AS payment_method',
             'smt.name AS shipping_method','smt.description AS shipping_description', 'od.shipping_date_latest AS sent',
-            'oc.email', 'LOWER(HEX(oc.customer_id)) AS persona_id', 'o.customer_comment AS customer_comment',
+            'oc.email', 'IF(oc.customer_id IS NULL, oc.customer_number, LOWER(HEX(oc.customer_id))) AS persona_id',
+            'o.customer_comment AS customer_comment',
             'IF(o.updated_at IS NULL, o.created_at, o.updated_at) AS updated_at',
             'o.order_date_time', 'IF(smso.technical_name="completed",1, 0) AS status', 'smso.technical_name AS status_code',
             'o.auto_increment', 'o.campaign_code', 'o.affiliate_code', 'o.deep_link_code'

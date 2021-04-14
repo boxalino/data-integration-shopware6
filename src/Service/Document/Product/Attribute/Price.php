@@ -42,6 +42,11 @@ class Price extends ModeIntegrator
                 continue;
             }
 
+            if($item['price']<$item['list_price'])
+            {
+                $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_SALE] = true;
+            }
+
             $schema = $this->getPriceSchema($languages, $currencyCodes, $currencyFactor, $item['price'], $item['list_price']);
             $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_PRICE] = $schema;
         }

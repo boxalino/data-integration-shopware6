@@ -88,8 +88,8 @@ class Pricing extends ModeIntegrator
             ->from("product")
             ->andWhere('version_id = :live')
             ->andWhere("JSON_SEARCH(category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
-            ->orderBy("created_at", "DESC")
-            ->addOrderBy("auto_increment", "DESC")
+            ->orderBy("product_number", "DESC")
+            ->addOrderBy("created_at", "DESC")
             ->setFirstResult($this->getFirstResultByBatch())
             ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
 

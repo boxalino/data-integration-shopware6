@@ -50,13 +50,22 @@ trait ShopwareMediaTrait
             $image = $this->mediaUrlGenerator->getAbsoluteMediaUrl($media);
         } catch(EmptyMediaFilenameException $exception)
         {
-            $this->logger->info("Shopware: Media Path Export failed for media ID $mediaId: " . $exception->getMessage());
+            if($this->getSystemConfiguration()->isTest())
+            {
+                $this->logger->info("Shopware: Media Path Export failed for media ID $mediaId: " . $exception->getMessage());
+            }
         } catch(EmptyMediaIdException $exception)
         {
-            $this->logger->info("Shopware: Media Path Export failed for media ID $mediaId: " . $exception->getMessage());
+            if($this->getSystemConfiguration()->isTest())
+            {
+                $this->logger->info("Shopware: Media Path Export failed for media ID $mediaId: " . $exception->getMessage());
+            }
         } catch(\Exception $exception)
         {
-            $this->logger->warning("Shopware: Media Path Export failed for media ID $mediaId: " . $exception->getMessage());
+            if($this->getSystemConfiguration()->isTest())
+            {
+                $this->logger->info("Shopware: Media Path Export failed for media ID $mediaId: " . $exception->getMessage());
+            }
         }
 
         return $image;

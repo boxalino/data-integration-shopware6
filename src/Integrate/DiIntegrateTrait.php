@@ -24,21 +24,20 @@ trait DiIntegrateTrait
     public function integrate(ConfigurationDataObject $configuration) : void
     {
         try {
-            $this->getLogger()->info(
-                "Boxalino DI: Start {$this->getIntegrationHandler()->getIntegrationType()} {$this->getIntegrationHandler()->getIntegrationMode()} sync for {$configuration->getAccount()}"
-            );
-
             if($this->getIntegrationHandler() instanceof IntegrationDocHandlerInterface)
             {
                 $this->getIntegrationHandler()->setSystemConfiguration($configuration);
             }
 
-            $this->getIntegrationHandler()
-                ->manageConfiguration($configuration)
-                ->integrate();
+            $this->getIntegrationHandler()->manageConfiguration($configuration);
+            $this->getLogger()->info(
+                "Boxalino DI: Start {$this->getIntegrationHandler()->getIntegrationType()} {$this->getIntegrationHandler()->getIntegrationMode()} {$this->getIntegrationHandler()->getDiConfiguration()->getTm()} sync for {$configuration->getAccount()}"
+            );
+
+            $this->getIntegrationHandler()->integrate();
 
             $this->getLogger()->info(
-                "Boxalino DI: End of {$this->getIntegrationHandler()->getIntegrationType()} {$this->getIntegrationHandler()->getIntegrationMode()} sync for {$configuration->getAccount()}"
+                "Boxalino DI: End of {$this->getIntegrationHandler()->getIntegrationType()} {$this->getIntegrationHandler()->getIntegrationMode()} {$this->getIntegrationHandler()->getDiConfiguration()->getTm()} sync for {$configuration->getAccount()}"
             );
         } catch (FailDocLoadException $exception)
         {
@@ -67,17 +66,13 @@ trait DiIntegrateTrait
 
             if($this->getIntegrationHandler() instanceof InstantIntegrationInterface)
             {
-                $this->getLogger()->info(
-                    "Boxalino DI: Start {$this->getIntegrationHandler()->getIntegrationType()} {$this->getIntegrationHandler()->getIntegrationMode()} sync for {$configuration->getAccount()}"
-                );
-
                 $this->getIntegrationHandler()->setIds($ids);
                 $this->getIntegrationHandler()
                     ->manageConfiguration($configuration)
                     ->integrate();
 
                 $this->getLogger()->info(
-                    "Boxalino DI: End of {$this->getIntegrationHandler()->getIntegrationType()} {$this->getIntegrationHandler()->getIntegrationMode()} sync for {$configuration->getAccount()}"
+                    "Boxalino DI: End of {$this->getIntegrationHandler()->getIntegrationType()} {$this->getIntegrationHandler()->getIntegrationMode()} {$this->getIntegrationHandler()->getDiConfiguration()->getTm()} sync for {$configuration->getAccount()}"
                 );
             }
         } catch (FailDocLoadException $exception)

@@ -32,6 +32,7 @@ trait EntityFullTrait
             "IF(product.active IS NULL, parent.active, product.active) AS active",
             "IF(product.ean IS NULL, parent.ean, product.ean) AS ean",
             "IF(product.is_closeout IS NULL, IF(parent.is_closeout = '1', 0, 1), IF(product.is_closeout = '1', 0, 1)) AS is_closeout",
+            "IF(DATEDIFF(NOW(), product.release_date) < {$this->getSystemConfiguration()->getMarkAsNew()}, 1, 0) AS " . DocSchemaInterface::FIELD_NEW,
 
             /** numeric properties */
             'IF(product.parent_id IS NULL, product.rating_average, parent.rating_average) AS rating_average',

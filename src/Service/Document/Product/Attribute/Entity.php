@@ -20,6 +20,7 @@ class Entity extends ModeIntegrator
 
     use EntityFullTrait;
     use EntityInstantTrait;
+    use DeltaInstantAddTrait;
 
     /**
      * @return array
@@ -137,42 +138,14 @@ class Entity extends ModeIntegrator
             ->andWhere('product.version_id = :live')
             # connect to the product IDs that belong to the channel linked to the Boxalino account/data index
             ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
-            ->orderBy("product.created_at", "DESC")
-            ->addOrderBy("product.auto_increment", "DESC")
+            ->orderBy("product.product_number", "DESC")
+            ->addOrderBy("product.created_at", "DESC")
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
             ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setFirstResult($this->getFirstResultByBatch())
             ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
 
         return $query;
-    }
-
-    /**
-     * If the logic for delta needs to be updated - rewrite this function
-     *
-     * @return \Doctrine\DBAL\Query\QueryBuilder
-     */
-    public function getQueryDelta(?string $propertyName = null) : QueryBuilder
-    {
-        $query = $this->_getQuery($propertyName);
-
-        $dateCriteria = $this->getSyncCheck() ?? date("Y-m-d H:i", strtotime("-60 min"));
-        $query->andWhere(
-            "STR_TO_DATE(product.updated_at, '%Y-%m-%d %H:%i') > :lastSync OR STR_TO_DATE(parent.updated_at, '%Y-%m-%d %H:%i') > :lastSync " .
-            "OR STR_TO_DATE(product.created_at, '%Y-%m-%d %H:%i') > :lastSync OR STR_TO_DATE(parent.created_at,  '%Y-%m-%d %H:%i') > :lastSync"
-        )
-            ->setParameter('lastSync', $dateCriteria);
-
-        return $query;
-    }
-
-    /**
-     * @return \Doctrine\DBAL\Query\QueryBuilder
-     */
-    public function getQueryInstant(?string $propertyName = null) : QueryBuilder
-    {
-        $query = $this->_getQuery($propertyName);
-        return $this->addInstantCondition($query);
     }
 
     /**

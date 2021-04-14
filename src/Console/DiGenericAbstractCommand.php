@@ -67,6 +67,7 @@ abstract class DiGenericAbstractCommand extends Command
                         continue;
                     }
 
+
                     if($configuration->getAccount() == $account)
                     {
                         $this->integrate($configuration);

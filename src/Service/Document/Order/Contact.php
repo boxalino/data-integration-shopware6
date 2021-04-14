@@ -2,6 +2,7 @@
 namespace Boxalino\DataIntegration\Service\Document\Order;
 
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\Order;
 use Boxalino\DataIntegrationDoc\Service\GcpRequestInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
@@ -33,13 +34,18 @@ abstract class Contact extends ModeIntegrator
                 $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_CONTACTS] = [];
             }
 
-            $schema = new OrderContactSchema($item);
-            if(isset($item["updated_at"]))
-            {
-                $schema->addDatetimeAttributes($this->getDatetimeAttributeSchema([$item["updated_at"]], "updated_at"));
-            }
+            try{
+                $schema = new OrderContactSchema($item);
+                if(isset($item["updated_at"]))
+                {
+                    $schema->addDatetimeAttributes($this->getDatetimeAttributeSchema([$item["updated_at"]], "updated_at"));
+                }
 
-            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_CONTACTS][] = $schema;
+                $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_CONTACTS][] = $schema;
+            } catch (\Throwable $exception)
+            {
+                //missing information
+            }
         }
 
         return $content;
@@ -105,8 +111,8 @@ abstract class Contact extends ModeIntegrator
         return [
             "LOWER(HEX(o.id)) AS ". $this->getDiIdField(),
             "'$type' AS type",
-            "LOWER(HEX(oc.customer_id)) AS persona_id",
-            "LOWER(HEX(oc.customer_id)) AS internal_id",
+            "IF(oc.customer_id IS NULL, oc.customer_number, LOWER(HEX(oc.customer_id))) AS persona_id",
+            "IF(oc.customer_id IS NULL, oc.customer_number, LOWER(HEX(oc.customer_id))) AS internal_id",
             "oc.customer_number AS external_id",
             "oa.title AS title",
             "st.display_name AS salutation_id",
@@ -114,7 +120,7 @@ abstract class Contact extends ModeIntegrator
             "oa.last_name AS lastname",
             "c.birthday AS date_of_birth",
             "c.created_at AS account_creation",
-            "cgt.name AS customer_groups",
+            "IF(cgt.name IS NULL, 'N/A', cgt.name) AS customer_groups",
             "sms.technical_name AS $field",
             "oa.company AS company",
             "oa.vat_id AS vat",

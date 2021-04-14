@@ -85,8 +85,8 @@ abstract class ModeIntegrator extends IntegrationSchemaPropertyHandler
             ->from("product")
             ->andWhere('product.version_id = :live')
             ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
-            ->orderBy("product.created_at", "DESC")
-            ->addOrderBy("product.auto_increment", "DESC")
+            ->orderBy("product.product_number", "DESC")
+            ->addOrderBy("product.created_at", "DESC")
             ->setFirstResult($this->getFirstResultByBatch())
             ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
 

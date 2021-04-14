@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Product;
 
-use Boxalino\DataIntegrationDoc\Doc\DocPropertiesTrait;
-use Boxalino\DataIntegrationDoc\Generator\DocGeneratorInterface;
 use Boxalino\DataIntegrationDoc\Generator\Product\Doc;
 use Boxalino\DataIntegrationDoc\Generator\Product\Group;
 use Boxalino\DataIntegrationDoc\Generator\Product\Line;
@@ -10,14 +8,12 @@ use Boxalino\DataIntegrationDoc\Generator\Product\Sku;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
-use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailSyncException;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocProduct;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocProductHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocDeltaIntegrationInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocDeltaIntegrationTrait;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocInstantIntegrationInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocInstantIntegrationTrait;
-use Boxalino\DataIntegrationDoc\Service\Integration\Mode\InstantIntegrationInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -85,9 +81,12 @@ class DocHandler extends DocProduct
             try{
                 if(!isset($content[DocSchemaInterface::DI_DOC_TYPE_FIELD]))
                 {
-                    $this->getLogger()->warning("Boxalino DI: incomplete content for $id: "
-                        . json_encode($content) . ". This error usually means the property handlers are missconfigured."
-                    );
+                    if($this->getSystemConfiguration()->isTest())
+                    {
+                        $this->getLogger()->warning("Boxalino DI: incomplete content for $id: "
+                            . json_encode($content) . ". This error usually means the property handlers are missconfigured."
+                        );
+                    }
 
                     continue;
                 }

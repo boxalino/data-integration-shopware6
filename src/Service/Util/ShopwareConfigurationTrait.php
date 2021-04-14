@@ -42,6 +42,7 @@ trait ShopwareConfigurationTrait
         {
             $allConfig = $this->systemConfigService->all($id);
             $this->config[$id] = $allConfig[DiConfigurationInterface::BOXALINO_CONFIG_KEY]['config'];
+            $this->config[$id]["markAsNew"] = $allConfig["core"]["listing"]["markAsNew"];
         }
 
         return $this->config[$id];

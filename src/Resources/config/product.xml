@@ -182,6 +182,9 @@
                 <argument>active</argument>
                 <argument>status</argument>
             </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>is_new</argument>
+            </call>
             <!-- is_closeout is used as logic for the "show out of stock" property -->
             <call method="addPropertyNameDocAttributeMapping">
                 <argument>is_closeout</argument>

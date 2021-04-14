@@ -130,7 +130,8 @@ class Configuration implements DiConfigurationInterface
                 "currencies" => array_unique(explode(",", $configuration['sales_channel_currencies_code'])),
                 "currenciesMap" => $currenciesMap,
                 "mode" => GcpRequestInterface::GCP_MODE_INSTANT_UPDATE,
-                "currencyFactorMap" => $currencyFactorMap
+                "currencyFactorMap" => $currencyFactorMap,
+                "markAsNew" => $configuration["markAsNew"]
             ]);
         }
 
@@ -191,7 +192,8 @@ class Configuration implements DiConfigurationInterface
                 "currenciesMap" => $currenciesMap,
                 "currencyFactorMap" => $currencyFactorMap,
                 "mode" => GcpRequestInterface::GCP_MODE_FULL,
-                "batchSize" => (int) $configuration['batchSize']
+                "batchSize" => (int) $configuration['batchSize'],
+                "markAsNew" => $configuration["markAsNew"]
             ]);
         }
 
@@ -252,7 +254,8 @@ class Configuration implements DiConfigurationInterface
                 "currenciesMap" => $currenciesMap,
                 "currencyFactorMap" => $currencyFactorMap,
                 "mode" => GcpRequestInterface::GCP_MODE_DELTA,
-                "batchSize" => (int) $configuration['batchSize']
+                "batchSize" => (int) $configuration['batchSize'],
+                "markAsNew" => $configuration["markAsNew"]
             ]);
         }
 

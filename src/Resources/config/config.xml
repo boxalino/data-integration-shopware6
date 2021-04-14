@@ -35,6 +35,7 @@
         </input-field>
         <input-field type="text">
             <name>batchSize</name>
+            <defaultValue>30000</defaultValue>
             <label>Data Integration Batch Size</label>
             <helpText>Batch Size for export in full mode (product, customers, orders, etc)</helpText>
         </input-field>
