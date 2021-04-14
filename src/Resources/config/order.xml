@@ -17,39 +17,6 @@
     </monolog:config>
 
     <services>
-        <!-- A.1: Full CLI command -->
-        <service id="Boxalino\DataIntegration\Console\Order\FullDataIntegration">
-            <argument>%kernel.environment%</argument>
-            <argument type="service" id="monolog.logger.boxalino-di-order"/>
-            <argument type="service" id="Boxalino\DataIntegration\Service\Util\DiConfigurationInterface"/>
-            <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\OrderIntegrationHandlerInterface"/>
-            <tag name="console.command"/>
-        </service>
-
-        <!-- A.2: Delta CLI command -->
-        <service id="Boxalino\DataIntegration\Console\Order\DeltaDataIntegration">
-            <argument>%kernel.environment%</argument>
-            <argument type="service" id="monolog.logger.boxalino-di-order"/>
-            <argument type="service" id="Boxalino\DataIntegration\Service\Util\DiConfigurationInterface"/>
-            <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\OrderDeltaIntegrationHandlerInterface"/>
-            <tag name="console.command"/>
-        </service>
-
-        <!-- B.1: DI handler - generates each file tyle (handler) required for FULL data integration -->
-        <service id="Boxalino\DataIntegrationDoc\Service\Integration\OrderIntegrationHandlerInterface"
-                 class="Boxalino\DataIntegration\Service\Integration\Order\FullIntegrationHandler">
-            <call method="addHandler">
-                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocOrderHandlerInterface"/>
-            </call>
-        </service>
-
-        <!-- B.2: DI handler - generates each file tyle (handler) required for DELTA data integration -->
-        <service id="Boxalino\DataIntegrationDoc\Service\Integration\OrderDeltaIntegrationHandlerInterface"
-                 class="Boxalino\DataIntegration\Service\Integration\Order\DeltaIntegrationHandler">
-            <call method="addHandler">
-                <argument type="service" id="Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocOrderHandlerInterface"/>
-            </call>
-        </service>
 
         <!-- C: Use this interface to set the logic for the full/delta data syncs for order -->
         <service id="Boxalino\DataIntegration\Service\Document\Order\ModeIntegratorInterface"
