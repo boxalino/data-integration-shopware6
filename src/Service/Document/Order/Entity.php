@@ -159,7 +159,7 @@ class Entity extends ModeIntegrator
             ->leftJoin(
                 'ot', 'payment_method_translation', 'pmt', "pmt.payment_method_id=ot.payment_method_id AND pmt.language_id = :defaultLanguageId"
             )
-            //->andWhere("o.sales_channel_id=:channelId")
+            ->andWhere("o.sales_channel_id=:channelId")
             ->andWhere("o.version_id = :live")
             ->addOrderBy("o.order_date_time", 'DESC')
             ->groupBy("o.id")

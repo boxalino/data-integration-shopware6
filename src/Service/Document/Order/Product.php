@@ -61,7 +61,7 @@ class Product extends ModeIntegrator
             ->from("order_line_item", "oli")
             ->leftJoin(
                 "oli", '( ' . $this->getOrderJoinQuery()->__toString() . ') ', 'o',
-                "oli.order_id = o.id AND oli.order_version_id = o.version_id"
+                "oli.order_id = o.id AND oli.order_version_id = o.version_id AND o.sales_channel_id=:channelId"
             )
             ->andWhere("o.id IS NOT NULL")
             ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)

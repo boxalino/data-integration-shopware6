@@ -81,7 +81,7 @@ abstract class Contact extends ModeIntegrator
             ->leftJoin(
                 'oa', 'country_state_translation', 'cstb', 'oa.country_state_id = cstb.country_state_id AND cstb.language_id=:defaultLanguageId'
             )
-            //->andWhere("o.sales_channel_id=:channelId")
+            ->andWhere("o.sales_channel_id=:channelId")
             ->andWhere("o.version_id = :live")
             ->addOrderBy("o.order_date_time", 'DESC')
             ->groupBy("o.id")

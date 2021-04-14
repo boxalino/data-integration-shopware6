@@ -88,6 +88,8 @@ class DocHandler extends DocProduct
                     $this->getLogger()->warning("Boxalino DI: incomplete content for $id: "
                         . json_encode($content) . ". This error usually means the property handlers are missconfigured."
                     );
+
+                    continue;
                 }
 
                 $schema = $this->getSchemaGeneratorByType($content[DocSchemaInterface::DI_DOC_TYPE_FIELD], $content);

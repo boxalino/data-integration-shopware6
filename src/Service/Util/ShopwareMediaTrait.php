@@ -41,22 +41,22 @@ trait ShopwareMediaTrait
      * @param string|null $mediaId
      * @return string|null
      */
-    public function getImageByMediaId(?string $mediaId) : ?string
+    public function getImageByMediaId(?string $mediaId) : string
     {
-        $image = null;
+        $image = "";
         try{
             /** @var MediaEntity $media */
             $media = $this->mediaRepository->search(new Criteria([$mediaId]), $this->context)->get($mediaId);
             $image = $this->mediaUrlGenerator->getAbsoluteMediaUrl($media);
         } catch(EmptyMediaFilenameException $exception)
         {
-            $this->logger->info("Shopware: Media Path Export failed for $image: " . $exception->getMessage());
+            $this->logger->info("Shopware: Media Path Export failed for media ID $mediaId: " . $exception->getMessage());
         } catch(EmptyMediaIdException $exception)
         {
-            $this->logger->info("Shopware: Media Path Export failed for $image: " . $exception->getMessage());
+            $this->logger->info("Shopware: Media Path Export failed for media ID $mediaId: " . $exception->getMessage());
         } catch(\Exception $exception)
         {
-            $this->logger->warning("Shopware: Media Path Export failed for $image: " . $exception->getMessage());
+            $this->logger->warning("Shopware: Media Path Export failed for media ID $mediaId: " . $exception->getMessage());
         }
 
         return $image;
