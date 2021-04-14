@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Subscriber;
+namespace Boxalino\DataIntegration\Subscriber\Product;
 
-use Boxalino\DataIntegration\Console\Mode\InstantTrait;
-use Boxalino\DataIntegration\Console\Type\ProductTrait;
+use Boxalino\DataIntegration\Integrate\Mode\InstantTrait;
+use Boxalino\DataIntegration\Integrate\Type\ProductTrait;
 use Boxalino\DataIntegration\Service\Util\DiConfigurationInterface;
-use Boxalino\DataIntegration\Subscriber\InstantDiSubscriber;
+use Boxalino\DataIntegration\Subscriber\DiInstantAbstractSubscriber;
 use Boxalino\DataIntegrationDoc\Service\Integration\ProductInstantIntegrationHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 use GuzzleHttp\Psr7\Request;
@@ -21,7 +21,7 @@ use Shopware\Core\Content\Product\Events\ProductIndexerEvent;
  *
  * @package Boxalino\DataIntegration\Service\InstantUpdate
  */
-class ProductDataIntegration extends InstantDiSubscriber
+class InstantDataIntegration extends DiInstantAbstractSubscriber
 {
     use InstantTrait;
     use ProductTrait;

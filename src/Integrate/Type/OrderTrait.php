@@ -1,19 +1,20 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Console\Type;
+namespace Boxalino\DataIntegration\Integrate\Type;
 
 use Boxalino\DataIntegrationDoc\Service\Integration\IntegrationHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 
 /**
- * Class ProductTrait
- * @package Boxalino\DataIntegration\Service
+ * Class OrderTrait
+ *
+ * @package Boxalino\DataIntegration\Integrate\Type
  */
-trait ProductTrait
+trait OrderTrait
 {
 
     public function canRun(ConfigurationDataObject $configurationDataObject): bool
     {
-        return $configurationDataObject->getAllowProductSync() ?? false;
+        return $configurationDataObject->getAllowOrderSync();
     }
 
     public function getIntegrationHandler(): IntegrationHandlerInterface

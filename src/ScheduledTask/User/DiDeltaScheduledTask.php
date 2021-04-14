@@ -1,12 +1,13 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Console\User;
+namespace Boxalino\DataIntegration\ScheduledTask\User;
 
 use Boxalino\DataIntegration\Integrate\Mode\DeltaTrait;
 use Boxalino\DataIntegration\Integrate\Type\UserTrait;
 use Boxalino\DataIntegration\Service\Util\DiConfigurationInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\UserDeltaIntegrationHandlerInterface;
 use Psr\Log\LoggerInterface;
-use Boxalino\DataIntegration\Console\DiGenericAbstractCommand;
+use Boxalino\DataIntegration\ScheduledTask\DiGenericAbstractScheduledTask;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 
 /**
  * Class DeltaDataIntegration
@@ -16,12 +17,10 @@ use Boxalino\DataIntegration\Console\DiGenericAbstractCommand;
  *
  * @package Boxalino\DataIntegration\Service
  */
-class DeltaDataIntegration extends DiGenericAbstractCommand
+abstract class DiDeltaScheduledTask extends DiGenericAbstractScheduledTask
 {
     use DeltaTrait;
     use UserTrait;
-
-    protected static $defaultName = 'boxalino:di:delta:user';
 
     /**
      * @var UserDeltaIntegrationHandlerInterface
@@ -32,16 +31,12 @@ class DeltaDataIntegration extends DiGenericAbstractCommand
         string $environment,
         LoggerInterface $logger,
         DiConfigurationInterface $configurationManager,
+        EntityRepositoryInterface $scheduledTaskRepository,
         OrderDeltaIntegrationHandlerInterface $integrationHandler
     ){
         $this->integrationHandler = $integrationHandler;
 
-        parent::__construct($environment, $logger, $configurationManager);
-    }
-
-    public function getDescription(): string
-    {
-        return "Boxalino Delta User Data Integration. Accepts parameters [account]";
+        parent::__construct($environment, $logger, $configurationManager, $scheduledTaskRepository);
     }
 
 

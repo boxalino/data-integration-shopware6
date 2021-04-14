@@ -1,12 +1,13 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Console\Product;
+namespace Boxalino\DataIntegration\ScheduledTask\Product;
 
 use Boxalino\DataIntegration\Integrate\Mode\FullTrait;
 use Boxalino\DataIntegration\Integrate\Type\ProductTrait;
 use Boxalino\DataIntegration\Service\Util\DiConfigurationInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\ProductIntegrationHandlerInterface;
 use Psr\Log\LoggerInterface;
-use Boxalino\DataIntegration\Console\DiGenericAbstractCommand;
+use Boxalino\DataIntegration\ScheduledTask\DiGenericAbstractScheduledTask;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 
 /**
  * Class FullDataIntegration
@@ -16,12 +17,10 @@ use Boxalino\DataIntegration\Console\DiGenericAbstractCommand;
  *
  * @package Boxalino\DataIntegration\Service
  */
-class FullDataIntegration extends DiGenericAbstractCommand
+abstract class DiFullScheduledTask extends DiGenericAbstractScheduledTask
 {
     use FullTrait;
     use ProductTrait;
-
-    protected static $defaultName = 'boxalino:di:full:product';
 
     /**
      * @var ProductIntegrationHandlerInterface
@@ -32,16 +31,12 @@ class FullDataIntegration extends DiGenericAbstractCommand
         string $environment,
         LoggerInterface $logger,
         DiConfigurationInterface $configurationManager,
+        EntityRepositoryInterface $scheduledTaskRepository,
         ProductIntegrationHandlerInterface $integrationHandler
     ){
         $this->integrationHandler = $integrationHandler;
 
-        parent::__construct($environment, $logger, $configurationManager);
-    }
-
-    public function getDescription(): string
-    {
-        return "Boxalino Full Product Data Integration. Accepts parameters [account]";
+        parent::__construct($environment, $logger, $configurationManager, $scheduledTaskRepository);
     }
 
 

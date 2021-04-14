@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Console\Mode;
+namespace Boxalino\DataIntegration\Integrate\Mode;
 
 /**
  * Class DeltaDataIntegration
@@ -9,11 +9,11 @@ namespace Boxalino\DataIntegration\Console\Mode;
  *
  * @package Boxalino\DataIntegration\Service
  */
-trait DeltaTrait
+trait FullTrait
 {
 
     /**
-     * Read Configurations for delta
+     * Access configurations for the full
      *
      * @return array
      * @throws \Psr\Cache\CacheException
@@ -21,7 +21,7 @@ trait DeltaTrait
      */
     public function getConfigurations(): array
     {
-        return $this->getConfigurationManager()->getDeltaConfigurations();
+        return $this->getConfigurationManager()->getFullConfigurations();
     }
 
 

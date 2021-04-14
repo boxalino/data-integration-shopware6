@@ -4,12 +4,12 @@ namespace Boxalino\DataIntegration\Subscriber;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Interface InstantDiSubscriberInterface
+ * Interface DiInstantSubscriberInterface
  * Instant Update Boxalino SOLR handler interface
  *
  * @package Boxalini\DataIntegration\Subscriber
  */
-interface InstantDiSubscriberInterface extends EventSubscriberInterface
+interface DiInstantSubscriberInterface extends EventSubscriberInterface
 {
 
     /**

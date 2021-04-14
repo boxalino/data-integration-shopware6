@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Console;
+namespace Boxalino\DataIntegration\Integrate;
 
 use Psr\Log\LoggerInterface;
 

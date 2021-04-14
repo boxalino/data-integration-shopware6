@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Console\Order;
+namespace Boxalino\DataIntegration\ScheduledTask\Order;
 
 use Boxalino\DataIntegration\Integrate\Mode\FullTrait;
 use Boxalino\DataIntegration\Integrate\Type\OrderTrait;
@@ -8,7 +8,8 @@ use Boxalino\DataIntegrationDoc\Service\Integration\IntegrationHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\OrderIntegrationHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 use Psr\Log\LoggerInterface;
-use Boxalino\DataIntegration\Console\DiGenericAbstractCommand;
+use Boxalino\DataIntegration\ScheduledTask\DiGenericAbstractScheduledTask;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 
 /**
  * Class FullDataIntegration
@@ -18,12 +19,10 @@ use Boxalino\DataIntegration\Console\DiGenericAbstractCommand;
  *
  * @package Boxalino\DataIntegration\Service
  */
-class FullDataIntegration extends DiGenericAbstractCommand
+abstract class DiFullScheduledTask extends DiGenericAbstractScheduledTask
 {
     use FullTrait;
     use OrderTrait;
-
-    protected static $defaultName = 'boxalino:di:full:order';
 
     /**
      * @var OrderIntegrationHandlerInterface
@@ -34,17 +33,12 @@ class FullDataIntegration extends DiGenericAbstractCommand
         string $environment,
         LoggerInterface $logger,
         DiConfigurationInterface $configurationManager,
+        EntityRepositoryInterface $scheduledTaskRepository,
         OrderIntegrationHandlerInterface $integrationHandler
     ){
         $this->integrationHandler = $integrationHandler;
 
-        parent::__construct($environment, $logger, $configurationManager);
+        parent::__construct($environment, $logger, $configurationManager, $scheduledTaskRepository);
     }
-
-    public function getDescription(): string
-    {
-        return "Boxalino Full Order Data Integration. Accepts parameters [account]";
-    }
-
 
 }
