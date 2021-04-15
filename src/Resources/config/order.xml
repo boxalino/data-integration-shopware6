@@ -171,7 +171,14 @@
             </call>
         </service>
 
-        <service id="boxalino.di.order.product" class="Boxalino\DataIntegration\Service\Document\Order\Product"
+        <service id="boxalino.di.order.product" class="Boxalino\DataIntegration\Service\Document\Order\Item\Product"
+                 parent="Boxalino\DataIntegration\Service\Document\Order\ModeIntegratorInterface">
+            <call method="allowInstantMode">
+                <argument>true</argument>
+            </call>
+        </service>
+
+        <service id="boxalino.di.order.promotion" class="Boxalino\DataIntegration\Service\Document\Order\Item\Promotion"
                  parent="Boxalino\DataIntegration\Service\Document\Order\ModeIntegratorInterface">
             <call method="allowInstantMode">
                 <argument>true</argument>

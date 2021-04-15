@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Service\Document\Order;
+namespace Boxalino\DataIntegration\Service\Document\Order\Item;
 
+use Boxalino\DataIntegration\Service\Document\Order\Item;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
@@ -16,7 +17,7 @@ use Boxalino\DataIntegrationDoc\Doc\Schema\Order\Product as OrderProductSchema;
  *
  * @package Boxalino\DataIntegration\Service\Document\Order
  */
-class Product extends ModeIntegrator
+class Product extends Item
 {
 
     /**
@@ -43,6 +44,12 @@ class Product extends ModeIntegrator
                 }
             }
 
+            if(isset($item["label"]))
+            {
+                $stringAttribute = $this->getStringAttributeSchema([$item["label"]], "label");
+                $schema->addStringAttributes($stringAttribute);
+            }
+
             $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_PRODUCTS][] = $schema;
         }
 
@@ -50,36 +57,25 @@ class Product extends ModeIntegrator
     }
 
     /**
-     * The order Product schema properties are set in order to dynamically create the object
-     *
-     * @return \Doctrine\DBAL\Query\QueryBuilder
+     * @return string
      */
-    public function getQuery(?string $propertyName = null) : QueryBuilder
+    public function getType(): string
     {
-        $query = $this->connection->createQueryBuilder();
-        $query->select($this->getFields())
-            ->from("order_line_item", "oli")
-            ->leftJoin(
-                "oli", '( ' . $this->getOrderJoinQuery()->__toString() . ') ', 'o',
-                "oli.order_id = o.id AND oli.order_version_id = o.version_id AND o.sales_channel_id=:channelId"
-            )
-            ->andWhere("o.id IS NOT NULL")
-            ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
-            ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
-
-        return $query;
+        return "product";
     }
+
 
     /**
      * @return string[]
      */
-    protected function getFields() : array
+    public function getFields() : array
     {
         return [
             "LOWER(HEX(oli.order_id)) AS ". $this->getDiIdField(),
             "oli.identifier AS sku_id",
             "'id' AS connection_property",
             "oli.type AS type",
+            "oli.label AS label",
             "oli.quantity AS quantity",
             "JSON_EXTRACT(oli.payload, '$.options') AS options", //use options of the product as localized string
             "TRUNCATE(oli.unit_price,2) AS unit_sales_price",
@@ -89,43 +85,6 @@ class Product extends ModeIntegrator
             "TRUNCATE(oli.unit_price - JSON_EXTRACT(oli.payload, '$.purchasePrice'),2) AS unit_gross_margin",  //get unit gross margin from unit_price-purchasePrice
             "TRUNCATE(JSON_EXTRACT(oli.payload, '$.purchasePrice')*oli.quantity,2) AS total_gross_margin" //calculate total gross margin from quantity*unit_gross_margin
         ];
-    }
-
-    /**
-     * @return QueryBuilder
-     */
-    protected function getOrderJoinQuery() : QueryBuilder
-    {
-        /** for delta requests */
-        if($this->filterByCriteria())
-        {
-            return $this->getQueryDelta();
-        }
-
-        /** for instant updates */
-        if($this->filterByIds())
-        {
-            return $this->getQueryInstant();
-        }
-
-        return $this->_getQuery();
-    }
-
-    /**
-     * @return QueryBuilder
-     */
-    public function _getQuery() : QueryBuilder
-    {
-        $query = $this->connection->createQueryBuilder();
-        $query->select("*")
-            ->from("`order`", "o")
-            ->andWhere("o.sales_channel_id=:channelId")
-            ->andWhere("o.version_id = :live")
-            ->addOrderBy("o.order_date_time", 'DESC')
-            ->setFirstResult($this->getFirstResultByBatch())
-            ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
-
-        return $query;
     }
 
 
