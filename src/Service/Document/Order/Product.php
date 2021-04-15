@@ -119,7 +119,7 @@ class Product extends ModeIntegrator
         $query = $this->connection->createQueryBuilder();
         $query->select("*")
             ->from("`order`", "o")
-            //->andWhere("o.sales_channel_id=:channelId")
+            ->andWhere("o.sales_channel_id=:channelId")
             ->andWhere("o.version_id = :live")
             ->addOrderBy("o.order_date_time", 'DESC')
             ->setFirstResult($this->getFirstResultByBatch())

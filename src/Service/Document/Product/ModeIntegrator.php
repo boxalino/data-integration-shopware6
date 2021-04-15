@@ -78,13 +78,14 @@ abstract class ModeIntegrator extends IntegrationSchemaPropertyHandler
     {
         if(empty($fields))
         {
-            $fields = ["id", "version_id"];
+            $fields = ["product.id", "product.version_id"];
         }
         $query = $this->connection->createQueryBuilder();
         $query->select($fields)
             ->from("product")
+            ->leftJoin('product', 'product_visibility', 'pv', 'product.id = pv.product_id AND pv.sales_channel_id = :channelId')
             ->andWhere('product.version_id = :live')
-            ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
+            ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL OR pv.product_id IS NOT NULL")
             ->orderBy("product.product_number", "DESC")
             ->addOrderBy("product.created_at", "DESC")
             ->setFirstResult($this->getFirstResultByBatch())

@@ -61,6 +61,7 @@ class Price extends ModeIntegrator
     public function _getQuery(?string $propertyName = null): QueryBuilder
     {
         return $this->_getProductQuery($this->getFields())
+            ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter("channelRootCategoryId", $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
     }
@@ -76,16 +77,16 @@ class Price extends ModeIntegrator
     {
         if ($this->getSystemConfiguration()->getSalesChannelTaxState() === CartPrice::TAX_STATE_GROSS) {
             return [
-                'LOWER(HEX(id)) AS ' . $this->getDiIdField(),
-                'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(price, \'$.*.gross\'),\'$[0]\'), 2), ",", "") AS price',
-                'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(price, \'$.*.listPrice\'),\'$[0].gross\'), 2), ",", "") AS list_price'
+                'LOWER(HEX(product.id)) AS ' . $this->getDiIdField(),
+                'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(product.price, \'$.*.gross\'),\'$[0]\'), 2), ",", "") AS price',
+                'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(product.price, \'$.*.listPrice\'),\'$[0].gross\'), 2), ",", "") AS list_price'
             ];
         }
 
         return [
-            'LOWER(HEX(id)) AS ' . $this->getDiIdField(),
-            'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(price, \'$.*.net\'),\'$[0]\'), 2), ",", "") AS price',
-            'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(price, \'$.*.listPrice\'),\'$[0].net\'), 2), ",", "") AS list_price'
+            'LOWER(HEX(product.id)) AS ' . $this->getDiIdField(),
+            'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(product.price, \'$.*.net\'),\'$[0]\'), 2), ",", "") AS price',
+            'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(product.price, \'$.*.listPrice\'),\'$[0].net\'), 2), ",", "") AS list_price'
         ];
     }
 

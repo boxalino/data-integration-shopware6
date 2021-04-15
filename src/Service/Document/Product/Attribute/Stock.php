@@ -19,7 +19,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 class Stock extends ModeIntegrator
 {
 
-    use DeltaInstantAddTrait;
+    use DeltaInstantTrait;
 
     /**
      * @return array
@@ -45,19 +45,24 @@ class Stock extends ModeIntegrator
      */
     public function _getQuery(?string $propertyName = null): QueryBuilder
     {
-        $query = $this->connection->createQueryBuilder();
-        $query->select(["LOWER(HEX(id)) AS {$this->getDiIdField()}", "available_stock AS value", "NULL as availability"])
-            ->from("product")
-            ->andWhere('version_id = :live')
-            ->andWhere("JSON_SEARCH(category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
-            ->orderBy("product.product_number", "DESC")
-            ->addOrderBy("product.created_at", "DESC")
+        $query = $this->_getProductQuery($this->_getQueryFields())
+            ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter("channelRootCategoryId", $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
-            ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
-            ->setFirstResult($this->getFirstResultByBatch())
-            ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
+            ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 
         return $query;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function _getQueryFields() : array
+    {
+        return [
+            "LOWER(HEX(product.id)) AS {$this->getDiIdField()}",
+            "product.available_stock AS value",
+            "NULL as availability"
+        ];
     }
 
 

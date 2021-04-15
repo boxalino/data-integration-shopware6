@@ -87,11 +87,13 @@ class Image extends ModeIntegrator
             ->leftJoin('product','product_media', 'product_media',
                 'product.product_media_id = product_media.id AND product_media.version_id=:live'
             )
+            ->leftJoin('product', 'product_visibility', 'pv', 'product.id = pv.product_id AND pv.sales_channel_id = :channelId')
             ->andWhere('product.version_id = :live')
-            ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
+            ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL OR pv.product_id IS NOT NULL")
             ->addGroupBy('product.id')
             ->orderBy("product.product_number", "DESC")
             ->addOrderBy("product.created_at", "DESC")
+            ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
             ->setFirstResult($this->getFirstResultByBatch())

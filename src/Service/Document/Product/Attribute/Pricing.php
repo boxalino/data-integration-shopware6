@@ -24,7 +24,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 class Pricing extends ModeIntegrator
 {
 
-    use DeltaInstantAddTrait;
+    use DeltaInstantTrait;
 
     /**
      * @return array
@@ -58,8 +58,9 @@ class Pricing extends ModeIntegrator
         $query = $this->connection->createQueryBuilder();
         $query->select($this->_getQueryFields())
             ->from("(" .$this->getPriceQuery()->__toString().")", "product")
-            ->where('active=1')
-            ->groupBy('parent_id')
+            ->where('product.active=1')
+            ->groupBy('product.parent_id')
+            ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter("channelRootCategoryId", $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 
@@ -83,17 +84,7 @@ class Pricing extends ModeIntegrator
      */
     protected function getPriceQuery() : QueryBuilder
     {
-        $query = $this->connection->createQueryBuilder();
-        $query->select($this->getPriceFields())
-            ->from("product")
-            ->andWhere('version_id = :live')
-            ->andWhere("JSON_SEARCH(category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
-            ->orderBy("product_number", "DESC")
-            ->addOrderBy("created_at", "DESC")
-            ->setFirstResult($this->getFirstResultByBatch())
-            ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
-
-        return $query;
+        return $this->_getProductQuery($this->getPriceFields());
     }
 
     /**
@@ -106,19 +97,19 @@ class Pricing extends ModeIntegrator
     public function getPriceFields(): array
     {
         $baseFields = [
-            'LOWER(HEX(id)) AS ' . $this->getDiIdField(),
-            "IF(parent_id IS NULL, LOWER(HEX(id)), LOWER(HEX(parent_id))) AS parent_id",
-            "updated_at", "created_at", "active"
+            'LOWER(HEX(product.id)) AS ' . $this->getDiIdField(),
+            "IF(product.parent_id IS NULL, LOWER(HEX(product.id)), LOWER(HEX(product.parent_id))) AS parent_id",
+            "product.updated_at", "product.created_at", "product.active"
         ];
 
         if ($this->getSystemConfiguration()->getSalesChannelTaxState() === CartPrice::TAX_STATE_GROSS) {
             return array_merge($baseFields, [
-                'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(price, \'$.*.gross\'),\'$[0]\'), 2), ",", "") AS price',
+                'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(product.price, \'$.*.gross\'),\'$[0]\'), 2), ",", "") AS price',
             ]);
         }
 
         return array_merge($baseFields, [
-            'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(price, \'$.*.net\'),\'$[0]\'), 2), ",", "") AS price',
+            'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(product.price, \'$.*.net\'),\'$[0]\'), 2), ",", "") AS price',
         ]);
     }
 

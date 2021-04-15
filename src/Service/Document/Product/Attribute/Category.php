@@ -70,6 +70,7 @@ class Category extends ModeIntegrator
             ->andWhere('product_category.product_version_id = :productLiveVersion')
             ->andWhere("product.id IS NOT NULL")
             ->addGroupBy('product_category.product_id')
+            ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter('productLiveVersion', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
             ->setParameter('categoryLiveVersion', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)

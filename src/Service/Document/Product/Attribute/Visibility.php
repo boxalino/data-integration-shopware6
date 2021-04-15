@@ -48,10 +48,10 @@ class Visibility extends ModeIntegrator
             ->leftJoin("product", 'product_visibility', 'product_visibility',
                 'product.id = product_visibility.product_id AND product.version_id = product_visibility.product_version_id')
             ->andWhere('product_visibility.product_version_id = :live')
-            ->andWhere('product_visibility.sales_channel_id = :channel')
+            ->andWhere('product_visibility.sales_channel_id = :channelId')
             ->addGroupBy('product.id')
+            ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
-            ->setParameter("channel", Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 
         return $query;

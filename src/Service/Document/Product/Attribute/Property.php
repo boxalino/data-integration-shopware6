@@ -89,6 +89,7 @@ class Property extends ModeIntegrator
             ->andWhere("product.id IS NOT NULL")
             ->andWhere("product_property.product_version_id = :live")
             ->andWhere("LOWER(HEX(pgo.property_group_id)) = '$propertyName'")
+            ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
             ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('propertyGroupId', Uuid::fromHexToBytes($propertyName), ParameterType::BINARY);

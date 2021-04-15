@@ -75,6 +75,7 @@ class Translation extends ModeIntegrator
             ->andWhere('product.version_id = :live')
             ->andWhere($this->getLanguageHeaderConditional())
             ->addGroupBy('product.id')
+            ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 

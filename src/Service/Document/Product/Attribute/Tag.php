@@ -22,7 +22,7 @@ class Tag extends ModeIntegrator
 {
 
     use ShopwareLocalizedTrait;
-    use DeltaInstantAddTrait;
+    use DeltaInstantTrait;
 
     /**
      * @return array
@@ -56,23 +56,27 @@ class Tag extends ModeIntegrator
      */
     public function _getQuery(?string $propertyName = null): QueryBuilder
     {
-        $query = $this->connection->createQueryBuilder();
-        $query->select(["LOWER(HEX(product.id)) AS {$this->getDiIdField()}", "GROUP_CONCAT(tag.name) AS " . DocSchemaInterface::FIELD_INTERNAL_ID])
-            ->from('product')
+        $query = $this->_getProductQuery($this->_getQueryFields())
             ->leftJoin('product',"product_tag","product_tag",
                 "product_tag.product_id=product.id AND product_tag.product_version_id=product.version_id")
             ->leftJoin("product_tag","tag", "tag", "product_tag.tag_id=tag.id")
-            ->andWhere('product.version_id = :live')
-            ->andWhere("JSON_SEARCH(product.category_tree, 'one', :channelRootCategoryId) IS NOT NULL")
             ->addGroupBy('product.id')
-            ->orderBy("product.product_number", "DESC")
-            ->addOrderBy("product.created_at", "DESC")
+            ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
-            ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION))
-            ->setFirstResult($this->getFirstResultByBatch())
-            ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
+            ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION));
 
         return $query;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function _getQueryFields() : array
+    {
+        return [
+            "LOWER(HEX(product.id)) AS {$this->getDiIdField()}",
+            "GROUP_CONCAT(tag.name) AS " . DocSchemaInterface::FIELD_INTERNAL_ID
+        ];
     }
 
 }
