@@ -32,8 +32,7 @@ abstract class Item extends ModeIntegrator
                 "oli.order_id = o.id AND oli.order_version_id = o.version_id AND o.sales_channel_id=:channelId"
             )
             ->andWhere("o.id IS NOT NULL")
-            ->andWhere("oli.type=':type'")
-            ->setParameter("type", $this->getType(), ParameterType::STRING)
+            ->andWhere("oli.type='{$this->getType()}'")
             ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 

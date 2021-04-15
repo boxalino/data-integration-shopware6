@@ -54,12 +54,12 @@ class Promotion extends Item
     {
         return [
             "LOWER(HEX(oli.order_id)) AS ". $this->getDiIdField(),
-            "JSON_EXTRACT(oli.payload, '$.promotionId') AS internal_id", #promotion ID information
+            "REPLACE(JSON_EXTRACT(oli.payload, '$.promotionId'), '\"','') AS internal_id", #promotion ID information
             "oli.referenced_id AS external_id",
-            "JSON_EXTRACT(oli.price_definition, '$.type') AS type",
+            "REPLACE(JSON_EXTRACT(oli.price_definition, '$.type'), '\"','') AS type",
             "oli.label AS label",
             "oli.referenced_id AS ean",
-            "IF(JSON_EXTRACT(oli.price_definition, '$.type')='percentage', JSON_EXTRACT(oli.payload, '$.value'),  NULL) AS voucher_percentage_value",
+            "IF(JSON_EXTRACT(oli.price_definition, '$.type')='percentage', REPLACE(JSON_EXTRACT(oli.payload, '$.value'), '\"',''),  NULL) AS voucher_percentage_value",
             "TRUNCATE(oli.total_price,2) AS voucher_absolute_value"
         ];
     }
