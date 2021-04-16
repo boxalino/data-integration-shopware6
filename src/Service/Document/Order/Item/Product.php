@@ -40,14 +40,14 @@ class Product extends Item
                 foreach($options as $option)
                 {
                     $stringAttribute = $this->getStringAttributeSchema([$option['option']], $option['group']);
-                    $schema->addStringAttributes($stringAttribute);
+                    $schema->addStringAttribute($stringAttribute);
                 }
             }
 
             if(isset($item["label"]))
             {
                 $stringAttribute = $this->getStringAttributeSchema([$item["label"]], "label");
-                $schema->addStringAttributes($stringAttribute);
+                $schema->addStringAttribute($stringAttribute);
             }
 
             $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_PRODUCTS][] = $schema;

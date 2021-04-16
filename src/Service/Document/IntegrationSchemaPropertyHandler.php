@@ -8,6 +8,7 @@ use Boxalino\DataIntegrationDoc\Doc\DocProductAttributeTrait;
 use Boxalino\DataIntegrationDoc\Doc\DocPropertiesTrait;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaPropertyHandler;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaPropertyHandlerInterface;
+use Boxalino\DataIntegrationDoc\Doc\DocUserAttributeTrait;
 use Boxalino\DataIntegrationDoc\Service\ErrorHandler\ModeDisabledException;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -27,6 +28,7 @@ abstract class IntegrationSchemaPropertyHandler extends DocSchemaPropertyHandler
     use IntegrationDocHandlerTrait;
     use DocProductAttributeTrait;
     use DocOrderAttributeTrait;
+    use DocUserAttributeTrait;
 
     /**
      * @var Connection

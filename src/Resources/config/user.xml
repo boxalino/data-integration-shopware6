@@ -17,6 +17,138 @@
     </monolog:config>
 
     <services>
+        <!-- C: Use this interface to set the logic for the full/delta data syncs for user -->
+        <service id="Boxalino\DataIntegration\Service\Document\User\ModeIntegratorInterface"
+                 class="Boxalino\DataIntegration\Service\Document\User\ModeIntegrator" abstract="true">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
+
+        <!-- X: Generic user attributes from order table Attribute Handler -->
+        <service id="boxalino.di.user.entity" class="Boxalino\DataIntegration\Service\Document\User\Entity"
+                 parent="Boxalino\DataIntegration\Service\Document\User\ModeIntegratorInterface">
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>id</argument>
+                <argument>internal_id</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>persona_id</argument> <!-- based on ID -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>customer_number</argument>
+                <argument>external_id</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>store</argument> <!-- from sales_channel_id -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>title</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>prefix</argument> <!-- from salutation_id -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>first_name</argument>
+                <argument>firstname</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>last_name</argument>
+                <argument>lastname</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>birthday</argument>
+                <argument>date_of_birth</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>created_at</argument>
+                <argument>account_creation</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>auto_group</argument> <!-- from customer_group_id -->
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>active</argument>
+                <argument>status</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>company</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>email</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>auto_increment</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>campaign_code</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>language</argument>
+                <argument>string_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>newsletter</argument>
+                <argument>numeric_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>guest</argument>
+                <argument>numeric_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>updated_at</argument>
+                <argument>datetime_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>first_login</argument>
+                <argument>datetime_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>last_login</argument>
+                <argument>datetime_attributes</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>string_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Doc\Schema\Typed\StringAttribute</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>localized_string_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Doc\Schema\Typed\StringLocalizedAttribute</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>numeric_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Doc\Schema\Typed\NumericAttribute</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>localized_numeric_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Doc\Schema\Typed\NumericLocalizedAttribute</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>datetime_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Doc\Schema\Typed\DatetimeAttribute</argument>
+            </call>
+            <call method="addSchemaDefinition">
+                <argument>localized_datetime_attributes</argument>
+                <argument>Boxalino\DataIntegrationDoc\Doc\Schema\Typed\DatetimeLocalizedAttribute</argument>
+            </call>
+            <call method="allowInstantMode">
+                <argument>true</argument>
+            </call>
+        </service>
+
+        <service id="boxalino.di.user.contact.shipping" class="Boxalino\DataIntegration\Service\Document\User\Contact\Shipping"
+                 parent="Boxalino\DataIntegration\Service\Document\User\ModeIntegratorInterface">
+            <call method="allowInstantMode">
+                <argument>true</argument>
+            </call>
+        </service>
+
+        <service id="boxalino.di.user.contact.billing" class="Boxalino\DataIntegration\Service\Document\User\Contact\Billing"
+                 parent="Boxalino\DataIntegration\Service\Document\User\ModeIntegratorInterface">
+            <call method="allowInstantMode">
+                <argument>true</argument>
+            </call>
+        </service>
 
     </services>
 
