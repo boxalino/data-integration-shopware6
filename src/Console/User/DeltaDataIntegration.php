@@ -32,7 +32,7 @@ class DeltaDataIntegration extends DiGenericAbstractCommand
         string $environment,
         LoggerInterface $logger,
         DiConfigurationInterface $configurationManager,
-        OrderDeltaIntegrationHandlerInterface $integrationHandler
+        UserDeltaIntegrationHandlerInterface $integrationHandler
     ){
         $this->integrationHandler = $integrationHandler;
 
