@@ -9,6 +9,7 @@ use Boxalino\DataIntegrationDoc\Doc\DocPropertiesTrait;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaPropertyHandler;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaPropertyHandlerInterface;
 use Boxalino\DataIntegrationDoc\Doc\DocUserAttributeTrait;
+use Boxalino\DataIntegrationDoc\Doc\GenericAttributeTrait;
 use Boxalino\DataIntegrationDoc\Service\ErrorHandler\ModeDisabledException;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Query\QueryBuilder;
