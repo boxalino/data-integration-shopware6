@@ -36,7 +36,7 @@ class DocHandler extends DocAttributeValues
     {
         if($this->getSystemConfiguration()->isTest())
         {
-            $this->getLogger()->info("Boxalino DI: sync for {$this->getDocType()}");
+            $this->getLogger()->info("Boxalino DI: load for {$this->getDocType()}");
         }
 
         $this->createDocLines();

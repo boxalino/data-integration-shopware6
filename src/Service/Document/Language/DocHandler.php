@@ -29,7 +29,7 @@ class DocHandler extends DocLanguages
     {
         if($this->getSystemConfiguration()->isTest())
         {
-            $this->getLogger()->info("Boxalino DI: sync for {$this->getDocType()}");
+            $this->getLogger()->info("Boxalino DI: load for {$this->getDocType()}");
         }
 
         $this->createDocLines();
@@ -43,7 +43,7 @@ class DocHandler extends DocLanguages
     {
         foreach($this->getSystemConfiguration()->getLanguagesCountryCodeMap() as $language=>$countryCode)
         {
-            /** @var Language | DocHandlerInterface $doc */
+            /** @var Language | DocGeneratorInterface $doc */
             $doc = $this->getDocSchemaGenerator();
             $doc->setLanguage($language)->setCountryCode($countryCode)->setCreationTm(date("Y-m-d H:i:s"));
 
