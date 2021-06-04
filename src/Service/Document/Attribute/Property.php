@@ -61,7 +61,7 @@ class Property extends IntegrationSchemaPropertyHandler
             $content[$property['name']][DocSchemaInterface::FIELD_INTERNAL_ID] = $property[$this->getDiIdField()];
             $content[$property['name']][DocSchemaInterface::FIELD_LOCALIZED] = true;
             $content[$property['name']][DocSchemaInterface::FIELD_MULTI_VALUE] = true;
-            $content[$property['name']][DocSchemaInterface::FIELD_FILTER_BY] = true;
+            $content[$property['name']][DocSchemaInterface::FIELD_FILTER_BY] = $property['filterable']==="1";
             $content[$property['name']][DocSchemaInterface::FIELD_LABEL] = $this->getTranslationById($property[$this->getDiIdField()]);
         }
 

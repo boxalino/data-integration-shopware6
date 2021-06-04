@@ -46,7 +46,11 @@ trait ShopwarePropertyTrait
      */
     public function getPropertyNames() : array
     {
-        $fields = ["LOWER(HEX(property_group.id)) AS " . $this->getDiIdField(), "IF(pgtl.name IS NULL, pgt.name, pgtl.name) AS name"];
+        $fields = [
+            "LOWER(HEX(property_group.id)) AS " . $this->getDiIdField(),
+            "IF(pgtl.name IS NULL, pgt.name, pgtl.name) AS name",
+            "property_group.filterable AS filterable",
+        ];
         $query = $this->connection->createQueryBuilder()
             ->select($fields)
             ->from("property_group")
