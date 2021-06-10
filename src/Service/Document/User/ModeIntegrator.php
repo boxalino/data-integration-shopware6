@@ -6,6 +6,7 @@ use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocDeltaIntegration
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocInstantIntegrationTrait;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 use Doctrine\DBAL\Connection;
+use Shopware\Core\Checkout\Customer\CustomerDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -46,12 +47,24 @@ abstract class ModeIntegrator extends IntegrationSchemaPropertyHandler
      */
     public function getQueryDelta() : QueryBuilder
     {
-        $query = $this->_getQuery();
+        return $this->addOrDeltaConditionByEntityNameDate(
+            $this->_getQuery(),
+            CustomerDefinition::ENTITY_NAME,
+            "customer",
+            $this->getDeltaDateConditional()
+        );
+    }
 
-        $dateCriteria = $this->getSyncCheck() ?? date("Y-m-d H:i", strtotime("1 week"));
-        $query->andWhere("customer.created_at >= '$dateCriteria' OR customer.updated_at >= '$dateCriteria'");
-
-        return $query;
+    /**
+     * As a daily basis, the customers can be exported for the past week only
+     * OR since last update
+     *
+     * @return string
+     */
+    public function getDeltaDateConditional() : string
+    {
+        $dateCriteria = $this->getSyncCheck() ?? date("Y-m-d H:i", strtotime("-1 week"));
+        return "customer.created_at >= '$dateCriteria' OR customer.updated_at >= '$dateCriteria'";
     }
 
     /**

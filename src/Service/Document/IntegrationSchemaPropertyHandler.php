@@ -3,6 +3,7 @@ namespace Boxalino\DataIntegration\Service\Document;
 
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
+use Boxalino\DataIntegration\Service\Util\DiFlaggedIdsTrait;
 use Boxalino\DataIntegrationDoc\Doc\DocOrderAttributeTrait;
 use Boxalino\DataIntegrationDoc\Doc\DocProductAttributeTrait;
 use Boxalino\DataIntegrationDoc\Doc\DocPropertiesTrait;
@@ -30,6 +31,7 @@ abstract class IntegrationSchemaPropertyHandler extends DocSchemaPropertyHandler
     use DocProductAttributeTrait;
     use DocOrderAttributeTrait;
     use DocUserAttributeTrait;
+    use DiFlaggedIdsTrait;
 
     /**
      * @var Connection

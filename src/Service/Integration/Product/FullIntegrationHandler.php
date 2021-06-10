@@ -10,7 +10,8 @@ use Boxalino\DataIntegrationDoc\Service\Integration\ProductIntegrationHandlerInt
  *
  * @package Boxalino\DataIntegrationDoc\Service
  */
-class FullIntegrationHandler extends Full implements ProductIntegrationHandlerInterface
+class FullIntegrationHandler extends Full
+    implements ProductIntegrationHandlerInterface
 {
 
     use ProductTrait;

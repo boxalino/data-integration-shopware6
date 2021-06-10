@@ -1,5 +1,5 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\Integrate\Mode;
+namespace Boxalino\DataIntegration\Integrate\Mode\Configuration;
 
 /**
  * Class InstantTrait

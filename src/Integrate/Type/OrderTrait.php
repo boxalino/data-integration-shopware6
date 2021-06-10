@@ -17,9 +17,5 @@ trait OrderTrait
         return $configurationDataObject->getAllowOrderSync();
     }
 
-    public function getIntegrationHandler(): IntegrationHandlerInterface
-    {
-        return $this->integrationHandler;
-    }
 
 }

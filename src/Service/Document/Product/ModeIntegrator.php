@@ -8,6 +8,7 @@ use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocInstantIntegrati
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 use Doctrine\DBAL\Connection;
 use MongoDB\Driver\Query;
+use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -52,11 +53,19 @@ abstract class ModeIntegrator extends IntegrationSchemaPropertyHandler
      */
     protected function addDeltaCondition(QueryBuilder $query) : QueryBuilder
     {
-        $dateCriteria = $this->getSyncCheck() ?? date("Y-m-d H:i", strtotime("-60 min"));
-        $query->andWhere("STR_TO_DATE(product.updated_at, '%Y-%m-%d %H:%i') > :lastSync OR STR_TO_DATE(product.created_at, '%Y-%m-%d %H:%i') > :lastSync")
-            ->setParameter('lastSync', $dateCriteria);
+        return $query->andWhere($this->getDeltaDateConditional());
+    }
 
-        return $query;
+    /**
+     * As a daily basis, the products can be exported for the past hour only
+     * OR since last update
+     *
+     * @return string
+     */
+    public function getDeltaDateConditional() : string
+    {
+        $dateCriteria = $this->getSyncCheck() ?? date("Y-m-d H:i", strtotime("-1 hour"));
+        return "STR_TO_DATE(product.updated_at, '%Y-%m-%d %H:%i') > '$dateCriteria' OR STR_TO_DATE(product.created_at, '%Y-%m-%d %H:%i') > '$dateCriteria'";
     }
 
     /**

@@ -2,6 +2,7 @@
 namespace Boxalino\DataIntegration\Service\Integration\Type;
 
 use Boxalino\DataIntegrationDoc\Service\GcpRequestInterface;
+use Shopware\Core\Checkout\Order\OrderDefinition;
 
 /**
  * Class OrderTrait
@@ -17,6 +18,14 @@ trait OrderTrait
     public function getIntegrationType(): string
     {
         return GcpRequestInterface::GCP_TYPE_ORDER;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEntityName() : string
+    {
+        return OrderDefinition::ENTITY_NAME;
     }
 
 }

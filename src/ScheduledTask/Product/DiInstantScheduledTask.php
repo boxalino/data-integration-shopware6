@@ -1,29 +1,26 @@
 <?php declare(strict_types=1);
-namespace Boxalino\DataIntegration\ScheduledTask\User;
+namespace Boxalino\DataIntegration\ScheduledTask\Product;
 
-use Boxalino\DataIntegration\Integrate\Mode\Configuration\DeltaTrait;
-use Boxalino\DataIntegration\Integrate\Type\UserTrait;
+use Boxalino\DataIntegration\Integrate\Mode\Configuration\InstantTrait;
+use Boxalino\DataIntegration\Integrate\Type\ProductTrait;
 use Boxalino\DataIntegration\Service\Util\DiConfigurationInterface;
-use Boxalino\DataIntegrationDoc\Service\Integration\UserDeltaIntegrationHandlerInterface;
+use Boxalino\DataIntegrationDoc\Service\Integration\ProductInstantIntegrationHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Boxalino\DataIntegration\ScheduledTask\DiGenericAbstractScheduledTask;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 
 /**
- * Class DeltaDataIntegration
- *
- * Use to trigger the data integration processes
- * ex: php bin/console boxalino:di:delta:user [account]
+ * Class DiInstantScheduledTask
  *
  * @package Boxalino\DataIntegration\Service
  */
-abstract class DiDeltaScheduledTask extends DiGenericAbstractScheduledTask
+abstract class DiInstantScheduledTask extends DiGenericAbstractScheduledTask
 {
-    use DeltaTrait;
-    use UserTrait;
+    use InstantTrait;
+    use ProductTrait;
 
     /**
-     * @var UserDeltaIntegrationHandlerInterface
+     * @var ProductInstantIntegrationHandlerInterface
      */
     protected $integrationHandler;
 
@@ -32,7 +29,7 @@ abstract class DiDeltaScheduledTask extends DiGenericAbstractScheduledTask
         LoggerInterface $logger,
         DiConfigurationInterface $configurationManager,
         EntityRepositoryInterface $scheduledTaskRepository,
-        OrderDeltaIntegrationHandlerInterface $integrationHandler
+        ProductInstantIntegrationHandlerInterface $integrationHandler
     ){
         $this->integrationHandler = $integrationHandler;
 

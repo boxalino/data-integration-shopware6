@@ -29,7 +29,7 @@ trait DeltaInstantAddTrait
     public function getQueryDelta(?string $propertyName = null) : QueryBuilder
     {
         $query = $this->_getQuery($propertyName);
-        return $this->addDeltaCondition($query);
+        return $this->addDeltaCondition($this->_getQuery($propertyName));
     }
 
 }

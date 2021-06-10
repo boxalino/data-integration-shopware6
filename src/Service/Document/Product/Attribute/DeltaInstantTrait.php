@@ -7,6 +7,8 @@ use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
  * Strategy for the delta-instant integration modes
+ * Use this trait for the properties that rely on a join with protected function _getProductQuery
+ * The delta/instant conditional on which products are updated is configured there
  *
  * @package Boxalino\DataIntegration
  */

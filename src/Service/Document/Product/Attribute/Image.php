@@ -53,7 +53,7 @@ class Image extends ModeIntegrator
     {
         $content = [];
         $languages = $this->getSystemConfiguration()->getLanguages();
-        foreach ($this->getData() as $item)
+        foreach ($this->getData(DocSchemaInterface::FIELD_IMAGES) as $item)
         {
             if($item[DocSchemaInterface::FIELD_INTERNAL_ID])
             {

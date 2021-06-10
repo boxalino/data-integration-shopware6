@@ -1,33 +1,34 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Console\Product;
 
-use Boxalino\DataIntegration\Integrate\Mode\Configuration\FullTrait;
+use Boxalino\DataIntegration\Integrate\Mode\Configuration\InstantTrait;
 use Boxalino\DataIntegration\Integrate\Type\ProductTrait;
 use Boxalino\DataIntegration\Service\Util\DiConfigurationInterface;
+use Boxalino\DataIntegrationDoc\Service\Integration\ProductInstantIntegrationHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\ProductIntegrationHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Boxalino\DataIntegration\Console\DiGenericAbstractCommand;
 
 /**
- * Class FullDataIntegration
+ * Class InstantDataIntegration
  *
  * Use to trigger the data integration processes
- * ex: php bin/console boxalino:di:full:product [account]
+ * ex: php bin/console boxalino:di:instant:product [account]
  *
  * @package Boxalino\DataIntegration\Service
  */
-class FullDataIntegration extends DiGenericAbstractCommand
+class InstantDataIntegration extends DiGenericAbstractCommand
 {
-    use FullTrait;
+    use InstantTrait;
     use ProductTrait;
 
-    protected static $defaultName = 'boxalino:di:full:product';
+    protected static $defaultName = 'boxalino:di:instant:product';
 
     public function __construct(
         string $environment,
         LoggerInterface $logger,
         DiConfigurationInterface $configurationManager,
-        ProductIntegrationHandlerInterface $integrationHandler
+        ProductInstantIntegrationHandlerInterface $integrationHandler
     ){
         $this->integrationHandler = $integrationHandler;
 
@@ -36,7 +37,7 @@ class FullDataIntegration extends DiGenericAbstractCommand
 
     public function getDescription(): string
     {
-        return "Boxalino Full Product Data Integration. Accepts parameters [account]";
+        return "Boxalino Instant Product Data Integration. Accepts parameters [account]";
     }
 
 

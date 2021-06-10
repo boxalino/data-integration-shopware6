@@ -2,6 +2,7 @@
 namespace Boxalino\DataIntegration\Service\Integration\Type;
 
 use Boxalino\DataIntegrationDoc\Service\GcpRequestInterface;
+use Shopware\Core\Checkout\Customer\CustomerDefinition;
 
 /**
  * Class IntegrationTypeTrait
@@ -18,5 +19,14 @@ trait UserTrait
     {
         return GcpRequestInterface::GCP_TYPE_USER;
     }
+
+    /**
+     * @return string
+     */
+    public function getEntityName() : string
+    {
+        return CustomerDefinition::ENTITY_NAME;
+    }
+
 
 }

@@ -16,9 +16,5 @@ trait ProductTrait
         return $configurationDataObject->getAllowProductSync() ?? false;
     }
 
-    public function getIntegrationHandler(): IntegrationHandlerInterface
-    {
-        return $this->integrationHandler;
-    }
 
 }

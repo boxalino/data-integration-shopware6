@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Console\Order;
 
-use Boxalino\DataIntegration\Integrate\Mode\FullTrait;
+use Boxalino\DataIntegration\Integrate\Mode\Configuration\FullTrait;
 use Boxalino\DataIntegration\Integrate\Type\OrderTrait;
 use Boxalino\DataIntegration\Service\Util\DiConfigurationInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\IntegrationHandlerInterface;

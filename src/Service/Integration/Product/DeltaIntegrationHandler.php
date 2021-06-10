@@ -14,7 +14,8 @@ use Boxalino\DataIntegrationDoc\Service\Integration\ProductDeltaIntegrationHandl
  *
  * @package Boxalino\DataIntegrationDoc\Service\Integration\Order
  */
-class DeltaIntegrationHandler extends Delta implements ProductDeltaIntegrationHandlerInterface
+class DeltaIntegrationHandler extends Delta
+    implements ProductDeltaIntegrationHandlerInterface
 {
     use ProductTrait;
 

@@ -16,9 +16,5 @@ trait UserTrait
         return $configurationDataObject->getAllowUserSync();
     }
 
-    public function getIntegrationHandler(): IntegrationHandlerInterface
-    {
-        return $this->integrationHandler;
-    }
 
 }

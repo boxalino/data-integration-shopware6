@@ -80,7 +80,7 @@ abstract class Item extends ModeIntegrator
     public function _getQuery() : QueryBuilder
     {
         $query = $this->connection->createQueryBuilder();
-        $query->select("*")
+        $query->select(["o.id", "o.version_id", "o.sales_channel_id"])
             ->from("`order`", "o")
             ->andWhere("o.sales_channel_id=:channelId")
             ->andWhere("o.version_id = :live")

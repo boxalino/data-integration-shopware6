@@ -8,6 +8,7 @@ use Boxalino\DataIntegrationDoc\Service\Integration\Mode\InstantIntegrationInter
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
+use Shopware\Core\Defaults;
 
 /**
  * Trait IntegrationIntegrationDocHandlerTrait
@@ -21,6 +22,11 @@ trait IntegrationDocHandlerTrait
      * @var ConfigurationDataObject
      */
     protected $systemConfiguration;
+
+    /**
+     * @var string
+     */
+    protected $handlerIntegrateTime;
 
     /**
      * @return ConfigurationDataObject
@@ -41,6 +47,27 @@ trait IntegrationDocHandlerTrait
     }
 
     /**
+     * @return string
+     */
+    public function getHandlerIntegrateTime(): string
+    {
+        if(!$this->handlerIntegrateTime)
+        {
+            $this->setHandlerIntegrateTime((new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT));
+        }
+
+        return $this->handlerIntegrateTime;
+    }
+
+    /**
+     * @param string $handlerIntegrateTime
+     */
+    public function setHandlerIntegrateTime(string $handlerIntegrateTime) : void
+    {
+        $this->handlerIntegrateTime = $handlerIntegrateTime;
+    }
+
+    /**
      * setIds and setSystemConfiguration to all of the Attribute elements
      * for data access purposes
      */
@@ -51,6 +78,7 @@ trait IntegrationDocHandlerTrait
             if($handler instanceof IntegrationDocHandlerInterface)
             {
                 $handler->setSystemConfiguration($this->getSystemConfiguration());
+                $handler->setHandlerIntegrateTime($this->getHandlerIntegrateTime());
             }
 
             try{
@@ -137,9 +165,8 @@ trait IntegrationDocHandlerTrait
         $this->loadByChunk($document);
 
         $this->getSystemConfiguration()->setChunk($chunk+1);
-        $this->docs = [];
-
         $this->integrate();
     }
+
 
 }

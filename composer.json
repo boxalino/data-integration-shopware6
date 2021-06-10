@@ -16,7 +16,7 @@
             "custom/plugins/BoxalinoDataIntegration": ["boxalino/data-integration-shopware6", "vendor/package"]
         },
         "shopware-plugin-class": "Boxalino\\DataIntegration\\BoxalinoDataIntegration",
-        "copyright": "Boxalino AG, 2020",
+        "copyright": "Boxalino AG, 2021",
         "label": {
             "de-DE": "Boxalino Data Integration für Shopware v6",
             "en-GB": "Boxalino Data Integration for Shopware v6"
@@ -24,7 +24,7 @@
     },
     "require": {
         "php": "^7.2",
-        "boxalino/data-integration-doc-php":"~3.0.0"
+        "boxalino/data-integration-doc-php":"~3.0.4"
     },
     "autoload": {
         "psr-4": {

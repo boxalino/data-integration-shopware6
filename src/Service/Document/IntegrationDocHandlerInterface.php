@@ -23,4 +23,15 @@ interface IntegrationDocHandlerInterface
      */
     public function setSystemConfiguration(ConfigurationDataObject $configuration) : IntegrationDocHandlerInterface;
 
+    /**
+     * @param string $handlerIntegrateTime
+     */
+    public function setHandlerIntegrateTime(string $handlerIntegrateTime) : void;
+
+    /**
+     * @return string
+     */
+    public function getHandlerIntegrateTime(): string;
+
+
 }

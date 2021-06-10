@@ -201,9 +201,9 @@ class Configuration implements DiConfigurationInterface
         return [
             "mode" => GcpRequestInterface::GCP_MODE_DELTA,
             "endpoint" => $configuration["deltaDiEndpoint"],
-            "allowProductSync" => (bool) $configuration['productDeltaStatus'],
-            "allowOrderSync" => (bool) $configuration['orderDeltaStatus'],
-            "allowUserSync" => (bool) $configuration['userDeltaStatus'],
+            "allowProductSync" => isset($configuration['productDeltaStatus']) ? (bool)$configuration['productDeltaStatus'] : false,
+            "allowUserSync" => isset($configuration['userDeltaStatus']) ? (bool) $configuration['userDeltaStatus'] : false,
+            "allowOrderSync" => isset($configuration['orderDeltaStatus']) ? (bool) $configuration['orderDeltaStatus'] : false,
         ];
     }
 
