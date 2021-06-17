@@ -50,7 +50,9 @@ class Option extends ModeIntegrator
                 continue;
             }
 
-            foreach ($this->getData($property[$this->getDiIdField()]) as $item)
+            $iterator = $this->getQueryIterator($this->getStatementQuery($property[$this->getDiIdField()]));
+
+            foreach ($iterator->getIterator() as $item)
             {
                 if(is_null($item[DocSchemaInterface::FIELD_INTERNAL_ID]))
                 {
@@ -89,9 +91,7 @@ class Option extends ModeIntegrator
             ->andWhere("LOWER(HEX(pgo.property_group_id)) = '$propertyName'")
             ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
-            ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING)
-            ->setFirstResult($this->getFirstResultByBatch())
-            ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
+            ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING);
 
         return $query;
     }

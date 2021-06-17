@@ -44,7 +44,6 @@ class DiFlaggedIdDefinition extends EntityDefinition
     {
         return new FieldCollection([
             (new IdField('id', 'id'))->addFlags(new PrimaryKey()),
-            (new IntField('row_id', 'rowId'))->addFlags(new WriteProtected()),
             (new StringField('entity_name', 'entityName'))->addFlags(new Required()),
             (new StringField('entity_id', 'entityId'))->addFlags(new Required())
         ]);

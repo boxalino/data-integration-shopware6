@@ -41,7 +41,9 @@ class DeliveryTime extends ModeIntegrator
     {
         $content = [];
         $languages = $this->getSystemConfiguration()->getLanguages();
-        foreach ($this->getData() as $item)
+        $iterator = $this->getQueryIterator($this->getStatementQuery());
+
+        foreach ($iterator->getIterator() as $item)
         {
             if(!isset($content[$item[$this->getDiIdField()]]))
             {

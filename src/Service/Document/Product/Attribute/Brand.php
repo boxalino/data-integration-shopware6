@@ -47,7 +47,9 @@ class Brand extends ModeIntegrator
     {
         $content = [];
         $languages = $this->getSystemConfiguration()->getLanguages();
-        foreach ($this->getData() as $item)
+        $iterator = $this->getQueryIterator($this->getStatementQuery());
+
+        foreach ($iterator->getIterator() as $item)
         {
             /** @var Repeated $brand */
             $brand = $this->getRepeatedLocalizedSchema(

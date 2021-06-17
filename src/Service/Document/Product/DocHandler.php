@@ -55,6 +55,9 @@ class DocHandler extends DocProduct
         $this->generateDocData();
 
         $productGroups = $this->getDocProductGroups();
+
+        $this->logTime("start" . __FUNCTION__);
+
         foreach($productGroups as $productGroup)
         {
             $document = $this->getDocSchemaGenerator();
@@ -66,6 +69,9 @@ class DocHandler extends DocProduct
             $this->addDocLine($document);
         }
 
+        $this->logTime("end" . __FUNCTION__);
+        $this->logMessage(__FUNCTION__, "end" . __FUNCTION__, "start" . __FUNCTION__);
+
         return $this;
     }
 
@@ -76,6 +82,8 @@ class DocHandler extends DocProduct
     {
         $productGroups = [];
         $productSkus = [];
+
+        $this->logTime("start" . __FUNCTION__);
         foreach($this->getDocData() as $id => $content)
         {
             try{
@@ -95,13 +103,19 @@ class DocHandler extends DocProduct
                 $parentId = $content[DocSchemaInterface::DI_PARENT_ID_FIELD];
                 if(is_null($parentId))
                 {
-                    $sku = $this->docTypePropDiffDuplicate(
-                        DocProductHandlerInterface::DOC_PRODUCT_LEVEL_GROUP,
-                        DocProductHandlerInterface::DOC_PRODUCT_LEVEL_SKU,
-                        $content
-                    );
+                    if($content[DocSchemaInterface::DI_AS_VARIANT] === "1")
+                    {
+                        $sku = $this->docTypePropDiffDuplicate(
+                            DocProductHandlerInterface::DOC_PRODUCT_LEVEL_GROUP,
+                            DocProductHandlerInterface::DOC_PRODUCT_LEVEL_SKU,
+                            $content
+                        );
 
-                    $schema->addSkus([$sku]);
+                        $schema->addSkus([$sku]);
+                        $productGroups[$id] = $schema;
+                        continue;
+                    }
+
                     $productGroups[$id] = $schema;
                     continue;
                 }
@@ -134,6 +148,9 @@ class DocHandler extends DocProduct
             $schema->addSkus($skus);
             $productGroups[$parentId] = $schema;
         }
+
+        $this->logTime("end" . __FUNCTION__);
+        $this->logMessage(__FUNCTION__, "end" . __FUNCTION__, "start" . __FUNCTION__);
 
         return $productGroups;
     }

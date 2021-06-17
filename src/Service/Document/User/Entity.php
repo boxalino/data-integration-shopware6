@@ -26,7 +26,9 @@ class Entity extends ModeIntegrator
     public function getValues() : array
     {
         $content = [];
-        foreach ($this->getData() as $item)
+        $iterator = $this->getQueryIterator($this->getStatementQuery());
+
+        foreach ($iterator->getIterator() as $item)
         {
             $content[$item[$this->getDiIdField()]] = [];
             foreach($item as $propertyName => $value)

@@ -41,7 +41,9 @@ trait DiFlaggedIdsTrait
     public function getFlaggedIdsByEntityNameAndDate(string $entityName, string $date) : array
     {
         $query = $this->getFlaggedIdsByEntityNameAndDateSql($entityName, $date);
-        return $query->execute()->fetchAll(FetchMode::COLUMN);
+        $content = $query->execute()->fetchAll(FetchMode::COLUMN);
+
+        return array_unique($content);
     }
 
     /**

@@ -13,11 +13,6 @@ class DiFlaggedIdEntity extends Entity
     use EntityIdTrait;
 
     /**
-     * @var int
-     */
-    protected $rowId;
-
-    /**
      * @var string
      */
     protected $entityName;
@@ -35,16 +30,6 @@ class DiFlaggedIdEntity extends Entity
     public function getUniqueIdentifier(): string
     {
         return $this->getEntityId();
-    }
-
-    public function getRowId(): int
-    {
-        return $this->rowId;
-    }
-
-    public function setRowId(int $rowId): void
-    {
-        $this->rowId = $rowId;
     }
 
     public function getEntityName(): string

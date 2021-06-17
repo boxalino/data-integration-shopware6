@@ -35,7 +35,9 @@ class Pricing extends ModeIntegrator
         $currencyFactors = $this->getSystemConfiguration()->getCurrencyFactorMap();
         $languages = $this->getSystemConfiguration()->getLanguages();
         $currencyCodes = $this->getSystemConfiguration()->getCurrencies();
-        foreach ($this->getData() as $item)
+        $iterator = $this->getQueryIterator($this->getStatementQuery());
+
+        foreach ($iterator->getIterator() as $item)
         {
             $label = ($item['min_price'] < $item['max_price']) ? "from" : "";
 

@@ -51,7 +51,9 @@ class Property extends ModeIntegrator
                 continue;
             }
 
-            foreach ($this->getData($property[$this->getDiIdField()]) as $item)
+            $iterator = $this->getQueryIterator($this->getStatementQuery($property[$this->getDiIdField()]));
+
+            foreach ($iterator->getIterator() as $item)
             {
                 if(is_null($item[DocSchemaInterface::FIELD_INTERNAL_ID]))
                 {

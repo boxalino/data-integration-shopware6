@@ -46,12 +46,20 @@ trait ShopwarePropertyTrait
      */
     public function getPropertyNames() : array
     {
-        $fields = [
-            "LOWER(HEX(property_group.id)) AS " . $this->getDiIdField(),
-            "IF(pgtl.name IS NULL, pgt.name, pgtl.name) AS name",
-            "property_group.filterable AS filterable",
-        ];
-        $query = $this->connection->createQueryBuilder()
+        $query = $this->getPropertyGroupDefaultTranslationQuery(
+            $this->getPropertyGroupDefaultTranslationFields(["property_group.filterable AS filterable"])
+        );
+
+        return $query->execute()->fetchAll(FetchMode::ASSOCIATIVE);
+    }
+
+    /**
+     * @param array $fields
+     * @return QueryBuilder
+     */
+    protected function getPropertyGroupDefaultTranslationQuery(array $fields) : QueryBuilder
+    {
+        return $this->connection->createQueryBuilder()
             ->select($fields)
             ->from("property_group")
             ->leftJoin("property_group", "property_group_translation", "pgt","property_group.id = pgt.property_group_id")
@@ -59,8 +67,18 @@ trait ShopwarePropertyTrait
                 "property_group.id = pgtl.property_group_id AND pgtl.language_id=:languageId")
             ->groupBy("property_group.id")
             ->setParameter("languageId", Uuid::fromHexToBytes($this->getSystemConfiguration()->getDefaultLanguageId()), ParameterType::STRING);
+    }
 
-        return $query->execute()->fetchAll(FetchMode::ASSOCIATIVE);
+    /**
+     * @param array $extraFields
+     * @return []|array|string[]
+     */
+    public function getPropertyGroupDefaultTranslationFields(array $extraFields = [])
+    {
+        return array_merge($extraFields, [
+            "LOWER(HEX(property_group.id)) AS " . $this->getDiIdField(),
+            "IF(pgtl.name IS NULL, pgt.name, pgtl.name) AS name"
+        ]);
     }
 
     /**

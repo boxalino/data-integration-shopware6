@@ -46,7 +46,9 @@ class Translation extends ModeIntegrator
                 continue;
             }
 
-            foreach ($this->getData($propertyName) as $item)
+            $iterator = $this->getQueryIterator($this->getStatementQuery($propertyName));
+
+            foreach ($iterator->getIterator() as $item)
             {
                 if(!isset($content[$item[$this->getDiIdField()]]))
                 {

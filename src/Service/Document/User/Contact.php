@@ -27,7 +27,9 @@ abstract class Contact extends ModeIntegrator
     public function getValues() : array
     {
         $content = [];
-        foreach($this->getData() as $item)
+        $iterator = $this->getQueryIterator($this->getStatementQuery());
+
+        foreach ($iterator->getIterator() as $item)
         {
             if(!isset($content[$item[$this->getDiIdField()]]))
             {

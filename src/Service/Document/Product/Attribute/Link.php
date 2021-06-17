@@ -39,7 +39,9 @@ class Link extends ModeIntegrator
     {
         $content = [];
         $languages = $this->getSystemConfiguration()->getLanguages();
-        foreach ($this->getData(DocSchemaInterface::FIELD_LINK) as $item)
+        $iterator = $this->getQueryIterator($this->getStatementQuery(DocSchemaInterface::FIELD_LINK));
+
+        foreach ($iterator->getIterator() as $item)
         {
             if(!isset($content[$item[$this->getDiIdField()]]))
             {

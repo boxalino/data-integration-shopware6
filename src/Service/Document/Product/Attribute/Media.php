@@ -5,6 +5,7 @@ use Boxalino\DataIntegration\Service\Document\Product\ModeIntegrator;
 use Boxalino\DataIntegration\Service\Util\ShopwareMediaTrait;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Boxalino\DataIntegrationDoc\Doc\Schema\Repeated;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Typed\StringAttribute;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -17,14 +18,14 @@ use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
- * Class Image
+ * Class Media
  *
  * @package Boxalino\DataIntegration\Service\Document\Product\Attribute
  */
-class Image extends ModeIntegrator
+class Media extends ModeIntegrator
 {
     use ShopwareMediaTrait;
-    use DeltaInstantTrait;
+    use DeltaInstantAddTrait;
 
     /**
      * Media constructor.
@@ -39,10 +40,11 @@ class Image extends ModeIntegrator
         UrlGeneratorInterface $generator,
         EntityRepositoryInterface $mediaRepository
     ){
-        $this->logger=$boxalinoLogger;
+        $this->logger = $boxalinoLogger;
         $this->mediaRepository = $mediaRepository;
         $this->mediaUrlGenerator = $generator;
         $this->context = Context::createDefaultContext();
+
         parent::__construct($connection);
     }
 
@@ -57,16 +59,23 @@ class Image extends ModeIntegrator
 
         foreach ($iterator->getIterator() as $item)
         {
-            if($item[DocSchemaInterface::FIELD_INTERNAL_ID])
+            if(!isset($content[$item[$this->getDiIdField()]]))
             {
-                $item = array_merge($item,
-                    array_fill_keys($languages, $this->getImageByMediaId($item[DocSchemaInterface::FIELD_INTERNAL_ID]))
-                );
-
-                /** @var Repeated $schema */
-                $schema = $this->getRepeatedLocalizedSchema($item, $languages);
-                $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_IMAGES] = [$schema];
+                $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STRING] = [];
             }
+
+            if(is_null($item[DocSchemaInterface::FIELD_INTERNAL_ID]))
+            {
+                continue;
+            }
+
+            $productMediaLinks = array_filter(array_map(function(string $mediaId) {
+                return $this->getImageByMediaId($mediaId);
+            }, explode("|", $item[DocSchemaInterface::FIELD_INTERNAL_ID])));
+
+            /** @var StringAttribute $schema */
+            $schema = $this->getStringAttributeSchema($productMediaLinks, "absolute_media_url");
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STRING][] = $schema;
         }
 
         return $content;
@@ -78,13 +87,21 @@ class Image extends ModeIntegrator
      */
     public function _getQuery(?string $propertyName = null): QueryBuilder
     {
-        return $this->_getProductQuery($this->_getQueryFields())
-            ->leftJoin('product','product_media', 'product_media',
-                'product.cover = product_media.id AND product_media.version_id=product.version_id'
-            )
+        $query = $this->connection->createQueryBuilder();
+        $query->select($this->_getQueryFields())
+            ->from("product_media")
+            ->leftJoin("product_media", "( " . $this->_getProductQuery()->__toString() . " )", 'product',
+                'product_media.product_id = product.id AND product_media.product_version_id = product.version_id')
+            ->andWhere('product_media.version_id = :liveVersion')
+            ->andWhere("product.id IS NOT NULL")
+            ->addGroupBy("product.id")
             ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
+            ->setParameter('productLiveVersion', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
+            ->setParameter('liveVersion', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY)
             ->setParameter('channelRootCategoryId', $this->getSystemConfiguration()->getNavigationCategoryId(), ParameterType::STRING);
+
+        return $query;
     }
 
     /**
@@ -94,7 +111,7 @@ class Image extends ModeIntegrator
     {
         return [
             "LOWER(HEX(product.id)) AS {$this->getDiIdField()}",
-            "LOWER(HEX(product_media.media_id)) AS " . DocSchemaInterface::FIELD_INTERNAL_ID
+            "GROUP_CONCAT(LOWER(HEX(product_media.media_id)) ORDER BY product_media.position SEPARATOR '|') AS " . DocSchemaInterface::FIELD_INTERNAL_ID
         ];
     }
 

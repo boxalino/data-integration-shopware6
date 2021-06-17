@@ -52,19 +52,19 @@ trait ShopwareMediaTrait
         {
             if($this->getSystemConfiguration()->isTest())
             {
-                $this->logger->info("Shopware: Media Path Export failed for media ID $mediaId: " . $exception->getMessage());
+                $this->logger->info("Shopware: Media Path Export not available for media ID $mediaId: " . $exception->getMessage());
             }
         } catch(EmptyMediaIdException $exception)
         {
             if($this->getSystemConfiguration()->isTest())
             {
-                $this->logger->info("Shopware: Media Path Export failed for media ID $mediaId: " . $exception->getMessage());
+                $this->logger->info("Shopware: Media Path Export not available for media ID $mediaId: " . $exception->getMessage());
             }
         } catch(\Exception $exception)
         {
             if($this->getSystemConfiguration()->isTest())
             {
-                $this->logger->info("Shopware: Media Path Export failed for media ID $mediaId: " . $exception->getMessage());
+                $this->logger->info("Shopware: Media Path Export not available for media ID $mediaId: " . $exception->getMessage());
             }
         }
 

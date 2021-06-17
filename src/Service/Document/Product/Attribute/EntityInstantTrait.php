@@ -26,6 +26,7 @@ trait EntityInstantTrait
             "IF(product.parent_id IS NULL, '" . DocProductHandlerInterface::DOC_PRODUCT_LEVEL_GROUP . "', '" .  DocProductHandlerInterface::DOC_PRODUCT_LEVEL_SKU . "') AS " . DocSchemaInterface::DI_DOC_TYPE_FIELD,
             "LOWER(HEX(product.parent_id)) AS " . DocSchemaInterface::DI_PARENT_ID_FIELD,
             "LOWER(HEX(product.id)) AS " . DocSchemaInterface::DI_ID_FIELD,
+            "IF(product.child_count = 0, 1, 0) AS " . DocSchemaInterface::DI_AS_VARIANT,
 
             /** entity-specific properties */
             "LOWER(HEX(product.id)) AS id",

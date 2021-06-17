@@ -26,7 +26,9 @@ class Visibility extends ModeIntegrator
     {
         $content = [];
         $languages = $this->getSystemConfiguration()->getLanguages();
-        foreach ($this->getData() as $item)
+        $iterator = $this->getQueryIterator($this->getStatementQuery());
+
+        foreach ($iterator->getIterator() as $item)
         {
             /** @var VisibilitySchema $schema */
             $schema = $this->getVisibilitySchema($languages, $item[DocSchemaInterface::FIELD_INTERNAL_ID]);

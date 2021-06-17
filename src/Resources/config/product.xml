@@ -20,7 +20,7 @@
 
         <!-- C: Use this interface to set the logic for the instant/delta data syncs for product -->
         <service id="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface"
-                 class="Boxalino\DataIntegration\Service\Document\Product\ModeIntegrator" abstract="true">
+                 class="Boxalino\DataIntegration\Service\Document\Product\ModeIntegrator" abstract="true" shared="false">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
         </service>
 
@@ -320,6 +320,26 @@
             </call>
             <call method="allowInstantMode">
                 <argument type="string">true</argument>
+            </call>
+        </service>
+
+        <!-- R: ATTRIBUTE_VISIBILITY_GROUPING Doc Attribute Handler -->
+        <service id="boxalino.di.product.visibility.grouping" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\AttributeVisibilityGrouping"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>attribute_visibility_grouping</argument>
+            </call>
+        </service>
+
+        <!-- S: MEDIA Attribute Handler -->
+        <service id="boxalino.di.product.media" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Media"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
+            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
+            <argument type="service" id="media.repository"/>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>absolute_media_url</argument>
+                <argument>string_attributes</argument>
             </call>
         </service>
 

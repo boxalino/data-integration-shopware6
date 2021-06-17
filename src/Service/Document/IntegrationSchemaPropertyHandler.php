@@ -13,13 +13,18 @@ use Boxalino\DataIntegrationDoc\Doc\DocUserAttributeTrait;
 use Boxalino\DataIntegrationDoc\Doc\GenericAttributeTrait;
 use Boxalino\DataIntegrationDoc\Service\ErrorHandler\ModeDisabledException;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\Statement;
+use Doctrine\DBAL\Driver\StatementIterator;
 use Doctrine\DBAL\Query\QueryBuilder;
 
 /**
  * Class IntegrationPropertyHandler
  *
- * Handles the data integration logic for product attributes
+ * Handles the data integration logic for all doc content exports (order, customer, products)
  * (from the documented schema and/or available in the project)
+ *
+ * AS AN INTEGRATOR, YOU CAN DECIDE IF TO USE THE STATEMENT ITERATOR OR LOADING THE DATA VIA FETCHALL
+ * BY DEFAULT - THE ITERATOR IS USED
  *
  * @package Boxalino\DataIntegration\Service\Document
  */
@@ -61,6 +66,44 @@ abstract class IntegrationSchemaPropertyHandler extends DocSchemaPropertyHandler
         }
     }
 
+    /**
+     * @return iterable | array
+     * @throws \Exception
+     */
+    public function getQueryIterator(?Statement $statement = null) : iterable
+    {
+        try {
+            if(is_null($statement))
+            {
+                return new \ArrayObject();
+            }
+            return new StatementIterator($statement);
+        } catch (ModeDisabledException $exception)
+        {
+            return new \ArrayObject();
+        } catch (\Throwable $exception)
+        {
+            throw new \Exception($exception->getMessage());
+        }
+    }
+
+    /**
+     * @param string|null $propertyName
+     * @return Statement | null
+     * @throws \Exception
+     */
+    public function getStatementQuery(?string $propertyName = null) : ?Statement
+    {
+        try {
+            return $this->getQuery($propertyName)->execute();
+        } catch (ModeDisabledException $exception)
+        {
+            return null;
+        } catch (\Throwable $exception)
+        {
+            throw new \Exception($exception->getMessage());
+        }
+    }
 
     /**
      * @param string $propertyName

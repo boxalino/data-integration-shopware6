@@ -35,7 +35,9 @@ class Price extends ModeIntegrator
         $currencyFactor = $this->getSystemConfiguration()->getCurrencyFactorMap();
         $languages = $this->getSystemConfiguration()->getLanguages();
         $currencyCodes = $this->getSystemConfiguration()->getCurrencies();
-        foreach ($this->getData() as $item)
+        $iterator = $this->getQueryIterator($this->getStatementQuery());
+
+        foreach ($iterator->getIterator() as $item)
         {
             if(is_null($item['list_price']) && is_null($item['price']))
             {

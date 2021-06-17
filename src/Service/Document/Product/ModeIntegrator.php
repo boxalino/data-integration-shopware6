@@ -53,7 +53,12 @@ abstract class ModeIntegrator extends IntegrationSchemaPropertyHandler
      */
     protected function addDeltaCondition(QueryBuilder $query) : QueryBuilder
     {
-        return $query->andWhere($this->getDeltaDateConditional());
+        return $this->addOrDeltaConditionByEntityNameDate(
+            $query,
+            ProductDefinition::ENTITY_NAME,
+            "product",
+            $this->getDeltaDateConditional()
+        );
     }
 
     /**
@@ -87,7 +92,7 @@ abstract class ModeIntegrator extends IntegrationSchemaPropertyHandler
     {
         if(empty($fields))
         {
-            $fields = ["product.id", "product.version_id"];
+            $fields = ["product.id", "product.version_id", "product.updated_at", "product.created_at"];
         }
         $query = $this->connection->createQueryBuilder();
         $query->select($fields)
