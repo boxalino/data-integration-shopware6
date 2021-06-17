@@ -6,6 +6,7 @@ use Boxalino\DataIntegration\Service\Util\ShopwareMediaTrait;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Boxalino\DataIntegrationDoc\Doc\Schema\Repeated;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Psr\Log\LoggerInterface;
@@ -14,6 +15,7 @@ use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
@@ -54,6 +56,7 @@ class Image extends ModeIntegrator
         $content = [];
         $languages = $this->getSystemConfiguration()->getLanguages();
         $iterator = $this->getQueryIterator($this->getStatementQuery(DocSchemaInterface::FIELD_IMAGES));
+        $this->prepareMediaRepositoryCollection();
 
         foreach ($iterator->getIterator() as $item)
         {
@@ -98,5 +101,16 @@ class Image extends ModeIntegrator
         ];
     }
 
+    /**
+     * Create a media collection once, instead of calling it every time
+     */
+    protected function prepareMediaRepositoryCollection() : void
+    {
+        $ids = $this->getStatementQuery()->fetchAll(FetchMode::COLUMN, 1);
+        if(count($ids))
+        {
+            $this->mediaCollection = $this->mediaRepository->search(new Criteria($ids), $this->context);
+        }
+    }
 
 }

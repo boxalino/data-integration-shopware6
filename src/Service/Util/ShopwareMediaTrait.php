@@ -9,6 +9,7 @@ use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
+use Shopware\Core\Framework\Struct\Collection;
 
 /**
  * Trait for accessing Shopware Media content
@@ -38,15 +39,28 @@ trait ShopwareMediaTrait
     protected $logger;
 
     /**
+     * @var Collection
+     */
+    protected $mediaCollection;
+
+    /**
      * @param string|null $mediaId
      * @return string|null
      */
     public function getImageByMediaId(?string $mediaId) : string
     {
         $image = "";
+        $mediaItem = null;
         try{
+            if($this->mediaCollection)
+            {
+                if($this->mediaCollection->has($mediaId))
+                {
+                    $mediaItem = $this->mediaCollection->get($mediaId);
+                }
+            }
             /** @var MediaEntity $media */
-            $media = $this->mediaRepository->search(new Criteria([$mediaId]), $this->context)->get($mediaId);
+            $media = $mediaItem ?? $this->mediaRepository->search(new Criteria([$mediaId]), $this->context)->get($mediaId);
             $image = $this->mediaUrlGenerator->getAbsoluteMediaUrl($media);
         } catch(EmptyMediaFilenameException $exception)
         {

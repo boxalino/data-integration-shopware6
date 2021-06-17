@@ -7,6 +7,7 @@ use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Boxalino\DataIntegrationDoc\Doc\Schema\Repeated;
 use Boxalino\DataIntegrationDoc\Doc\Schema\Typed\StringAttribute;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Psr\Log\LoggerInterface;
@@ -15,6 +16,7 @@ use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 
 /**
@@ -56,6 +58,7 @@ class Media extends ModeIntegrator
         $content = [];
         $languages = $this->getSystemConfiguration()->getLanguages();
         $iterator = $this->getQueryIterator($this->getStatementQuery(DocSchemaInterface::FIELD_IMAGES));
+        $this->prepareMediaRepositoryCollection();
 
         foreach ($iterator->getIterator() as $item)
         {
@@ -113,6 +116,23 @@ class Media extends ModeIntegrator
             "LOWER(HEX(product.id)) AS {$this->getDiIdField()}",
             "GROUP_CONCAT(LOWER(HEX(product_media.media_id)) ORDER BY product_media.position SEPARATOR '|') AS " . DocSchemaInterface::FIELD_INTERNAL_ID
         ];
+    }
+
+    /**
+     * Create a media collection once, instead of calling it every time
+     */
+    protected function prepareMediaRepositoryCollection() : void
+    {
+        $ids = $this->getStatementQuery()->fetchAll(FetchMode::COLUMN, 1);
+        if(count($ids))
+        {
+            /** @var array $mediaIdList fetches IDs */
+            $mediaIdList = call_user_func_array("array_merge", array_filter(array_map(function($row) {
+                return array_merge(explode("|", $row));
+            }, $ids)));
+
+            $this->mediaCollection = $this->mediaRepository->search(new Criteria($mediaIdList), $this->context);
+        }
     }
 
 
