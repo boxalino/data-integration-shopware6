@@ -131,7 +131,7 @@ class Media extends ModeIntegrator
                 return array_merge(explode("|", $row));
             }, $ids)));
 
-            $this->mediaCollection = $this->mediaRepository->search(new Criteria($mediaIdList), $this->context);
+            $this->mediaCollection = $this->mediaRepository->search(new Criteria(array_filter($mediaIdList)), $this->context);
         }
     }
 

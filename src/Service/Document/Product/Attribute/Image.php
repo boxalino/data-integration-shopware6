@@ -109,7 +109,7 @@ class Image extends ModeIntegrator
         $ids = $this->getStatementQuery()->fetchAll(FetchMode::COLUMN, 1);
         if(count($ids))
         {
-            $this->mediaCollection = $this->mediaRepository->search(new Criteria($ids), $this->context);
+            $this->mediaCollection = $this->mediaRepository->search(new Criteria(array_filter($ids)), $this->context);
         }
     }
 
