@@ -2,6 +2,7 @@
 namespace Boxalino\DataIntegration\Service\Document;
 
 use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailSyncException;
+use Boxalino\DataIntegrationDoc\Service\ErrorHandler\NoRecordsFoundException;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocDeltaIntegrationInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocInstantIntegrationInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Mode\InstantIntegrationInterface;
@@ -123,7 +124,15 @@ trait IntegrationDocHandlerTrait
      */
     public function integrate(): void
     {
-        $this->createDocLines();
+        try{
+            $this->createDocLines();
+        } catch (NoRecordsFoundException $exception)
+        {
+            //logical exception to break the loop
+        } catch (\Throwable $exception)
+        {
+            throw $exception;
+        }
 
         /** for instant data integrations - the generic load is sufficient */
         if($this->getSystemConfiguration()->getMode() == InstantIntegrationInterface::INTEGRATION_MODE)

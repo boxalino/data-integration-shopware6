@@ -3,6 +3,7 @@ namespace Boxalino\DataIntegration\Service\Document\Product\Attribute;
 
 use Boxalino\DataIntegration\Service\Document\Product\ModeIntegrator;
 use Boxalino\DataIntegrationDoc\Doc\Schema\Localized;
+use Boxalino\DataIntegrationDoc\Service\ErrorHandler\NoRecordsFoundException;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Shopware\Core\Defaults;
@@ -121,6 +122,11 @@ class Entity extends ModeIntegrator
 
                 $content[$item[$this->getDiIdField()]][$propertyName] = $value;
             }
+        }
+
+        if(empty($content))
+        {
+            throw new NoRecordsFoundException("No records available. This is a logical exception in order to exit the handler loop.");
         }
 
         return $content;
