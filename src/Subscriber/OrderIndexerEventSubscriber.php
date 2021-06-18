@@ -50,6 +50,7 @@ class OrderIndexerEventSubscriber implements EventSubscriberInterface
      */
     public function addUpdatedIds(EntityWrittenEvent $event): void
     {
+        $ids = [];
         foreach ($event->getWriteResults() as $result)
         {
             if ($result->hasPayload('orderId'))
