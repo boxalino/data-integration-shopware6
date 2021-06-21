@@ -4,6 +4,7 @@ namespace Boxalino\DataIntegration\Service\Document\Product\Attribute;
 use Boxalino\DataIntegration\Service\Document\Product\ModeIntegrator;
 use Boxalino\DataIntegration\Service\Util\ShopwarePropertyTrait;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
+use Boxalino\DataIntegrationDoc\Doc\Schema\Typed\StringAttribute;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
@@ -49,6 +50,10 @@ class AttributeVisibilityGrouping extends ModeIntegrator
 
             $values = explode(",", $item[DocSchemaInterface::FIELD_INTERNAL_ID]);
             $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_ATTRIBUTE_VISIBILITY_GROUPING] = $values;
+
+            /** @var StringAttribute $schema */
+            $schema = $this->getStringAttributeSchema($values, "configurator_group_config");
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STRING][] = $schema;
         }
 
         return $content;

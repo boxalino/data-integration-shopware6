@@ -32,7 +32,7 @@ trait EntityFullTrait
             "product.updated_at AS updated_at",
             "IF(product.active IS NULL, parent.active, product.active) AS active",
             "IF(product.ean IS NULL, parent.ean, product.ean) AS ean",
-            "IF(product.is_closeout IS NULL, IF(parent.is_closeout = '1', 0, 1), IF(product.is_closeout = '1', 0, 1)) AS is_closeout",
+            "IF(product.is_closeout IS NULL, IF(parent.is_closeout = '1', 0, 1), IF(product.is_closeout = '1', 0, 1)) AS " . DocSchemaInterface::FIELD_SHOW_OUT_OF_STOCK,
             "IF(DATEDIFF(NOW(), product.release_date) < {$this->getSystemConfiguration()->getMarkAsNew()}, 1, 0) AS " . DocSchemaInterface::FIELD_NEW,
 
             /** numeric properties */
@@ -43,6 +43,8 @@ trait EntityFullTrait
             'IF(product.purchase_price IS NULL, parent.purchase_price, product.purchase_price) AS purchase_price',
             'IF(product.min_purchase IS NULL, parent.min_purchase, product.min_purchase) AS min_purchase',
             'tax.tax_rate AS tax_rate',
+            'IF(product.parent_id IS NULL, product.purchase_unit, parent.purchase_unit) AS purchase_unit',
+            "IF(product.parent_id IS NOT NULL, parent.child_count, IF(product.child_count = '0', 1, product.child_count)) AS variant_count",
 
             /** string properties */
             'product.auto_increment AS auto_increment',

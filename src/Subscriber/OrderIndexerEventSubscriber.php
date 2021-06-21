@@ -59,6 +59,11 @@ class OrderIndexerEventSubscriber implements EventSubscriberInterface
             }
         }
 
+        if(empty($ids))
+        {
+            return;
+        }
+
         $content = [];
         foreach(array_unique($ids) as $id)
         {

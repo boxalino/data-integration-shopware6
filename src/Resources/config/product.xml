@@ -187,7 +187,6 @@
             </call>
             <!-- is_closeout is used as logic for the "show out of stock" property -->
             <call method="addPropertyNameDocAttributeMapping">
-                <argument>is_closeout</argument>
                 <argument>show_out_of_stock</argument>
             </call>
             <call method="addPropertyNameDocAttributeMapping">
@@ -216,6 +215,14 @@
             </call>
             <call method="addPropertyNameDocAttributeMapping">
                 <argument>tax_rate</argument>
+                <argument>numeric_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>purchase_unit</argument>
+                <argument>numeric_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>variant_count</argument>
                 <argument>numeric_attributes</argument>
             </call>
             <call method="addPropertyNameDocAttributeMapping">
@@ -328,6 +335,10 @@
                  parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
             <call method="addPropertyNameDocAttributeMapping">
                 <argument>attribute_visibility_grouping</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>configurator_group_config</argument>
+                <argument>string_attributes</argument>
             </call>
         </service>
 
