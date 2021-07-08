@@ -30,9 +30,9 @@
             <argument type="service" id="Doctrine\DBAL\Connection"/>
         </service>
 
-        <!-- B: the tmp index table with updated content ids -->
-        <service id="Boxalino\DataIntegration\Core\DataIntegration\DiFlaggedIdDefinition">
-            <tag name="shopware.entity.definition" entity="boxalino_di_flagged_id" />
+        <!-- B: di timesheet interface -->
+        <service id="Boxalino\DataIntegration\Service\Util\DiTimesheetHandlerInterface" class="Boxalino\DataIntegration\Service\Util\DiTimesheetHandler">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
         </service>
 
         <!-- C: di handler ids interface -->
@@ -44,6 +44,8 @@
         <service id="boxalino.di.handler.abstract" class="Boxalino\DataIntegration\Service\Integration\Mode\AbstractIntegrationHander"
                  public="true" shared="false" abstract="true">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
+            <argument type="service" id="Boxalino\DataIntegration\Service\Util\DiTimesheetHandlerInterface"/>
+            <argument type="service" id="Boxalino\DataIntegration\Service\Util\DiFlaggedIdHandlerInterface"/>
         </service>
     </services>
 

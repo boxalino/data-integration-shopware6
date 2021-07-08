@@ -106,11 +106,16 @@ class Image extends ModeIntegrator
      */
     protected function prepareMediaRepositoryCollection() : void
     {
-        $ids = $this->getStatementQuery()->fetchAll(FetchMode::COLUMN, 1);
-        if(count($ids))
+        $query = $this->getStatementQuery();
+        if ($query)
         {
-            $this->mediaCollection = $this->mediaRepository->search(new Criteria(array_filter($ids)), $this->context);
+            $ids = $query->fetchAll(FetchMode::COLUMN, 1);
+            if(count($ids))
+            {
+                $this->mediaCollection = $this->mediaRepository->search(new Criteria(array_filter($ids)), $this->context);
+            }
         }
     }
+
 
 }

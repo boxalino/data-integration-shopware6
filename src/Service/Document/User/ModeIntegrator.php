@@ -51,7 +51,8 @@ abstract class ModeIntegrator extends IntegrationSchemaPropertyHandler
             $this->_getQuery(),
             CustomerDefinition::ENTITY_NAME,
             "customer",
-            $this->getDeltaDateConditional()
+            $this->getDeltaDateConditional(),
+            $this->_getDeltaSyncCheckDate()
         );
     }
 
@@ -63,8 +64,16 @@ abstract class ModeIntegrator extends IntegrationSchemaPropertyHandler
      */
     public function getDeltaDateConditional() : string
     {
-        $dateCriteria = $this->getSyncCheck() ?? date("Y-m-d H:i", strtotime("-1 week"));
+        $dateCriteria = $this->_getDeltaSyncCheckDate();
         return "customer.created_at >= '$dateCriteria' OR customer.updated_at >= '$dateCriteria'";
+    }
+
+    /**
+     * @return string
+     */
+    protected function _getDeltaSyncCheckDate() : string
+    {
+        return $this->getSyncCheck() ?? date("Y-m-d H:i", strtotime("-1 week"));
     }
 
     /**

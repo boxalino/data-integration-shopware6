@@ -29,18 +29,27 @@ abstract class Instant extends AbstractIntegrationHandler
         $this->setHandlerIntegrateTime((new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT));
         $this->addSystemConfigurationOnHandlers();
         $this->integrateInstant();
-        $this->clearDiFlaggedIds();
+        $this->updateDiTimesheet();
     }
 
     /**
      * Access the saved IDs from the entity repository
+     *
      * @return array
      */
     public function getIds(): array
     {
         if(empty($this->ids))
         {
-            $this->ids = $this->getFlaggedIdsByEntityName($this->getEntityName());
+            $this->ids = $this->diFlaggedService->getFlaggedIdsByEntityNameAndDateFromTo(
+                $this->getEntityName(),
+                $this->diTimesheetService->getDiTimesheetRunAtByAccountTypeMode(
+                    $this->getDiConfiguration()->getAccount(),
+                    $this->getEntityName(),
+                    $this->getIntegrationType()
+                ),
+                $this->getHandlerIntegrateTime()
+            );
         }
 
         return $this->ids;

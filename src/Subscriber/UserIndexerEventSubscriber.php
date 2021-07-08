@@ -1,6 +1,8 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Subscriber;
 
+use Boxalino\DataIntegration\Service\Util\DiFlaggedIdHandlerInterface;
+use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerDefinition;
 use Shopware\Core\Checkout\Customer\Event\CustomerIndexerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
@@ -17,12 +19,12 @@ class UserIndexerEventSubscriber implements EventSubscriberInterface
 {
 
     /**
-     * @var EntityRepositoryInterface
+     * @var DiFlaggedIdHandlerInterface
      */
     protected $updatedIdRepository;
 
     public function __construct(
-        EntityRepositoryInterface $updatedIdRepository
+        DiFlaggedIdHandlerInterface $updatedIdRepository
     ){
         $this->updatedIdRepository = $updatedIdRepository;
     }
@@ -41,14 +43,8 @@ class UserIndexerEventSubscriber implements EventSubscriberInterface
      */
     public function addUpdatedIds(CustomerIndexerEvent $event): void
     {
-        $content = [];
-        foreach($event->getIds() as $id)
-        {
-            $content[] = ["entityName" => CustomerDefinition::ENTITY_NAME, "entityId"=> $id, 'id' => Uuid::randomHex()];
-        }
-
         try{
-            $this->updatedIdRepository->create($content, $event->getContext());
+            $this->updatedIdRepository->flag(CustomerDefinition::ENTITY_NAME, $event->getIds());
         } catch (\Throwable $exception)
         {  }
     }

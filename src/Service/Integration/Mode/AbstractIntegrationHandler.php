@@ -2,7 +2,9 @@
 namespace Boxalino\DataIntegration\Service\Integration\Mode;
 
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
+use Boxalino\DataIntegration\Service\Util\DiFlaggedIdHandlerInterface;
 use Boxalino\DataIntegration\Service\Util\DiFlaggedIdsTrait;
+use Boxalino\DataIntegration\Service\Util\DiTimesheetHandlerInterface;
 use Doctrine\DBAL\Connection;
 use Boxalino\DataIntegrationDoc\Service\Integration\IntegrationHandler;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
@@ -13,13 +15,23 @@ use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 abstract class AbstractIntegrationHandler extends IntegrationHandler
 {
 
-    use DiFlaggedIdsTrait;
     use IntegrationDocHandlerTrait;
 
+    /** @var DiTimesheetHandlerInterface */
+    protected $diTimesheetService;
+
+    /** @var DiFlaggedIdHandlerInterface */
+    protected $diFlaggedService;
+
     public function __construct(
-        Connection $connection
+        Connection $connection,
+        DiTimesheetHandlerInterface $diTimesheet,
+        DiFlaggedIdHandlerInterface $diFlagged
     ){
+        $this->diFlaggedService = $diFlagged;
+        $this->diTimesheetService = $diTimesheet;
         $this->connection = $connection;
+
         parent::__construct();
     }
 
@@ -34,7 +46,31 @@ abstract class AbstractIntegrationHandler extends IntegrationHandler
     public function clearDiFlaggedIds(): void
     {
         try{
-            $this->deleteFlaggedIdsByEntityName($this->getEntityName());
+            $this->diFlaggedService->deleteFlaggedIdsByEntityNameAndDate(
+                $this->getEntityName(),
+                $this->diTimesheetService->getDiFlaggedIdDeleteConditionalByAccountType(
+                    $this->getDiConfiguration()->getAccount(),
+                    $this->getEntityName()
+                )
+            );
+        } catch(\Throwable $exception)
+        {
+            throw $exception;
+        }
+    }
+
+    /**
+     * Adds a run time that the DI timesheet has run successfully
+     */
+    public function updateDiTimesheet(): void
+    {
+        try{
+            $this->diTimesheetService->timesheet(
+                $this->getEntityName(),
+                $this->getDiConfiguration()->getAccount(),
+                $this->getDiConfiguration()->getMode(),
+                $this->getHandlerIntegrateTime()
+            );
         } catch(\Throwable $exception)
         {
             throw $exception;

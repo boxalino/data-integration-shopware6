@@ -19,6 +19,7 @@ abstract class Full extends AbstractIntegrationHandler
         $this->setHandlerIntegrateTime((new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT));
         $this->addSystemConfigurationOnHandlers();
         $this->integrateFull();
+        $this->updateDiTimesheet();
         $this->clearDiFlaggedIds();
     }
 

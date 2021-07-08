@@ -129,6 +129,8 @@ trait IntegrationDocHandlerTrait
         } catch (NoRecordsFoundException $exception)
         {
             //logical exception to break the loop
+            //reset the docs in case the attributeHandlers were not run in the randomly order
+            $this->resetDocs();
         } catch (\Throwable $exception)
         {
             throw $exception;

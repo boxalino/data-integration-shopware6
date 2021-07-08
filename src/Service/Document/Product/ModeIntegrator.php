@@ -57,7 +57,8 @@ abstract class ModeIntegrator extends IntegrationSchemaPropertyHandler
             $query,
             ProductDefinition::ENTITY_NAME,
             "product",
-            $this->getDeltaDateConditional()
+            $this->getDeltaDateConditional(),
+            $this->_getDeltaSyncCheckDate()
         );
     }
 
@@ -69,8 +70,16 @@ abstract class ModeIntegrator extends IntegrationSchemaPropertyHandler
      */
     public function getDeltaDateConditional() : string
     {
-        $dateCriteria = $this->getSyncCheck() ?? date("Y-m-d H:i", strtotime("-1 hour"));
+        $dateCriteria = $this->_getDeltaSyncCheckDate();
         return "STR_TO_DATE(product.updated_at, '%Y-%m-%d %H:%i') > '$dateCriteria' OR STR_TO_DATE(product.created_at, '%Y-%m-%d %H:%i') > '$dateCriteria'";
+    }
+
+    /**
+     * @return string
+     */
+    protected function _getDeltaSyncCheckDate() : string
+    {
+        return $this->getSyncCheck() ?? date("Y-m-d H:i", strtotime("-1 hour"));
     }
 
     /**

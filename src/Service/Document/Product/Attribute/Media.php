@@ -123,15 +123,19 @@ class Media extends ModeIntegrator
      */
     protected function prepareMediaRepositoryCollection() : void
     {
-        $ids = $this->getStatementQuery()->fetchAll(FetchMode::COLUMN, 1);
-        if(count($ids))
+        $query = $this->getStatementQuery();
+        if($query)
         {
-            /** @var array $mediaIdList fetches IDs */
-            $mediaIdList = call_user_func_array("array_merge", array_filter(array_map(function($row) {
-                return array_merge(explode("|", $row));
-            }, $ids)));
+            $ids = $query->fetchAll(FetchMode::COLUMN, 1);
+            if(count($ids))
+            {
+                /** @var array $mediaIdList fetches IDs */
+                $mediaIdList = call_user_func_array("array_merge", array_filter(array_map(function($row) {
+                    return array_merge(explode("|", $row));
+                }, $ids)));
 
-            $this->mediaCollection = $this->mediaRepository->search(new Criteria(array_filter($mediaIdList)), $this->context);
+                $this->mediaCollection = $this->mediaRepository->search(new Criteria(array_filter($mediaIdList)), $this->context);
+            }
         }
     }
 

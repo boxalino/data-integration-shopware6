@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Subscriber;
 
+use Boxalino\DataIntegration\Service\Util\DiFlaggedIdHandlerInterface;
 use Shopware\Core\Checkout\Cart\Event\CheckoutOrderPlacedEvent;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Checkout\Order\OrderDefinition;
@@ -23,12 +24,12 @@ class OrderIndexerEventSubscriber implements EventSubscriberInterface
 {
 
     /**
-     * @var EntityRepositoryInterface
+     * @var DiFlaggedIdHandlerInterface
      */
     protected $updatedIdRepository;
 
     public function __construct(
-        EntityRepositoryInterface $updatedIdRepository
+        DiFlaggedIdHandlerInterface $updatedIdRepository
     ){
         $this->updatedIdRepository = $updatedIdRepository;
     }
@@ -36,7 +37,6 @@ class OrderIndexerEventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            CheckoutOrderPlacedEvent::class => 'addUpdatedIdFromOrderPlaced',
             StateMachineTransitionEvent::class => 'addUpdatedIdsFromStateChanged',
             OrderEvents::ORDER_LINE_ITEM_WRITTEN_EVENT => 'addUpdatedIds',
             OrderEvents::ORDER_LINE_ITEM_DELETED_EVENT => 'addUpdatedIds',
@@ -44,13 +44,13 @@ class OrderIndexerEventSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * Adding customer IDs to the updated_id content
+     * Adding order IDs to the updated_id content
      *
      * @param EntityWrittenEvent $event
      */
     public function addUpdatedIds(EntityWrittenEvent $event): void
     {
-        $ids = [];
+        $ids = []; $salesChannelIds=[];
         foreach ($event->getWriteResults() as $result)
         {
             if ($result->hasPayload('orderId'))
@@ -64,14 +64,8 @@ class OrderIndexerEventSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $content = [];
-        foreach(array_unique($ids) as $id)
-        {
-            $content[] = ["entityName" => OrderDefinition::ENTITY_NAME, "entityId"=> $id, 'id' => Uuid::randomHex()];
-        }
-
         try{
-            $this->updatedIdRepository->create($content, $event->getContext());
+            $this->updatedIdRepository->flag(OrderDefinition::ENTITY_NAME, array_unique($ids), $salesChannelIds);
         } catch (\Throwable $exception)
         {  }
     }
@@ -79,14 +73,16 @@ class OrderIndexerEventSubscriber implements EventSubscriberInterface
     /**
      * Mark the order that was placed
      *
+     * DISCLAIMER: for the export logic - when using the created_at / updated_at as conditional for delta, -
+     * - listening to this event is pointless
+     *
+     * @deprecated
      * @param CheckoutOrderPlacedEvent $event
      */
     public function addUpdatedIdFromOrderPlaced(CheckoutOrderPlacedEvent $event): void
     {
-        $content[] = ["entityName" => OrderDefinition::ENTITY_NAME, "entityId"=> $event->getOrder()->getId(), 'id' => Uuid::randomHex()];
-
         try{
-            $this->updatedIdRepository->create($content, $event->getContext());
+            $this->updatedIdRepository->flag(OrderDefinition::ENTITY_NAME, [$event->getOrder()->getId()], [$event->getSalesChannelId()]);
         } catch (\Throwable $exception)
         {  }
     }
@@ -102,10 +98,8 @@ class OrderIndexerEventSubscriber implements EventSubscriberInterface
         {
             if ($event->getEntityName() === OrderDefinition::ENTITY_NAME)
             {
-                $content[] = ["entityName" => OrderDefinition::ENTITY_NAME, "entityId"=> $event->getEntityId(), 'id' => Uuid::randomHex()];
-
                 try{
-                    $this->updatedIdRepository->create($content, $event->getContext());
+                    $this->updatedIdRepository->flag(OrderDefinition::ENTITY_NAME, [$event->getEntityId()]);
                 } catch (\Throwable $exception)
                 {  }
             }

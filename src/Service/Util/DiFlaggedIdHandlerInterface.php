@@ -6,29 +6,28 @@ use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 /**
  * Interface DiFlaggedIdManagerInterface
  *
+ * The boxalino_di_flagged_id table is a strategy for keeping track of content update (product, order, user)
+ * These IDs are being used as filter logic for a) instant b) delta processes
+ *
+ * It is updated based on the defined subscribers in the Integration Layer
+ *
+ * The integration team`s duty is to review the default provided samples (from current repository)
+ * and update the subscribed to events where it is needed, in order to avoid any conflicts
+ *
  * @package Boxalino\DataIntegration\Service
  */
 interface DiFlaggedIdHandlerInterface
 {
 
-    /**
-     * @param string $entityName
-     * @return array
-     */
-    public function getFlaggedIdsByEntityName(string $entityName) : array;
+    public const ENTITY_NAME_PREFIX = 'boxalino_di_flagged_id_';
+
 
     /**
      * @param string $entityName
      * @param string $date
      * @return array
      */
-    public function getFlaggedIdsByEntityNameAndDate(string $entityName, string $date) : array;
-
-    /**
-     * @param string $entityName
-     * @return void
-     */
-    public function deleteFlaggedIdsByEntityName(string $entityName) : void;
+    public function getFlaggedIdsByEntityNameAndDateFromTo(string $entityName, string $dateFrom, string $dateTo) : array;
 
     /**
      * @param string $entityName
@@ -39,12 +38,10 @@ interface DiFlaggedIdHandlerInterface
 
     /**
      * @param string $entityName
-     * @param string $date
-     * @param int $limit
-     * @return Criteria
+     * @param array | null $ids
+     * @param array | null $salesChannelIds
      */
-    public function getCriteriaByEntityNameDateAndLimit(string $entityName, string $date, int $limit = 200) : Criteria;
-
+    public function flag(string $entityName, array $ids = [], array $salesChannelIds = []) : void;
 
 
 }
