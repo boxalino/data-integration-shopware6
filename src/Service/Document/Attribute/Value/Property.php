@@ -64,7 +64,7 @@ class Property extends ModeIntegrator
         $content = [];
         foreach($this->getPropertyNames() as $property)
         {
-            $propertyName = $property['name'];
+            $propertyName = $this->sanitizePropertyName($property['name']);
             $content[$propertyName] = [];
             $this->setPropertyId($property[$this->getDiIdField()]);
 

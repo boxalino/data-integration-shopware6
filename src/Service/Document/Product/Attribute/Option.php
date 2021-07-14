@@ -41,7 +41,7 @@ class Option extends ModeIntegrator
         $languages = $this->getSystemConfiguration()->getLanguages();
         foreach($this->getPropertyNames() as $property)
         {
-            $propertyName = $property['name'];
+            $propertyName = $this->sanitizePropertyName($property['name']);
             $this->setPropertyId($property[$this->getDiIdField()]);
 
             /** on instant mode - export only the allowed properties */

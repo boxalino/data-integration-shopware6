@@ -3,6 +3,7 @@ namespace Boxalino\DataIntegration\Service\Util;
 
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
+use Boxalino\DataIntegrationDoc\Generator\DiPropertyTrait;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\ParameterType;
@@ -18,6 +19,7 @@ use Shopware\Core\Framework\Uuid\Uuid;
 trait ShopwarePropertyTrait
 {
     use ShopwareLocalizedTrait;
+    use DiPropertyTrait;
     //use IntegrationDocHandlerTrait;
 
     /**
@@ -52,7 +54,7 @@ trait ShopwarePropertyTrait
 
         return $query->execute()->fetchAll(FetchMode::ASSOCIATIVE);
     }
-
+    
     /**
      * @param array $fields
      * @return QueryBuilder

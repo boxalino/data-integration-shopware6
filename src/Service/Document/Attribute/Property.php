@@ -57,7 +57,7 @@ class Property extends IntegrationSchemaPropertyHandler
         $content = [];
         foreach($this->getPropertyNames() as $property)
         {
-            $content[$property['name']][DocSchemaInterface::FIELD_NAME] = $property['name'];
+            $content[$property['name']][DocSchemaInterface::FIELD_NAME] = $this->sanitizePropertyName($property['name']);
             $content[$property['name']][DocSchemaInterface::FIELD_INTERNAL_ID] = $property[$this->getDiIdField()];
             $content[$property['name']][DocSchemaInterface::FIELD_LOCALIZED] = true;
             $content[$property['name']][DocSchemaInterface::FIELD_MULTI_VALUE] = true;

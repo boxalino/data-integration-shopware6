@@ -49,7 +49,7 @@ class AttributeVisibilityGrouping extends ModeIntegrator
             }
 
             $values = explode(",", $item[DocSchemaInterface::FIELD_INTERNAL_ID]);
-            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_ATTRIBUTE_VISIBILITY_GROUPING] = $values;
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_ATTRIBUTE_VISIBILITY_GROUPING] = $this->sanitizePropertyNames($values);
 
             /** @var StringAttribute $schema */
             $schema = $this->getStringAttributeSchema($values, "configurator_group_config");
