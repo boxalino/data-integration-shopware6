@@ -354,6 +354,16 @@
             </call>
         </service>
 
+        <!-- T: Review Total Attribute Handler -->
+        <service id="boxalino.di.product.review" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Review"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
+            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>di_review_total</argument>
+                <argument>numeric_attributes</argument>
+            </call>
+        </service>
+
     </services>
 
 </container>
