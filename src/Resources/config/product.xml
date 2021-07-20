@@ -364,6 +364,16 @@
             </call>
         </service>
 
+        <!-- S: Group Release Date Attribute Handler -->
+        <service id="boxalino.di.product.release_date" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\GroupReleaseDate"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
+            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>di_group_release_date</argument>
+                <argument>string_attributes</argument>
+            </call>
+        </service>
+
     </services>
 
 </container>

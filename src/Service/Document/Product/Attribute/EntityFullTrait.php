@@ -62,7 +62,7 @@ trait EntityFullTrait
             'product.display_group AS display_group',
 
             /** datetime attributes */
-            'IF(product.release_date IS NULL, parent.release_date, product.release_date) AS release_date',
+            'IF(product.release_date IS NULL, parent.release_date, product.release_date) AS release_date'
         ];
     }
 
