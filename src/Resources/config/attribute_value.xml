@@ -9,7 +9,7 @@
         <service id="boxalino.di.values.category" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\Category">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
             <argument type="service" id="boxalino.di.util.localized"/>
-            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Boxalino\DataIntegration\Service\Product\Logger"/>
             <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
             <argument type="service" id="media.repository"/>
             <call method="allowInstantMode">
@@ -21,7 +21,7 @@
         <service id="boxalino.di.values.brand" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\Brand">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
             <argument type="service" id="boxalino.di.util.localized"/>
-            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Boxalino\DataIntegration\Service\Product\Logger"/>
             <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
             <argument type="service" id="media.repository"/>
         </service>
@@ -30,7 +30,7 @@
         <service id="boxalino.di.values.property" class="Boxalino\DataIntegration\Service\Document\Attribute\Value\Property">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
             <argument type="service" id="boxalino.di.util.localized"/>
-            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Boxalino\DataIntegration\Service\Product\Logger"/>
             <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
             <argument type="service" id="media.repository"/>
         </service>

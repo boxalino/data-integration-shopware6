@@ -113,7 +113,7 @@
         <!-- L: Image Attribute Handler -->
         <service id="boxalino.di.product.images" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Image"
                  parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
-            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Boxalino\DataIntegration\Service\Product\Logger"/>
             <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
             <argument type="service" id="media.repository"/>
             <call method="addPropertyNameDocAttributeMapping">
@@ -345,7 +345,7 @@
         <!-- S: MEDIA Attribute Handler -->
         <service id="boxalino.di.product.media" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Media"
                  parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
-            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Boxalino\DataIntegration\Service\Product\Logger"/>
             <argument type="service" id="Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface"/>
             <argument type="service" id="media.repository"/>
             <call method="addPropertyNameDocAttributeMapping">
@@ -357,7 +357,7 @@
         <!-- T: Review Total Attribute Handler -->
         <service id="boxalino.di.product.review" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Review"
                  parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
-            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Boxalino\DataIntegration\Service\Product\Logger"/>
             <call method="addPropertyNameDocAttributeMapping">
                 <argument>di_review_total</argument>
                 <argument>numeric_attributes</argument>
@@ -367,11 +367,17 @@
         <!-- S: Group Release Date Attribute Handler -->
         <service id="boxalino.di.product.release_date" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\GroupReleaseDate"
                  parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
-            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Boxalino\DataIntegration\Service\Product\Logger"/>
             <call method="addPropertyNameDocAttributeMapping">
                 <argument>di_group_release_date</argument>
                 <argument>string_attributes</argument>
             </call>
+        </service>
+
+        <!-- Logger defined per Shopware6 pattern - clears out dynamically -->
+        <service id="Boxalino\DataIntegration\Service\Product\Logger" class="Monolog\Logger">
+            <factory service="Shopware\Core\Framework\Log\LoggerFactory" method="createRotating"/>
+            <argument type="string">boxalino-di-product</argument>
         </service>
 
     </services>

@@ -185,6 +185,12 @@
             </call>
         </service>
 
+        <!-- Logger defined per Shopware6 pattern - clears out dynamically -->
+        <service id="Boxalino\DataIntegration\Service\Order\Logger" class="Monolog\Logger">
+            <factory service="Shopware\Core\Framework\Log\LoggerFactory" method="createRotating"/>
+            <argument type="string">boxalino-di-order</argument>
+        </service>
+
     </services>
 
 </container>

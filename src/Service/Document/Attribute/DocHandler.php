@@ -55,7 +55,7 @@ class DocHandler extends DocAttribute
                     {
                         /** @var Attribute | DocHandlerInterface $doc */
                         $doc = $this->getDocSchemaGenerator($content);
-                        $doc->setName($propertyName)->setCreationTm(date("Y-m-d H:i:s"));
+                        $doc->setCreationTm(date("Y-m-d H:i:s"));
                         $this->applyPropertyConfigurations($doc);
 
                         $this->addDocLine($doc);

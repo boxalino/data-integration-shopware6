@@ -47,6 +47,12 @@
             <argument type="service" id="Boxalino\DataIntegration\Service\Util\DiTimesheetHandlerInterface"/>
             <argument type="service" id="Boxalino\DataIntegration\Service\Util\DiFlaggedIdHandlerInterface"/>
         </service>
+
+        <!-- Logger defined per Shopware6 pattern - clears out dynamically -->
+        <service id="Boxalino\DataIntegration\Service\Logger" class="Monolog\Logger">
+            <factory service="Shopware\Core\Framework\Log\LoggerFactory" method="createRotating"/>
+            <argument type="string">boxalino-di</argument>
+        </service>
     </services>
 
 </container>

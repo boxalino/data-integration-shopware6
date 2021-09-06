@@ -9,7 +9,7 @@
         <service id="boxalino.di.attribute.property" class="Boxalino\DataIntegration\Service\Document\Attribute\Property">
             <argument type="service" id="Doctrine\DBAL\Connection"/>
             <argument type="service" id="boxalino.di.util.localized"/>
-            <argument type="service" id="monolog.logger.boxalino-di-product"/>
+            <argument type="service" id="Boxalino\DataIntegration\Service\Product\Logger"/>
         </service>
 
         <!-- B: Attribute info handler for GENERIC attributes from ENTITY -->
