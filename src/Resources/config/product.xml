@@ -293,10 +293,6 @@
                 <argument>tax</argument>
                 <argument>localized_string_attributes</argument>
             </call>
-            <call method="addPropertyNameDocAttributeMapping">
-                <argument>tag</argument>
-                <argument>localized_string_attributes</argument>
-            </call>
             <call method="addSchemaDefinition">
                 <argument>status</argument>
                 <argument>Boxalino\DataIntegrationDoc\Doc\Schema\Status</argument>

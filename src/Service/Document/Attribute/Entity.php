@@ -63,6 +63,7 @@ class Entity extends IntegrationSchemaPropertyHandler
 
                 if(in_array($docMappingName, $this->getProductMultivalueSchemaTypes()))
                 {
+                    $content[$docAttributeName][DocSchemaInterface::FIELD_MULTI_VALUE] = true;
                     if(in_array($docMappingName, $this->getTypedLocalizedSchemaProperties())
                     ){
                         $content[$docAttributeName][DocSchemaInterface::FIELD_LOCALIZED] = true;
