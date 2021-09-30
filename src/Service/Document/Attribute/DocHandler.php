@@ -50,7 +50,7 @@ class DocHandler extends DocAttribute
             {
                 if($handler instanceof DocSchemaPropertyHandlerInterface)
                 {
-                    /** @var Array: [property-name => [$schema, $schema], property-name => [], [..]] $data */
+                    /** @var array: [property-name => [$schema, $schema], property-name => [], [..]] $data */
                     foreach($handler->getValues() as $propertyName => $content)
                     {
                         /** @var Attribute | DocHandlerInterface $doc */

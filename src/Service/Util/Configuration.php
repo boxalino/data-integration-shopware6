@@ -1,21 +1,13 @@
 <?php
 namespace Boxalino\DataIntegration\Service\Util;
 
-use Boxalino\DataIntegration\Service\Util\DiConfigurationInterface;
 use Boxalino\DataIntegrationDoc\Service\GcpRequestInterface;
-use Boxalino\DataIntegrationDoc\Service\Util\AbstractSimpleObject;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\FetchMode;
-use Doctrine\DBAL\ParameterType;
-use Shopware\Core\Defaults;
-use Shopware\Core\Framework\Uuid\Uuid;
 use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceInterface;
+use Shopware\Core\System\SalesChannel\Context\SalesChannelContextServiceParameters;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\System\SystemConfig\SystemConfigService;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\TagAwareAdapterInterface;
-use Symfony\Contracts\Cache\ItemInterface;
-use Boxalino\DataIntegration\Service\Util\ShopwareConfigurationTrait;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 
 
@@ -185,7 +177,7 @@ class Configuration implements DiConfigurationInterface
     {
         return [
             "mode" => GcpRequestInterface::GCP_MODE_INSTANT_UPDATE,
-            "endpoint" => $configuration["instantDiEndpoint"],
+            "endpoint" => $configuration["instantDiEndpoint"] ?? "",
             "allowProductSync" => isset($configuration['productInstantStatus']) ? (bool)$configuration['productInstantStatus'] : false,
             "allowUserSync" => isset($configuration['userInstantStatus']) ? (bool) $configuration['userInstantStatus'] : false,
             "allowOrderSync" => isset($configuration['orderInstantStatus']) ? (bool) $configuration['orderInstantStatus'] : false,
@@ -200,7 +192,7 @@ class Configuration implements DiConfigurationInterface
     {
         return [
             "mode" => GcpRequestInterface::GCP_MODE_DELTA,
-            "endpoint" => $configuration["deltaDiEndpoint"],
+            "endpoint" => $configuration["deltaDiEndpoint"] ?? "",
             "allowProductSync" => isset($configuration['productDeltaStatus']) ? (bool)$configuration['productDeltaStatus'] : false,
             "allowUserSync" => isset($configuration['userDeltaStatus']) ? (bool) $configuration['userDeltaStatus'] : false,
             "allowOrderSync" => isset($configuration['orderDeltaStatus']) ? (bool) $configuration['orderDeltaStatus'] : false,
@@ -215,7 +207,7 @@ class Configuration implements DiConfigurationInterface
     {
         return [
             "mode" => GcpRequestInterface::GCP_MODE_FULL,
-            "endpoint" => $configuration["fullDiEndpoint"],
+            "endpoint" => $configuration["fullDiEndpoint"] ?? "",
             "allowProductSync" => isset($configuration['productDiStatus']) ? (bool)$configuration['productDiStatus'] : false,
             "allowUserSync" => isset($configuration['userDiStatus']) ? (bool) $configuration['userDiStatus'] : false,
             "allowOrderSync" => isset($configuration['orderDiStatus']) ? (bool) $configuration['orderDiStatus'] : false,
@@ -228,12 +220,6 @@ class Configuration implements DiConfigurationInterface
      */
     protected function _getGenericConfigurations(array $configuration) : array
     {
-        $salesChannelContext = $this->salesChannelContextService->get(
-            $configuration['sales_channel_id'],
-            "boxalinoinstantupdatetoken",
-            $configuration['sales_channel_default_language_id']
-        );
-
         $languagesCodeMap = array_combine(explode(",", $configuration['sales_channel_languages_locale']), explode(",", $configuration['sales_channel_languages_code']));
         $languagesMap = array_combine(explode(",", $configuration['sales_channel_languages_id']), explode(",", $configuration['sales_channel_languages_locale']));
         $currenciesMap = array_combine(explode(",", $configuration['sales_channel_currencies_id']), explode(",", $configuration['sales_channel_currencies_code']));
@@ -244,7 +230,7 @@ class Configuration implements DiConfigurationInterface
             "apiKey" => $configuration["apiKey"],
             "apiSecret" => $configuration["apiSecret"],
             "salesChannelId" => $configuration['sales_channel_id'],
-            "salesChannelTaxState" => $salesChannelContext->getTaxState(),
+            "salesChannelTaxState" => $this->getSalesChannelContext($configuration)->getTaxState(),
             "defaultLanguageId" => $configuration['sales_channel_default_language_id'],
             "defaultCurrencyId" => $configuration["sales_channel_default_currency_id"],
             "defaultCurrencyCode" => $currenciesMap[$configuration["sales_channel_default_currency_id"]],
@@ -260,6 +246,21 @@ class Configuration implements DiConfigurationInterface
             "markAsNew" => $configuration["markAsNew"],
             "batchSize" => (int) $configuration['batchSize']
         ];
+    }
+
+    /**
+     * @param array $configuration
+     * @return SalesChannelContext
+     */
+    protected function getSalesChannelContext(array $configuration) : SalesChannelContext
+    {
+        return $this->salesChannelContextService->get(
+            new SalesChannelContextServiceParameters(
+                $configuration['sales_channel_id'],
+                "boxalinoinstantupdatetoken",
+                $configuration['sales_channel_default_language_id']
+            )
+        );
     }
 
     /**

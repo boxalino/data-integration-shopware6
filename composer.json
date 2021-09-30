@@ -24,10 +24,10 @@
     },
     "require": {
         "php": "^7.2",
-        "boxalino/data-integration-doc-php":"~3.0.8"
+        "boxalino/data-integration-doc-php":"~3.0.10"
     },
     "autoload": {
-        "psr-4": {
+        "psr-4": {8
             "Boxalino\\DataIntegration\\": "src/"
         }
     }

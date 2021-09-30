@@ -202,11 +202,11 @@
                 <argument>numeric_attributes</argument>
             </call>
             <call method="addPropertyNameDocAttributeMapping">
-                <argument>purchase_price</argument>
+                <argument>child_count</argument>
                 <argument>numeric_attributes</argument>
             </call>
             <call method="addPropertyNameDocAttributeMapping">
-                <argument>child_count</argument>
+                <argument>max_purchase</argument>
                 <argument>numeric_attributes</argument>
             </call>
             <call method="addPropertyNameDocAttributeMapping">

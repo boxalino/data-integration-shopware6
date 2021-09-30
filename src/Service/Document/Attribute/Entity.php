@@ -52,6 +52,7 @@ class Entity extends IntegrationSchemaPropertyHandler
             if($docAttributeName)
             {
                 $content[$docAttributeName] = [];
+                $content[$docAttributeName][DocSchemaInterface::FIELD_NAME] = $docAttributeName;
                 $content[$docAttributeName][DocSchemaInterface::FIELD_LABEL] = $this->getPropertyLabel($propertyName, $languages);
 
                 $docMappingName = $this->productEntityConfiguration->getProperties()[$propertyName];

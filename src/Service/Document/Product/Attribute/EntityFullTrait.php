@@ -40,7 +40,7 @@ trait EntityFullTrait
             'product.restock_time AS restock_time',
             'product.sales AS sales',
             'product.child_count AS child_count',
-            'IF(product.purchase_price IS NULL, parent.purchase_price, product.purchase_price) AS purchase_price',
+            'IF(product.max_purchase IS NULL, parent.max_purchase, product.max_purchase) AS max_purchase',
             'IF(product.min_purchase IS NULL, parent.min_purchase, product.min_purchase) AS min_purchase',
             'tax.tax_rate AS tax_rate',
             'IF(product.parent_id IS NULL, product.purchase_unit, parent.purchase_unit) AS purchase_unit',
