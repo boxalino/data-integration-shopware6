@@ -27,7 +27,7 @@
         "boxalino/data-integration-doc-php":"~3.0.10"
     },
     "autoload": {
-        "psr-4": {8
+        "psr-4": {
             "Boxalino\\DataIntegration\\": "src/"
         }
     }
