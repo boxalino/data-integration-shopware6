@@ -103,19 +103,13 @@ class DocHandler extends DocProduct
                 $parentId = $content[DocSchemaInterface::DI_PARENT_ID_FIELD];
                 if(is_null($parentId))
                 {
-                    if($content[DocSchemaInterface::DI_AS_VARIANT] === "1")
-                    {
-                        $sku = $this->docTypePropDiffDuplicate(
-                            DocProductHandlerInterface::DOC_PRODUCT_LEVEL_GROUP,
-                            DocProductHandlerInterface::DOC_PRODUCT_LEVEL_SKU,
-                            $content
-                        );
+                    $sku = $this->docTypePropDiffDuplicate(
+                        DocProductHandlerInterface::DOC_PRODUCT_LEVEL_GROUP,
+                        DocProductHandlerInterface::DOC_PRODUCT_LEVEL_SKU,
+                        $content
+                    );
 
-                        $schema->addSkus([$sku]);
-                        $productGroups[$id] = $schema;
-                        continue;
-                    }
-
+                    $schema->addSkus([$sku]);
                     $productGroups[$id] = $schema;
                     continue;
                 }
@@ -145,8 +139,7 @@ class DocHandler extends DocProduct
             {
                 $schema = $productGroups[$parentId];
             }
-            $schema->addSkus($skus);
-            $productGroups[$parentId] = $schema;
+            $productGroups[$parentId] = $schema->addSkus($skus);
         }
 
         $this->logTime("end" . __FUNCTION__);

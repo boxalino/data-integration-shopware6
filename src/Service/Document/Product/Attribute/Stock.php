@@ -30,10 +30,12 @@ class Stock extends ModeIntegrator
         foreach ($this->getData() as $item)
         {
             $stockValue = $item['value'] ?? false;
-            if($stockValue)
+            if($stockValue === false)
             {
-                $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STOCK][] = $this->getStockSchema($item['value'], $item['availability']);
+                continue;
             }
+
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STOCK][] = $this->getStockSchema($item['value'], $item['availability']);
         }
 
         return $content;
