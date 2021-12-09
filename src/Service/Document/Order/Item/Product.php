@@ -52,6 +52,12 @@ class Product extends Item
                 $schema->addStringAttribute($stringAttribute);
             }
 
+            if(isset($item["purchase_price"]))
+            {
+                $stringAttribute = $this->getStringAttributeSchema([$item["purchase_price"]], "purchase_price");
+                $schema->addStringAttribute($stringAttribute);
+            }
+
             $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_PRODUCTS][] = $schema;
         }
 
@@ -85,7 +91,8 @@ class Product extends Item
             "IF(JSON_EXTRACT(oli.price, '$.listPrice.price') IS NULL, TRUNCATE(oli.unit_price,2), JSON_EXTRACT(oli.price, '$.listPrice.price')) AS unit_list_price",
             "IF(JSON_EXTRACT(oli.price, '$.listPrice.price') IS NULL, TRUNCATE(oli.total_price,2), TRUNCATE(JSON_EXTRACT(oli.price, '$.listPrice.price')*oli.quantity, 2)) AS total_list_price",
             "TRUNCATE(oli.unit_price - JSON_EXTRACT(oli.payload, '$.purchasePrice'),2) AS unit_gross_margin",  //get unit gross margin from unit_price-purchasePrice
-            "TRUNCATE(JSON_EXTRACT(oli.payload, '$.purchasePrice')*oli.quantity,2) AS total_gross_margin" //calculate total gross margin from quantity*unit_gross_margin
+            "TRUNCATE(JSON_EXTRACT(oli.payload, '$.purchasePrice')*oli.quantity,2) AS total_gross_margin", //calculate total gross margin from quantity*unit_gross_margin
+            "TRUNCATE(JSON_EXTRACT(oli.payload, '$.purchasePrice'),2) AS purchase_price",
         ];
     }
 
