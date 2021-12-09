@@ -20,6 +20,7 @@ trait DiFlaggedIdsTrait
 
     /**
      * @param string $entityName
+     * @param string $dateFrom
      * @param string $dateTo
      * @return array
      */

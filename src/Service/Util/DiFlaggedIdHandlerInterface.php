@@ -22,9 +22,10 @@ interface DiFlaggedIdHandlerInterface
     public const ENTITY_NAME_PREFIX = 'boxalino_di_flagged_id_';
 
 
-    /**
+    /***
      * @param string $entityName
-     * @param string $date
+     * @param string $dateFrom
+     * @param string $dateTo
      * @return array
      */
     public function getFlaggedIdsByEntityNameAndDateFromTo(string $entityName, string $dateFrom, string $dateTo) : array;

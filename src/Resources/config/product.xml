@@ -144,6 +144,15 @@
             </call>
         </service>
 
+        <!-- N2: Main Category Attribute Handler -->
+        <service id="boxalino.di.product.main_category" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\MainCategory"
+                 parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>main_category</argument>
+                <argument>string_attributes</argument>
+            </call>
+        </service>
+
         <!-- O: Product tags -->
         <service id="boxalino.di.product.tags" class="Boxalino\DataIntegration\Service\Document\Product\Attribute\Tag"
                  parent="Boxalino\DataIntegration\Service\Document\Product\ModeIntegratorInterface">
