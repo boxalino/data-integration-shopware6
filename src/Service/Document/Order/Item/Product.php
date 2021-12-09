@@ -54,8 +54,8 @@ class Product extends Item
 
             if(isset($item["purchase_price"]))
             {
-                $stringAttribute = $this->getStringAttributeSchema([$item["purchase_price"]], "purchase_price");
-                $schema->addStringAttribute($stringAttribute);
+                $stringAttribute = $this->getNumericAttributeSchema([$item["purchase_price"]], "purchase_price");
+                $schema->addNumericAttribute($stringAttribute);
             }
 
             $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_PRODUCTS][] = $schema;
