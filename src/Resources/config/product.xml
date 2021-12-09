@@ -231,6 +231,14 @@
                 <argument>numeric_attributes</argument>
             </call>
             <call method="addPropertyNameDocAttributeMapping">
+                <argument>purchase_price_net</argument>
+                <argument>numeric_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
+                <argument>purchase_price_gross</argument>
+                <argument>numeric_attributes</argument>
+            </call>
+            <call method="addPropertyNameDocAttributeMapping">
                 <argument>variant_count</argument>
                 <argument>numeric_attributes</argument>
             </call>

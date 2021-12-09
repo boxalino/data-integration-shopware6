@@ -44,6 +44,8 @@ trait EntityFullTrait
             'IF(product.min_purchase IS NULL, parent.min_purchase, product.min_purchase) AS min_purchase',
             'tax.tax_rate AS tax_rate',
             'IF(product.parent_id IS NULL, product.purchase_unit, parent.purchase_unit) AS purchase_unit',
+            'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(product.price, \'$.*.net\'),\'$[0]\'), 2), ",", "") AS purchase_price_net',
+            'REPLACE(FORMAT(JSON_EXTRACT(JSON_EXTRACT(product.price, \'$.*.gross\'),\'$[0]\'), 2), ",", "") AS purchase_price_gross',
             "IF(product.parent_id IS NOT NULL, parent.child_count, IF(product.child_count = '0', 1, product.child_count)) AS variant_count",
 
             /** string properties */
