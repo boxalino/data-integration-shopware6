@@ -43,7 +43,6 @@ class DocHandler extends DocAttribute
     protected function createDocLines() : self
     {
         try {
-            $data = [];
             $this->addSystemConfigurationOnHandlers();
             $this->setLanguages($this->getSystemConfiguration()->getLanguages());
             foreach($this->getHandlers() as $handler)

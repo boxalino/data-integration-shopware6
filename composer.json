@@ -23,8 +23,8 @@
         }
     },
     "require": {
-        "php": "^7.2",
-        "boxalino/data-integration-doc-php":"~3.0.12"
+        "php": "^7.2 || ^8.0",
+        "boxalino/data-integration-doc-php":"~3.0.13"
     },
     "autoload": {
         "psr-4": {

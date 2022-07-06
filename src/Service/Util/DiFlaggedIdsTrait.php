@@ -23,6 +23,7 @@ trait DiFlaggedIdsTrait
      * @param string $dateFrom
      * @param string $dateTo
      * @return array
+     * @throws \Doctrine\DBAL\Exception
      */
     public function getFlaggedIdsByEntityNameAndDateFromTo(string $entityName, string $dateFrom, string $dateTo) : array
     {
