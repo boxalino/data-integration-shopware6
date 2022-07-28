@@ -89,6 +89,11 @@
             <helpText>Activate / Disable the Data Integration for the doc_order document</helpText>
         </input-field>
         <input-field type="text">
+            <name>threshold</name>
+            <label>Threshold</label>
+            <helpText>Add a validation for the minimum number of items that must be present in order for a full to be synced</helpText>
+        </input-field>
+        <input-field type="text">
             <name>fullDiEndpoint</name>
             <label>Full Data Integration Endpoint</label>
             <helpText>Endpoint for full data sync requests</helpText>
@@ -119,6 +124,12 @@
             <name>deltaDiEndpoint</name>
             <label>Delta Data Integration Endpoint</label>
             <helpText>Endpoint for delta data sync requests</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>outsource</name>
+            <defaultValue>1</defaultValue>
+            <label>Enable Outsource Mode</label>
+            <helpText>When outsource mode is enabled, only doc_product is exported, making the export faster</helpText>
         </input-field>
     </card>
 </config>

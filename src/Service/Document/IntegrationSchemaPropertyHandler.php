@@ -1,16 +1,12 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document;
 
-use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
-use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
 use Boxalino\DataIntegration\Service\Util\DiFlaggedIdsTrait;
 use Boxalino\DataIntegrationDoc\Doc\DocOrderAttributeTrait;
 use Boxalino\DataIntegrationDoc\Doc\DocProductAttributeTrait;
-use Boxalino\DataIntegrationDoc\Doc\DocPropertiesTrait;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaPropertyHandler;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaPropertyHandlerInterface;
 use Boxalino\DataIntegrationDoc\Doc\DocUserAttributeTrait;
-use Boxalino\DataIntegrationDoc\Doc\GenericAttributeTrait;
 use Boxalino\DataIntegrationDoc\Service\ErrorHandler\ModeDisabledException;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\Statement;
@@ -101,7 +97,7 @@ abstract class IntegrationSchemaPropertyHandler extends DocSchemaPropertyHandler
             return null;
         } catch (\Throwable $exception)
         {
-            throw new \Exception($exception->getMessage());
+            throw new \Exception($exception->getMessage() . " \n " . $exception->getTraceAsString());
         }
     }
 
@@ -116,7 +112,7 @@ abstract class IntegrationSchemaPropertyHandler extends DocSchemaPropertyHandler
      */
     public function getFirstResultByBatch() : int
     {
-        return (int)$this->getSystemConfiguration()->getBatchSize()*$this->getSystemConfiguration()->getChunk();
+        return (int)$this->getSystemConfiguration()->getBatchSize()*(int)$this->getSystemConfiguration()->getChunk();
     }
 
 

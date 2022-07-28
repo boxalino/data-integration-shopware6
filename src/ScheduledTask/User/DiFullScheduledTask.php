@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\ScheduledTask\User;
 
-use Boxalino\DataIntegration\Integrate\Mode\Configuration\FullTrait;
-use Boxalino\DataIntegration\Integrate\Type\UserTrait;
-use Boxalino\DataIntegration\Service\Util\DiConfigurationInterface;
+use Boxalino\DataIntegrationDoc\Framework\Integrate\Mode\Configuration\FullTrait;
+use Boxalino\DataIntegrationDoc\Framework\Integrate\Type\UserTrait;
+use Boxalino\DataIntegrationDoc\Framework\Util\DiConfigurationInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\UserIntegrationHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Boxalino\DataIntegration\ScheduledTask\DiGenericAbstractScheduledTask;

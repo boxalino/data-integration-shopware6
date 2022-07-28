@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\ScheduledTask\Order;
 
-use Boxalino\DataIntegration\Integrate\Mode\Configuration\DeltaTrait;
-use Boxalino\DataIntegration\Integrate\Type\OrderTrait;
-use Boxalino\DataIntegration\Service\Util\DiConfigurationInterface;
+use Boxalino\DataIntegrationDoc\Framework\Integrate\Mode\Configuration\DeltaTrait;
+use Boxalino\DataIntegrationDoc\Framework\Integrate\Type\OrderTrait;
+use Boxalino\DataIntegrationDoc\Framework\Util\DiConfigurationInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\IntegrationHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\OrderDeltaIntegrationHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;

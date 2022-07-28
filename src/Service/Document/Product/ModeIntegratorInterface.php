@@ -13,7 +13,8 @@ use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocInstantIntegrati
  * @package Boxalino\DataIntegration\Service\Document\Product
  */
 interface ModeIntegratorInterface
-    extends DocInstantIntegrationInterface, DocDeltaIntegrationInterface, DocSchemaPropertyHandlerInterface, IntegrationDocHandlerInterface
+    extends DocInstantIntegrationInterface, DocDeltaIntegrationInterface
+    , DocSchemaPropertyHandlerInterface, IntegrationDocHandlerInterface
 {
 
 

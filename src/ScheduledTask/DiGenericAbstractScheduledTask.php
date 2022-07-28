@@ -1,10 +1,10 @@
 <?php
 namespace Boxalino\DataIntegration\ScheduledTask;
 
-use Boxalino\DataIntegration\Integrate\DiAbstractTrait;
-use Boxalino\DataIntegration\Integrate\DiIntegrateTrait;
-use Boxalino\DataIntegration\Integrate\DiLoggerTrait;
-use Boxalino\DataIntegration\Service\Util\DiConfigurationInterface;
+use Boxalino\DataIntegrationDoc\Framework\Integrate\DiAbstractTrait;
+use Boxalino\DataIntegrationDoc\Framework\Integrate\DiIntegrateTrait;
+use Boxalino\DataIntegrationDoc\Framework\Integrate\DiLoggerTrait;
+use Boxalino\DataIntegrationDoc\Framework\Util\DiConfigurationInterface;
 use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailDocLoadException;
 use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailSyncException;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;

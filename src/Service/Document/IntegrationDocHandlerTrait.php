@@ -39,12 +39,11 @@ trait IntegrationDocHandlerTrait
 
     /**
      * @param ConfigurationDataObject $configuration
-     * @return IntegrationDocHandlerInterface
+     * @return void
      */
-    public function setSystemConfiguration(ConfigurationDataObject $configuration): IntegrationDocHandlerInterface
+    public function setSystemConfiguration(ConfigurationDataObject $configuration): void
     {
         $this->systemConfiguration = $configuration;
-        return $this;
     }
 
     /**

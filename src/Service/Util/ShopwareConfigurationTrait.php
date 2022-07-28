@@ -1,7 +1,7 @@
 <?php
 namespace Boxalino\DataIntegration\Service\Util;
 
-use Boxalino\DataIntegration\Service\Util\DiConfigurationInterface;
+use Boxalino\DataIntegrationDoc\Framework\Util\DiConfigurationInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;

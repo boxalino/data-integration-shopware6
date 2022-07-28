@@ -1,10 +1,7 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Product;
 
-use Boxalino\DataIntegrationDoc\Generator\Product\Doc;
 use Boxalino\DataIntegrationDoc\Generator\Product\Group;
-use Boxalino\DataIntegrationDoc\Generator\Product\Line;
-use Boxalino\DataIntegrationDoc\Generator\Product\Sku;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
@@ -33,7 +30,7 @@ use Psr\Log\LoggerInterface;
  * @package Boxalino\DataIntegration\Service\Document\Product
  */
 class DocHandler extends DocProduct
-    implements DocProductHandlerInterface, IntegrationDocHandlerInterface, DocDeltaIntegrationInterface, DocInstantIntegrationInterface
+    implements DocProductHandlerInterface, DocDeltaIntegrationInterface, DocInstantIntegrationInterface, IntegrationDocHandlerInterface
 {
 
     use IntegrationDocHandlerTrait;

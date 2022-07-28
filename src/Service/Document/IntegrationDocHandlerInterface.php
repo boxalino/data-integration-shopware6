@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document;
 
+use Boxalino\DataIntegrationDoc\Framework\Util\DiIntegrationConfigurationInterface;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 
 /**
@@ -10,18 +11,8 @@ use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
  *
  * @package Boxalino\DataIntegration\Service\Document
  */
-interface IntegrationDocHandlerInterface
+interface IntegrationDocHandlerInterface extends DiIntegrationConfigurationInterface
 {
-    /**
-     * @return ConfigurationDataObject
-     */
-    public function getSystemConfiguration() : ConfigurationDataObject;
-
-    /**
-     * @param ConfigurationDataObject $configuration
-     * @return IntegrationDocHandlerInterface
-     */
-    public function setSystemConfiguration(ConfigurationDataObject $configuration) : IntegrationDocHandlerInterface;
 
     /**
      * @param string $handlerIntegrateTime
