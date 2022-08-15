@@ -4,7 +4,6 @@ namespace Boxalino\DataIntegration\Service\Document\Product\Attribute;
 use Boxalino\DataIntegration\Service\Document\Product\ModeIntegrator;
 use Boxalino\DataIntegration\Service\Util\ShopwareMediaTrait;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
-use Boxalino\DataIntegrationDoc\Doc\Schema\Repeated;
 use Boxalino\DataIntegrationDoc\Doc\Schema\Typed\StringAttribute;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;

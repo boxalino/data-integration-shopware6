@@ -1,14 +1,11 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Order;
 
-use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Doctrine\DBAL\Query\QueryBuilder;
-use Boxalino\DataIntegrationDoc\Doc\Schema\Order\Voucher as OrderVoucherSchema;
 
 /**
  * Class Item

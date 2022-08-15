@@ -5,10 +5,7 @@ use Boxalino\DataIntegrationDoc\Framework\Integrate\DiAbstractTrait;
 use Boxalino\DataIntegrationDoc\Framework\Integrate\DiIntegrateTrait;
 use Boxalino\DataIntegrationDoc\Framework\Integrate\DiLoggerTrait;
 use Boxalino\DataIntegrationDoc\Framework\Util\DiConfigurationInterface;
-use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailDocLoadException;
-use Boxalino\DataIntegrationDoc\Service\ErrorHandler\FailSyncException;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
-use Boxalino\Exporter\Service\ExporterFullInterface;
 use Psr\Log\LoggerInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
@@ -50,13 +47,14 @@ abstract class DiGenericAbstractScheduledTask extends ScheduledTaskHandler
     abstract static function getHandledMessages(): iterable;
 
     /**
-     * Triggers the full data exporter for a specific account if so it is set
+     * Triggers the data exporter for a specific account if so it is set
      *
      * @throws \Exception
      */
     public function run(): void
     {
         try{
+            $this->getLogger()->info("Boxalino DI: START OF SCHEDULED TASK");
             /** @var ConfigurationDataObject $configuration */
             foreach($this->getConfigurations() as $configuration)
             {
@@ -66,6 +64,7 @@ abstract class DiGenericAbstractScheduledTask extends ScheduledTaskHandler
                     continue;
                 }
             }
+            $this->getLogger()->info("Boxalino DI: END OF SCHEDULED TASK");
         } catch (\Exception $exc)
         {
             $this->getLogger()->error($exc->getMessage());

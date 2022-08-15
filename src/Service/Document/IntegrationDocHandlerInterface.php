@@ -2,7 +2,6 @@
 namespace Boxalino\DataIntegration\Service\Document;
 
 use Boxalino\DataIntegrationDoc\Framework\Util\DiIntegrationConfigurationInterface;
-use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 
 /**
  * Interface IntegrationDocHandlerInterface

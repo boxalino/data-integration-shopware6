@@ -8,13 +8,9 @@ use Boxalino\DataIntegrationDoc\Doc\Schema\Repeated;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Boxalino\DataIntegrationDoc\Doc\Schema\RepeatedLocalized;
-use Boxalino\DataIntegrationDoc\Doc\Schema\Localized;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
-use Boxalino\DataIntegrationDoc\Doc\DocSchemaIntegrationTrait;
 
 /**
  * Class Brand

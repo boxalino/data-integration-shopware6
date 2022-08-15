@@ -3,12 +3,10 @@ namespace Boxalino\DataIntegration\Service\Document\Attribute;
 
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Doc\Attribute;
-use Boxalino\DataIntegrationDoc\Doc\DocSchemaIntegrationTrait;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocAttribute;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocAttributeHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocHandlerInterface;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
-use Psr\Log\LoggerInterface;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaPropertyHandlerInterface;
 
 /**

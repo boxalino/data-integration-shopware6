@@ -2,7 +2,6 @@
 namespace Boxalino\DataIntegration\Subscriber;
 
 use Boxalino\DataIntegration\Service\Util\DiFlaggedIdHandlerInterface;
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Checkout\Customer\CustomerDefinition;
 use Shopware\Core\Checkout\Customer\Event\CustomerIndexerEvent;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;

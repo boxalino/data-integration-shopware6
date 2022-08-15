@@ -11,7 +11,6 @@ use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocDeltaIntegration
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocDeltaIntegrationTrait;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocInstantIntegrationInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocInstantIntegrationTrait;
-use Psr\Log\LoggerInterface;
 
 /**
  * Class DocHandler

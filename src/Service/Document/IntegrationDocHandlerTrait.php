@@ -7,7 +7,6 @@ use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocDeltaIntegration
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocInstantIntegrationInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Mode\InstantIntegrationInterface;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
-use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Shopware\Core\Defaults;
 

@@ -4,7 +4,6 @@ namespace Boxalino\DataIntegration\Service\Document\Product\Attribute;
 use Boxalino\DataIntegration\Service\Document\Product\ModeIntegrator;
 use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
 use Boxalino\DataIntegration\Service\Util\ShopwareLocalizedTrait;
-use Boxalino\DataIntegrationDoc\Doc\Schema\Localized;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;

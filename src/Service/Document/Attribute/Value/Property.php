@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Attribute\Value;
 
-use Boxalino\DataIntegration\Service\Document\Attribute\Value\DocAttributeValueTrait;
-use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
 use Boxalino\DataIntegration\Service\Util\ShopwareMediaTrait;
 use Boxalino\DataIntegration\Service\Util\ShopwarePropertyTrait;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;

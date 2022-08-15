@@ -11,7 +11,6 @@ use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Boxalino\DataIntegrationDoc\Doc\Schema\Localized;
 
 /**
  * Class Option

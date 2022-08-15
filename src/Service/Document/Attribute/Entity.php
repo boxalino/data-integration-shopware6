@@ -4,7 +4,6 @@ namespace Boxalino\DataIntegration\Service\Document\Attribute;
 use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
 use Boxalino\DataIntegration\Service\Document\Product\Attribute\Entity as ProductEntityConfiguration;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
-use Boxalino\DataIntegrationDoc\Doc\Schema\Localized;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Shopware\Core\Defaults;

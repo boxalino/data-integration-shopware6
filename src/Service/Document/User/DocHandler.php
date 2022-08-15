@@ -3,7 +3,6 @@ namespace Boxalino\DataIntegration\Service\Document\User;
 
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Doc\User;
-use Boxalino\DataIntegrationDoc\Generator\DocGeneratorInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocUserHandlerInterface;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;

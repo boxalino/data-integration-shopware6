@@ -1,8 +1,6 @@
 <?php
 namespace Boxalino\DataIntegration\Service\Util;
 
-use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
-use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
 use Boxalino\DataIntegrationDoc\Generator\DiPropertyTrait;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;

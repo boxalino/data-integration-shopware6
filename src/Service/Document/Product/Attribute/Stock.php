@@ -2,7 +2,6 @@
 namespace Boxalino\DataIntegration\Service\Document\Product\Attribute;
 
 use Boxalino\DataIntegration\Service\Document\Product\ModeIntegrator;
-use Boxalino\DataIntegrationDoc\Doc\Schema\Stock as StockSchema;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;

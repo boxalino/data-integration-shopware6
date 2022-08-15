@@ -1,9 +1,7 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Integration\Mode;
 
-use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
 use Boxalino\DataIntegration\Service\Util\DiFlaggedIdHandlerInterface;
-use Boxalino\DataIntegration\Service\Util\DiFlaggedIdsTrait;
 use Boxalino\DataIntegration\Service\Util\DiTimesheetHandlerInterface;
 use Doctrine\DBAL\Connection;
 use Boxalino\DataIntegrationDoc\Service\Integration\IntegrationHandler;

@@ -7,7 +7,6 @@ use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocDeltaIntegration
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocInstantIntegrationTrait;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 use Doctrine\DBAL\Connection;
-use MongoDB\Driver\Query;
 use Shopware\Core\Content\Product\ProductDefinition;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Uuid\Uuid;

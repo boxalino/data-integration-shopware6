@@ -1,8 +1,6 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Attribute\Value;
 
-use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
-use Boxalino\DataIntegration\Service\Util\ShopwareLocalizedTrait;
 use Boxalino\DataIntegrationDoc\Doc\Schema\Localized;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Boxalino\DataIntegrationDoc\Doc\Schema\RepeatedGenericLocalized;

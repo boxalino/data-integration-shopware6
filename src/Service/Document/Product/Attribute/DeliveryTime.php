@@ -6,7 +6,6 @@ use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
 use Boxalino\DataIntegration\Service\Util\ShopwareLocalizedTrait;
 use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Boxalino\DataIntegrationDoc\Doc\Schema\Repeated;
-use Boxalino\DataIntegrationDoc\Doc\Schema\RepeatedLocalized;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;

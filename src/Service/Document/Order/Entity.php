@@ -1,10 +1,7 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Order;
 
-use Boxalino\DataIntegration\Service\Document\IntegrationSchemaPropertyHandler;
-use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Boxalino\DataIntegrationDoc\Doc\Schema\Localized;
-use Boxalino\DataIntegrationDoc\Service\GcpRequestInterface;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 use Shopware\Core\Defaults;

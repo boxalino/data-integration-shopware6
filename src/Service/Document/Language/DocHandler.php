@@ -4,7 +4,6 @@ namespace Boxalino\DataIntegration\Service\Document\Language;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Doc\Language;
 use Boxalino\DataIntegrationDoc\Generator\DocGeneratorInterface;
-use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocLanguagesHandlerInterface;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocLanguages;

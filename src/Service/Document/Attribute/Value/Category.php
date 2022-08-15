@@ -14,7 +14,6 @@ use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\Uuid\Uuid;
-use Boxalino\DataIntegrationDoc\Doc\Schema\Category as CategorySchema;
 use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
 
 /**

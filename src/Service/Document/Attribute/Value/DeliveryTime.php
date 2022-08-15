@@ -1,13 +1,11 @@
 <?php declare(strict_types=1);
 namespace Boxalino\DataIntegration\Service\Document\Attribute\Value;
 
-use Boxalino\DataIntegration\Service\Document\Attribute\Value\DocAttributeValueTrait;
 use Boxalino\DataIntegration\Service\Util\ShopwareLocalizedTrait;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
-use Psr\Log\LoggerInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
 use Shopware\Core\Framework\Uuid\Uuid;
