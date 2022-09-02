@@ -3,6 +3,7 @@ namespace Boxalino\DataIntegration\Service\Integration\Mode;
 
 use Boxalino\DataIntegration\Service\Util\DiFlaggedIdHandlerInterface;
 use Boxalino\DataIntegration\Service\Util\DiTimesheetHandlerInterface;
+use Boxalino\DataIntegrationDoc\Service\ErrorHandler\StopSyncException;
 use Doctrine\DBAL\Connection;
 use Boxalino\DataIntegrationDoc\Service\Integration\IntegrationHandler;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
@@ -73,6 +74,37 @@ abstract class AbstractIntegrationHandler extends IntegrationHandler
         {
             throw $exception;
         }
+    }
+
+    /**
+     * Review if the integrate run (data export trigger) is allowed
+     * It can be limited by a scheduler configuration or some other custom logic
+     *
+     * @return bool
+     */
+    public function isIntegrateAllowed() : bool
+    {
+        if($this->getSystemConfiguration()->getSchedulerEnabled())
+        {
+            $dailyStart = $this->getSystemConfiguration()->getSchedulerDailyStart();
+            $dailyEnd = $this->getSystemConfiguration()->getSchedulerDailyEnd();
+            $currentStoreTime = (new \DateTime())->format("H");
+            if($dailyEnd < $dailyStart)
+            {
+                $dailyEnd+=24;
+            }
+
+            if($currentStoreTime === min(max($currentStoreTime, $dailyStart), $dailyEnd))
+            {
+                return true;
+            }
+
+            throw new StopSyncException(
+                "DI integration stopped: the current time $currentStoreTime is outside the time range allowed via scheduler (from $dailyStart to $dailyEnd)"
+            );
+        }
+
+        return true;
     }
 
 

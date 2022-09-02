@@ -22,10 +22,13 @@ abstract class Instant extends AbstractIntegrationHandler
 
     public function integrate(): void
     {
-        $this->setHandlerIntegrateTime((new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT));
-        $this->addSystemConfigurationOnHandlers();
-        $this->integrateInstant();
-        $this->updateDiTimesheet();
+        if($this->isIntegrateAllowed())
+        {
+            $this->setHandlerIntegrateTime((new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT));
+            $this->addSystemConfigurationOnHandlers();
+            $this->integrateInstant();
+            $this->updateDiTimesheet();
+        }
     }
 
     /**

@@ -12,11 +12,14 @@ abstract class Delta extends AbstractIntegrationHandler
 
     public function integrate(): void
     {
-        $this->setHandlerIntegrateTime((new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT));
-        $this->addSystemConfigurationOnHandlers();
-        $this->integrateDelta();
-        $this->updateDiTimesheet();
-        $this->clearDiFlaggedIds();
+        if($this->isIntegrateAllowed())
+        {
+            $this->setHandlerIntegrateTime((new \DateTime())->format(Defaults::STORAGE_DATE_TIME_FORMAT));
+            $this->addSystemConfigurationOnHandlers();
+            $this->integrateDelta();
+            $this->updateDiTimesheet();
+            $this->clearDiFlaggedIds();
+        }
     }
 
 

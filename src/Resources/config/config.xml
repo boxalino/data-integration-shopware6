@@ -66,6 +66,11 @@
             <label>Instant Update Endpoint</label>
             <helpText>Endpoint for Instant Update requests</helpText>
         </input-field>
+        <input-field type="text">
+            <name>fields</name>
+            <label>Fields</label>
+            <helpText>Declare which fields are part of an instant update. Use comma (,) to separate values</helpText>
+        </input-field>
     </card>
     <card>
         <title>Full Data Integration Configuration</title>
@@ -130,6 +135,28 @@
             <defaultValue>1</defaultValue>
             <label>Enable Outsource Mode</label>
             <helpText>When outsource mode is enabled, only doc_product is exported, making the export faster</helpText>
+        </input-field>
+    </card>
+    <card>
+        <title>Scheduler</title>
+        <title lang="de-DE">DI Scheduler</title>
+        <input-field type="bool">
+            <name>schedulerStatus</name>
+            <defaultValue>0</defaultValue>
+            <label>Enable scheduler for Delta/Instant DI requests</label>
+            <helpText>Activate / Disable the Scheduler configuration for delta/instant</helpText>
+        </input-field>
+        <input-field type="text">
+            <name>dailyStart</name>
+            <defaultValue>5</defaultValue>
+            <label>Daily Start Hour</label>
+            <helpText>Min hour from when integration is enabled (ex: 5).</helpText>
+        </input-field>
+        <input-field type="text">
+            <name>dailyEnd</name>
+            <defaultValue>23</defaultValue>
+            <label>Daily End Hour</label>
+            <helpText>Latest hour to which the integration is enabled (ex: 23)</helpText>
         </input-field>
     </card>
 </config>
