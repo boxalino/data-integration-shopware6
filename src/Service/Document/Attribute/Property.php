@@ -117,9 +117,12 @@ class Property extends IntegrationSchemaPropertyHandler
             $content = $this->translations->offsetGet($id);
             foreach($this->getSystemConfiguration()->getLanguages() as $language)
             {
-                $localized = new Localized();
-                $localized->setValue($content[$language])->setLanguage($language);
-                $schema[] = $localized;
+                if($content[$language])
+                {
+                    $localized = new Localized();
+                    $localized->setValue($content[$language])->setLanguage($language);
+                    $schema[] = $localized;
+                }
             }
         }
 
