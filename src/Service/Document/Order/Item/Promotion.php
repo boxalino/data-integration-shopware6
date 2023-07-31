@@ -34,7 +34,7 @@ class Promotion extends Item
                 $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_VOUCHERS] = [];
             }
 
-            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_VOUCHERS][] = new OrderVoucherSchema($item);
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_VOUCHERS][] = (new OrderVoucherSchema($item))->toArray();
         }
 
         return $content;

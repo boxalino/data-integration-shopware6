@@ -32,7 +32,7 @@ class Visibility extends ModeIntegrator
         {
             /** @var VisibilitySchema $schema */
             $schema = $this->getVisibilitySchema($languages, $item[DocSchemaInterface::FIELD_INTERNAL_ID]);
-            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_VISIBILITY] = $schema;
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_VISIBILITY][] = $schema->toArray();
         }
 
         return $content;

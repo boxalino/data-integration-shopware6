@@ -40,7 +40,7 @@ abstract class Contact extends ModeIntegrator
                     $schema->addDatetimeAttributes($this->getDatetimeAttributeSchema([$item["updated_at"]], "updated_at"));
                 }
 
-                $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_CONTACTS][] = $schema;
+                $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_CONTACTS][] = $schema->toArray();
             } catch (\Throwable $exception)
             {
                 //missing information

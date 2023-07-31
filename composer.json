@@ -3,6 +3,7 @@
     "type": "shopware-platform-plugin",
     "description": "Boxalino Data Integration for Shopware6",
     "license": "MIT",
+    "version": "3.5.0",
     "authors": [
         {
             "name": "Boxalino AG",
@@ -24,7 +25,7 @@
     },
     "require": {
         "php": "^7.2 || ^8.0",
-        "boxalino/data-integration-doc-php":"~3.1.17"
+        "boxalino/data-integration-doc-php":"~4.0.7"
     },
     "autoload": {
         "psr-4": {

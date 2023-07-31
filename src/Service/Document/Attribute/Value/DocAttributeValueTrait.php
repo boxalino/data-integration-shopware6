@@ -74,7 +74,7 @@ trait DocAttributeValueTrait
 
             $localized = new Localized();
             $localized->setValue($content)->setLanguage($language);
-            $schema[$property][] = $localized;
+            $schema[$property][] = $localized->toArray();
         }
 
         return $schema;
@@ -127,6 +127,7 @@ trait DocAttributeValueTrait
     }
 
     /**
+     * @param string $propertyName
      * @return array
      * @throws \Exception
      */

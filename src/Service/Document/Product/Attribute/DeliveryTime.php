@@ -56,7 +56,7 @@ class DeliveryTime extends ModeIntegrator
 
             /** @var Repeated $schema */
             $schema = $this->getRepeatedLocalizedSchema($item, $languages,"delivery_time");
-            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STRING_LOCALIZED][] = $schema;
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STRING_LOCALIZED][] = $schema->toArray();
         }
 
         return $content;

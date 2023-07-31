@@ -41,7 +41,7 @@ class Pricing extends ModeIntegrator
 
             /** @var PricingSchema $schema */
             $schema = $this->getPricingSchema($languages, $currencyCodes, $currencyFactors, $item['min_price'], $label);
-            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_PRICING] = $schema;
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_PRICING] = $schema->toArray();
         }
 
         return $content;

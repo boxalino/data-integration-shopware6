@@ -57,7 +57,7 @@ class Product extends Item
                 $schema->addNumericAttribute($stringAttribute);
             }
 
-            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_PRODUCTS][] = $schema;
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_PRODUCTS][] = $schema->toArray();
         }
 
         return $content;

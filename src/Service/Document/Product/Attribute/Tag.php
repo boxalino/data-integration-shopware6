@@ -44,7 +44,7 @@ class Tag extends ModeIntegrator
 
             /** @var StringAttribute $schema */
             $schema = $this->getStringAttributeSchema(explode(",", $item[DocSchemaInterface::FIELD_INTERNAL_ID]), "tag");
-            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STRING][] = $schema;
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STRING][] = $schema->toArray();
         }
 
         return $content;

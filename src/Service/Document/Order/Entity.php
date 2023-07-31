@@ -71,7 +71,7 @@ class Entity extends ModeIntegrator
                                 $typedProperty->setName($propertyName)
                                     ->addValue($value);
 
-                                $content[$item[$this->getDiIdField()]][$docAttributeName][] = $typedProperty;
+                                $content[$item[$this->getDiIdField()]][$docAttributeName][] = $typedProperty->toArray();
                             }
 
                             continue;
@@ -90,7 +90,7 @@ class Entity extends ModeIntegrator
                                     $typedProperty->addValue($localized);
                                 }
 
-                                $content[$item[$this->getDiIdField()]][$docAttributeName][] = $typedProperty;
+                                $content[$item[$this->getDiIdField()]][$docAttributeName][] = $typedProperty->toArray();
                             }
 
                             continue;
@@ -101,7 +101,7 @@ class Entity extends ModeIntegrator
                         if(method_exists($propertyType, "setValue"))
                         {
                             $propertyType->setValue($value);
-                            $content[$item[$this->getDiIdField()]][$docAttributeName][] = $propertyType;
+                            $content[$item[$this->getDiIdField()]][$docAttributeName][] = $propertyType->toArray();
 
                             continue;
                         }

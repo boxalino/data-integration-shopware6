@@ -47,7 +47,7 @@ class Price extends ModeIntegrator
             }
 
             $schema = $this->getPriceSchema($languages, $currencyCodes, $currencyFactor, $item['price'], $item['list_price']);
-            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_PRICE] = $schema;
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_PRICE] = $schema->toArray();
         }
 
         return $content;

@@ -34,7 +34,7 @@ class Stock extends ModeIntegrator
                 continue;
             }
 
-            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STOCK][] = $this->getStockSchema($item['value'], $item['availability']);
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STOCK][] = $this->getStockSchema($item['value'], $item['availability'])->toArray();
         }
 
         return $content;

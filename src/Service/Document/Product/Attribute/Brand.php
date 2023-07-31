@@ -52,7 +52,7 @@ class Brand extends ModeIntegrator
                 array_merge($item, $this->getLocalizedPropertyById($item[DocSchemaInterface::FIELD_INTERNAL_ID])),
                 $languages
             );
-            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_BRANDS][] = $brand;
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_BRANDS][] = $brand->toArray();
         }
 
         return $content;

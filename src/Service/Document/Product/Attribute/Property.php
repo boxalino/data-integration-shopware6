@@ -65,7 +65,7 @@ class Property extends ModeIntegrator
 
                 /** @var Repeated $schema */
                 $schema = $this->getRepeatedLocalizedSchema($item, $languages, $propertyName);
-                $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STRING_LOCALIZED][] = $schema;
+                $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STRING_LOCALIZED][] = $schema->toArray();
             }
         }
 

@@ -121,7 +121,7 @@ class Property extends IntegrationSchemaPropertyHandler
                 {
                     $localized = new Localized();
                     $localized->setValue($content[$language])->setLanguage($language);
-                    $schema[] = $localized;
+                    $schema[] = $localized->toArray();
                 }
             }
         }
