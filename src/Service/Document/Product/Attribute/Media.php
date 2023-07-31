@@ -10,11 +10,10 @@ use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Content\Media\DataAbstractionLayer\MediaRepositoryDecorator;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Uuid\Uuid;
 
@@ -33,13 +32,13 @@ class Media extends ModeIntegrator
      * @param Connection $connection
      * @param LoggerInterface $boxalinoLogger
      * @param UrlGeneratorInterface $generator
-     * @param MediaRepositoryDecorator $mediaRepository
+     * @param EntityRepository $mediaRepository
      */
     public function __construct(
         Connection $connection,
         LoggerInterface $boxalinoLogger,
         UrlGeneratorInterface $generator,
-        EntityRepositoryInterface $mediaRepository
+        EntityRepository $mediaRepository
     ){
         $this->logger = $boxalinoLogger;
         $this->mediaRepository = $mediaRepository;

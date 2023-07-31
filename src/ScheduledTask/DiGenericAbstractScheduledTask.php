@@ -7,7 +7,7 @@ use Boxalino\DataIntegrationDoc\Framework\Integrate\DiLoggerTrait;
 use Boxalino\DataIntegrationDoc\Framework\Util\DiConfigurationInterface;
 use Boxalino\DataIntegrationDoc\Service\Util\ConfigurationDataObject;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\MessageQueue\ScheduledTask\ScheduledTaskHandler;
 
 /**
@@ -30,7 +30,7 @@ abstract class DiGenericAbstractScheduledTask extends ScheduledTaskHandler
         string $environment,
         LoggerInterface $logger,
         DiConfigurationInterface $configurationManager,
-        EntityRepositoryInterface $scheduledTaskRepository
+        EntityRepository $scheduledTaskRepository
     ){
         parent::__construct($scheduledTaskRepository);
 
@@ -38,13 +38,6 @@ abstract class DiGenericAbstractScheduledTask extends ScheduledTaskHandler
         $this->logger = $logger;
         $this->environment = $environment;
     }
-
-    /**
-     * Set the class with the scheduled task configuration
-     *
-     * @return iterable
-     */
-    abstract static function getHandledMessages(): iterable;
 
     /**
      * Triggers the data exporter for a specific account if so it is set

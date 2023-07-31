@@ -9,11 +9,10 @@ use Doctrine\DBAL\FetchMode;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\DBAL\Query\QueryBuilder;
 use Psr\Log\LoggerInterface;
-use Shopware\Core\Content\Media\DataAbstractionLayer\MediaRepositoryDecorator;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Defaults;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\Uuid\Uuid;
 use Boxalino\DataIntegration\Service\Util\Document\StringLocalized;
 
@@ -35,14 +34,14 @@ class Property extends ModeIntegrator
      * @param StringLocalized $localizedStringBuilder
      * @param LoggerInterface $boxalinoLogger
      * @param UrlGeneratorInterface $generator
-     * @param MediaRepositoryDecorator $mediaRepository
+     * @param EntityRepository $mediaRepository
      */
     public function __construct(
         Connection $connection,
         StringLocalized $localizedStringBuilder,
         LoggerInterface $boxalinoLogger,
         UrlGeneratorInterface $generator,
-        EntityRepositoryInterface $mediaRepository
+        EntityRepository $mediaRepository
     ){
         $this->logger = $boxalinoLogger;
         $this->localizedStringBuilder = $localizedStringBuilder;

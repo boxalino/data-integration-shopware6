@@ -1,7 +1,7 @@
 <?php
 namespace Boxalino\DataIntegration;
 
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\ContainsFilter;
 use Shopware\Core\Framework\Plugin;
@@ -49,7 +49,7 @@ class BoxalinoDataIntegration extends Plugin
 
     protected function removeConfiguration(Context $context): void
     {
-        /** @var EntityRepositoryInterface $systemConfigRepository */
+        /** @var EntityRepository $systemConfigRepository */
         $systemConfigRepository = $this->container->get('system_config.repository');
         $criteria = (new Criteria())->addFilter(new ContainsFilter('configurationKey', $this->getName() . '.config.'));
         $idSearchResult = $systemConfigRepository->searchIds($criteria, $context);

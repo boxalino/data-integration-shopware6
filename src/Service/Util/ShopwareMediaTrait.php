@@ -7,7 +7,7 @@ use Shopware\Core\Content\Media\Exception\EmptyMediaIdException;
 use Shopware\Core\Content\Media\MediaEntity;
 use Shopware\Core\Content\Media\Pathname\UrlGeneratorInterface;
 use Shopware\Core\Framework\Context;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\Struct\Collection;
 
@@ -24,7 +24,7 @@ trait ShopwareMediaTrait
     protected $mediaUrlGenerator;
 
     /**
-     * @var EntityRepositoryInterface
+     * @var EntityRepository
      */
     protected $mediaRepository;
 

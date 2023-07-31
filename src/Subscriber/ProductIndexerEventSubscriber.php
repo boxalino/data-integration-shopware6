@@ -4,8 +4,7 @@ namespace Boxalino\DataIntegration\Subscriber;
 use Boxalino\DataIntegration\Service\Util\DiFlaggedIdHandlerInterface;
 use Shopware\Core\Content\Product\Events\ProductIndexerEvent;
 use Shopware\Core\Content\Product\ProductDefinition;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
-use Shopware\Core\Framework\Uuid\Uuid;
+use Shopware\Coreuse Shopware\Core\Framework\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**

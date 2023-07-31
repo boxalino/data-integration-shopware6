@@ -7,7 +7,7 @@ use Boxalino\DataIntegrationDoc\Framework\Util\DiConfigurationInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\ProductInstantIntegrationHandlerInterface;
 use Psr\Log\LoggerInterface;
 use Boxalino\DataIntegration\ScheduledTask\DiGenericAbstractScheduledTask;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
+use Shopware\Core\Framework\DataAbstractionLayer\EntityRepository;
 
 /**
  * Class DiInstantScheduledTask
@@ -28,7 +28,7 @@ abstract class DiInstantScheduledTask extends DiGenericAbstractScheduledTask
         string $environment,
         LoggerInterface $logger,
         DiConfigurationInterface $configurationManager,
-        EntityRepositoryInterface $scheduledTaskRepository,
+        EntityRepository $scheduledTaskRepository,
         ProductInstantIntegrationHandlerInterface $integrationHandler
     ){
         $this->integrationHandler = $integrationHandler;
