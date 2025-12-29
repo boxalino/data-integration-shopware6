@@ -83,6 +83,13 @@ class Category extends ModeIntegrator
             // adding link
             $link = $this->getLocalizedPropertyById($item[$this->getDiIdField()], DocSchemaInterface::FIELD_LINK);
             $schema = $this->addingPropertyToSchema(DocSchemaInterface::FIELD_LINK, $schema, $link);
+	        
+	        // adding numeric attributes for level, visible
+	        $schema[DocSchemaInterface::FIELD_NUMERIC][] = $this->getNumericAttributeSchema([$item['visible']] , "visible", null);
+	        $schema[DocSchemaInterface::FIELD_NUMERIC][] = $this->getNumericAttributeSchema([$item['level']] , "level", null);
+	        
+	        // adding string attribute for page
+	        $schema[DocSchemaInterface::FIELD_STRING][] = $this->getStringAttributeSchema([$item['type']] , "type");
 
             $content[DocSchemaInterface::FIELD_CATEGORIES][] = $schema;
         }
@@ -119,6 +126,9 @@ class Category extends ModeIntegrator
             "LOWER(HEX(category.parent_id)) AS " . DocSchemaInterface::FIELD_PARENT_VALUE_IDS,
             "category.active AS " . DocSchemaInterface::FIELD_STATUS,
             "LOWER(HEX(category.media_id)) AS " . DocSchemaInterface::FIELD_IMAGES,
+	        "category.level AS level",
+	        "category.visible AS visible",
+	        "category.type AS type",
         ];
     }
 
