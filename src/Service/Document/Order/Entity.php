@@ -182,7 +182,7 @@ class Entity extends ModeIntegrator
         return [
             'LOWER(HEX(o.id)) AS ' . $this->getDiIdField(),
             'LOWER(HEX(o.id)) AS id', 'o.order_number', 'sct.name AS store',
-            'c.iso_code AS currency_cd', 'o.currency_factor',  'FORMAT(o.amount_total,2) AS amount_total', 'FORMAT(o.amount_net,2) AS amount_net',
+            'c.iso_code AS currency_cd', 'o.currency_factor',  'TRUNCATE(o.amount_total,2) AS amount_total', 'TRUNCATE(o.amount_net,2) AS amount_net',
             'o.tax_status', 'o.shipping_total', 'IF(o.tax_status="net",1,0) AS tax_free',
             'TRUNCATE(o.amount_total - o.amount_net, 2) AS tax_amnt', 'locale.code as language',
             'GROUP_CONCAT(od.tracking_codes) AS tracking_code', 'pmt.name AS payment_method',
