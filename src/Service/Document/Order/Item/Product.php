@@ -56,6 +56,13 @@ class Product extends Item
                 $stringAttribute = $this->getNumericAttributeSchema([$item["purchase_price"]], "purchase_price");
                 $schema->addNumericAttribute($stringAttribute);
             }
+			
+			if(isset($item['payload']))
+			{
+				$schema->addStringAttribute(
+					$this->getStringAttributeSchema([$item['payload']], 'payload')
+				);
+			}
 
             $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_PRODUCTS][] = $schema;
         }
@@ -66,11 +73,10 @@ class Product extends Item
     /**
      * @return string
      */
-    public function getType(): string
+    public function getTypeFilter(): string
     {
-        return "product";
+        return "oli.type='product'";
     }
-
 
     /**
      * @return string[]
@@ -92,6 +98,7 @@ class Product extends Item
             "TRUNCATE(oli.unit_price - JSON_EXTRACT(oli.payload, '$.purchasePrice'),2) AS unit_gross_margin",  //get unit gross margin from unit_price-purchasePrice
             "TRUNCATE(JSON_EXTRACT(oli.payload, '$.purchasePrice')*oli.quantity,2) AS total_gross_margin", //calculate total gross margin from quantity*unit_gross_margin
             "TRUNCATE(JSON_EXTRACT(oli.payload, '$.purchasePrice'),2) AS purchase_price",
+	        "oli.payload AS payload"
         ];
     }
 
