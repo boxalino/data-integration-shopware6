@@ -178,7 +178,16 @@
             </call>
         </service>
 
-        <service id="boxalino.di.order.promotion" class="Boxalino\DataIntegration\Service\Document\Order\Item\Promotion"
+        <service id="boxalino.di.order.voucher" class="Boxalino\DataIntegration\Service\Document\Order\Item\Voucher"
+                 parent="Boxalino\DataIntegration\Service\Document\Order\ModeIntegratorInterface">
+            <call method="allowInstantMode">
+                <argument>true</argument>
+            </call>
+        </service>
+
+        <!-- Surcharge-like line items (cart-surcharge, transport-insurance, payment-surcharge,
+             splitorder, co2-compensation, shipping-method) → mapped to doc_order vouchers -->
+        <service id="boxalino.di.order.surcharge" class="Boxalino\DataIntegration\Service\Document\Order\Item\Surcharge"
                  parent="Boxalino\DataIntegration\Service\Document\Order\ModeIntegratorInterface">
             <call method="allowInstantMode">
                 <argument>true</argument>

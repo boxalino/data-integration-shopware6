@@ -66,11 +66,10 @@ class Product extends Item
     /**
      * @return string
      */
-    public function getType(): string
+    public function getTypeFilter(): string
     {
-        return "product";
+        return "oli.type='product'";
     }
-
 
     /**
      * @return string[]
