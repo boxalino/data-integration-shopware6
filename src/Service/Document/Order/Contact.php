@@ -37,7 +37,7 @@ abstract class Contact extends ModeIntegrator
                 $schema = new OrderContactSchema($item);
                 if(isset($item["updated_at"]))
                 {
-                    $schema->addDatetimeAttributes($this->getDatetimeAttributeSchema([$item["updated_at"]], "updated_at"));
+                    $schema->addDatetimeAttribute($this->getDatetimeAttributeSchema([$item["updated_at"]], "updated_at"));
                 }
 
                 $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_CONTACTS][] = $schema;
