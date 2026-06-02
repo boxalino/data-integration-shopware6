@@ -3,13 +3,13 @@
     "type": "shopware-platform-plugin",
     "description": "Boxalino Data Integration for Shopware6",
     "license": "MIT",
-    "version": "3.6.0",
+    "version": "3.6.1",
     "authors": [
         {
             "name": "Boxalino AG",
             "role": "Manufacturer",
             "email": "support@boxalino.com",
-            "homepage": "http://www.boxalino.com/"
+            "homepage": "https://www.boxalino.com/"
         }
     ],
     "extra": {

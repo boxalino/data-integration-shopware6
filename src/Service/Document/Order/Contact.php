@@ -37,7 +37,7 @@ abstract class Contact extends ModeIntegrator
                 $schema = new OrderContactSchema($item);
                 if(isset($item["updated_at"]))
                 {
-                    $schema->addDatetimeAttributes($this->getDatetimeAttributeSchema([$item["updated_at"]], "updated_at"));
+                    $schema->addDatetimeAttribute($this->getDatetimeAttributeSchema([$item["updated_at"]], "updated_at"));
                 }
 
                 $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_CONTACTS][] = $schema->toArray();
@@ -75,10 +75,10 @@ abstract class Contact extends ModeIntegrator
                 "c", 'customer_group_translation', 'cgt', "c.customer_group_id = cgt.customer_group_id AND cgt.language_id=:defaultLanguageId"
             )
             ->leftJoin(
-                "c", 'salutation_translation', 'st', "c.salutation_id = st.salutation_id AND st.language_id=:defaultLanguageId"
+                $this->getAddressJoinSrc(), 'order_address', 'oa', $this->getAddressCondition()
             )
             ->leftJoin(
-                $this->getAddressJoinSrc(), 'order_address', 'oa', $this->getAddressCondition()
+                'oa', 'salutation_translation', 'st', "oa.salutation_id = st.salutation_id AND st.language_id=:defaultLanguageId"
             )
             ->leftJoin(
                 'oa', 'country', 'cb', 'oa.country_id = cb.id'

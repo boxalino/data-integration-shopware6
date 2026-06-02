@@ -37,11 +37,11 @@ abstract class Contact extends ModeIntegrator
                 $schema = new UserContactSchema($item);
                 if(isset($item["updated_at"]))
                 {
-                    $schema->addDatetimeAttributes($this->getDatetimeAttributeSchema([$item["updated_at"]], "updated_at"));
+                    $schema->addDatetimeAttribute($this->getDatetimeAttributeSchema([$item["updated_at"]], "updated_at"));
                 }
                 if(isset($item["created_at"]))
                 {
-                    $schema->addDatetimeAttributes($this->getDatetimeAttributeSchema([$item["created_at"]], "created_at"));
+                    $schema->addDatetimeAttribute($this->getDatetimeAttributeSchema([$item["created_at"]], "created_at"));
                 }
 
                 $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_CONTACTS][] = $schema->toArray();
