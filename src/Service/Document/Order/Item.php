@@ -82,6 +82,7 @@ abstract class Item extends ModeIntegrator
             ->andWhere("o.sales_channel_id=:channelId")
             ->andWhere("o.version_id = :live")
             ->addOrderBy("o.order_date_time", 'DESC')
+            ->addOrderBy("o.auto_increment", 'ASC')
             ->setFirstResult($this->getFirstResultByBatch())
             ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
 
