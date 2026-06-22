@@ -45,7 +45,7 @@ class Wishlist extends ModeIntegrator
 
         foreach ($this->getProducts($wishlistIds) as $row) 
         {
-            $content[$row['customer_wishlist_id']]['products'][] = [
+            $content[$row[$this->getDiIdField()]]['products'][] = [
                 'sku'  => $row['sku'],
                 'type' => $row['type'],
             ];
@@ -79,7 +79,7 @@ class Wishlist extends ModeIntegrator
     {
         $query = $this->connection->createQueryBuilder();
         $query->select([
-            'LOWER(HEX(wp.customer_wishlist_id)) AS customer_wishlist_id',
+            'LOWER(HEX(wp.customer_wishlist_id)) AS ' . $this->getDiIdField(),
             'IFNULL(parent.product_number, p.product_number) AS sku',
             "'product' AS type",
         ])
@@ -92,4 +92,5 @@ class Wishlist extends ModeIntegrator
         return $query->execute()->fetchAll();
     }
 
+	
 }
