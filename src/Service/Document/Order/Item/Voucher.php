@@ -32,7 +32,7 @@ class Voucher extends Item
             $schema = new OrderVoucherSchema($item);
             $schema->addStringAttribute($this->getStringAttributeSchema([$item['payload']], 'payload'));
 
-            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_VOUCHERS][] = $schema;
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_VOUCHERS][] = $schema->toArray();
         }
 
         return $content;

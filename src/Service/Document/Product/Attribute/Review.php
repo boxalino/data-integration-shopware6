@@ -51,7 +51,7 @@ class Review extends ModeIntegrator
 
             /** @var NumericAttribute $schema */
             $total = $this->getNumericAttributeSchema([$item[DocSchemaInterface::FIELD_INTERNAL_ID]], self::BOXALINO_DATA_INTEGRATION_FIELD_REVIEW_TOTAL, null);
-            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_NUMERIC][] = $total;
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_NUMERIC][] = $total->toArray();
         }
 
         return $content;

@@ -47,7 +47,7 @@ class Surcharge extends Item
 				$this->getStringAttributeSchema([$item['payload']], 'payload')
 			);
 			
-			$content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_PRODUCTS][] = $schema;
+			$content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_PRODUCTS][] = $schema->toArray();
 			try{
 				if(!isset($content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_NUMERIC]))
 				{
@@ -57,7 +57,7 @@ class Surcharge extends Item
 					$this->getNumericAttributeSchema(
 						[(float) $item['total_sales_price']],
 						'doc_service_' . str_replace('-', '_', $item['type']) . '_cost'
-					);
+					)->toArray();
 			} catch (\Throwable $exception) {}
 		}
 		

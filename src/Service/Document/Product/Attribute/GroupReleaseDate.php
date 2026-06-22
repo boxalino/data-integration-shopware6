@@ -46,7 +46,7 @@ class GroupReleaseDate extends ModeIntegrator
             {
                 /** @var StringAttribute $oldestReleaseDateSchema */
                 $oldestReleaseDateSchema = $this->getStringAttributeSchema([$item[self::FIELD_GROUP_RELEASE_DATE]], self::FIELD_GROUP_RELEASE_DATE);
-                $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STRING][] = $oldestReleaseDateSchema;
+                $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STRING][] = $oldestReleaseDateSchema->toArray();
             }
         }
 

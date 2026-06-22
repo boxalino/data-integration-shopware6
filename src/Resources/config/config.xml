@@ -93,6 +93,12 @@
             <label>Enable Order Data Integration</label>
             <helpText>Activate / Disable the Data Integration for the doc_order document</helpText>
         </input-field>
+        <input-field type="bool">
+            <name>userSelectionDiStatus</name>
+            <defaultValue>0</defaultValue>
+            <label>Enable Wishlist Data Integration</label>
+            <helpText>Activate / Disable the Data Integration for doc_user_selection (wishlist)</helpText>
+        </input-field>
         <input-field type="text">
             <name>threshold</name>
             <label>Threshold</label>
@@ -124,6 +130,12 @@
             <defaultValue>1</defaultValue>
             <label>Enable Order Delta Data Integration</label>
             <helpText>Activate / Disable the Data Integration for the doc_order document</helpText>
+        </input-field>
+        <input-field type="bool">
+            <name>userSelectionDeltaStatus</name>
+            <defaultValue>0</defaultValue>
+            <label>Enable Wishlist Delta Data Integration</label>
+            <helpText>Activate / Disable the Delta Data Integration for doc_user_selection (wishlist)</helpText>
         </input-field>
         <input-field type="text">
             <name>deltaDiEndpoint</name>

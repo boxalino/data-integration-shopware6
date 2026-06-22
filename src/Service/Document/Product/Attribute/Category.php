@@ -46,7 +46,7 @@ class Category extends ModeIntegrator
                 $languages
             );
 
-            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_CATEGORIES][] = $schema;
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_CATEGORIES][] = $schema->toArray();
         }
 
         return $content;

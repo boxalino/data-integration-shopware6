@@ -68,7 +68,7 @@ class Image extends ModeIntegrator
 
                 /** @var Repeated $schema */
                 $schema = $this->getRepeatedLocalizedSchema($item, $languages);
-                $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_IMAGES] = [$schema];
+                $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_IMAGES][] = $schema->toArray();
             }
         }
 

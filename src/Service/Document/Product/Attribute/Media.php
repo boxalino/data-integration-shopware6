@@ -77,7 +77,7 @@ class Media extends ModeIntegrator
 
             /** @var StringAttribute $schema */
             $schema = $this->getStringAttributeSchema($productMediaLinks, "absolute_media_url");
-            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STRING][] = $schema;
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STRING][] = $schema->toArray();
         }
 
         return $content;

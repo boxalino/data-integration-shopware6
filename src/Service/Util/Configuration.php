@@ -199,6 +199,7 @@ class Configuration implements DiConfigurationInterface
             DiConfigurationInterface::DI_CONFIG_ALLOW_PRODUCT_SYNC => isset($configuration['productDeltaStatus']) ? (bool)$configuration['productDeltaStatus'] : false,
             DiConfigurationInterface::DI_CONFIG_ALLOW_USER_SYNC => isset($configuration['userDeltaStatus']) ? (bool) $configuration['userDeltaStatus'] : false,
             DiConfigurationInterface::DI_CONFIG_ALLOW_ORDER_SYNC => isset($configuration['orderDeltaStatus']) ? (bool) $configuration['orderDeltaStatus'] : false,
+            'allowUserSelectionSync' => isset($configuration['userSelectionDeltaStatus']) ? (bool) $configuration['userSelectionDeltaStatus'] : false,
         ];
     }
 
@@ -215,6 +216,7 @@ class Configuration implements DiConfigurationInterface
             DiConfigurationInterface::DI_CONFIG_ALLOW_PRODUCT_SYNC => isset($configuration['productDiStatus']) ? (bool)$configuration['productDiStatus'] : false,
             DiConfigurationInterface::DI_CONFIG_ALLOW_USER_SYNC => isset($configuration['userDiStatus']) ? (bool) $configuration['userDiStatus'] : false,
             DiConfigurationInterface::DI_CONFIG_ALLOW_ORDER_SYNC => isset($configuration['orderDiStatus']) ? (bool) $configuration['orderDiStatus'] : false,
+            'allowUserSelectionSync' => isset($configuration['userSelectionDiStatus']) ? (bool) $configuration['userSelectionDiStatus'] : false,
         ];
     }
 
