@@ -39,7 +39,7 @@ trait DocAttributeValueTrait
         if(isset($row[DocSchemaInterface::FIELD_IMAGES]))
         {
             // adding media
-            $schema[DocSchemaInterface::FIELD_IMAGES][] = $this->getImage($row);
+            $schema[DocSchemaInterface::FIELD_IMAGES][] = $this->getImage($row)->toArray();
         }
 
         if(isset($row[DocSchemaInterface::FIELD_STATUS]))

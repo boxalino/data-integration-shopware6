@@ -29,7 +29,7 @@ abstract class Item extends ModeIntegrator
                 "oli.order_id = o.id AND oli.order_version_id = o.version_id AND o.sales_channel_id=:channelId"
             )
             ->andWhere("o.id IS NOT NULL")
-            ->andWhere("oli.type='{$this->getType()}'")
+            ->andWhere($this->getTypeFilter())
             ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter('live', Uuid::fromHexToBytes(Defaults::LIVE_VERSION), ParameterType::BINARY);
 
@@ -41,7 +41,7 @@ abstract class Item extends ModeIntegrator
      *
      * @return string
      */
-    abstract public function getType() : string;
+    abstract public function getTypeFilter() : string;
 
 
     /**
@@ -81,7 +81,7 @@ abstract class Item extends ModeIntegrator
             ->from("`order`", "o")
             ->andWhere("o.sales_channel_id=:channelId")
             ->andWhere("o.version_id = :live")
-            ->addOrderBy("o.order_date_time", 'DESC')
+            ->addOrderBy("o.auto_increment", 'ASC')
             ->setFirstResult($this->getFirstResultByBatch())
             ->setMaxResults($this->getSystemConfiguration()->getBatchSize());
 

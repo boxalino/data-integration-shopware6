@@ -39,7 +39,7 @@ class MainCategory extends ModeIntegrator
                 continue;
             }
 
-            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STRING][] = 
+            $content[$item[$this->getDiIdField()]][DocSchemaInterface::FIELD_STRING][] =
                 $this->getStringAttributeSchema($values,"main_category")->toArray();
         }
 
