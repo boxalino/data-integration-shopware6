@@ -1,0 +1,43 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:monolog="http://symfony.com/schema/dic/monolog"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd http://symfony.com/schema/dic/monolog http://symfony.com/schema/dic/monolog/monolog-1.0.xsd">
+
+    <monolog:config>
+        <monolog:channel>boxalino-di-user-selection</monolog:channel>
+        <monolog:handler name="boxalino_di_user_selection_log"
+                         type="stream"
+                         path="%kernel.logs_dir%/boxalino-di-user-selection-%kernel.environment%.log"
+                         level="debug">
+            <monolog:channels>
+                <monolog:channel>boxalino-di-user-selection</monolog:channel>
+            </monolog:channels>
+        </monolog:handler>
+    </monolog:config>
+
+    <services>
+
+        <!-- C: Use this interface to set the logic for the full/delta data syncs for user selection -->
+        <service id="Boxalino\DataIntegration\Service\Document\UserSelection\ModeIntegratorInterface"
+                 class="Boxalino\DataIntegration\Service\Document\UserSelection\ModeIntegrator" abstract="true">
+            <argument type="service" id="Doctrine\DBAL\Connection"/>
+        </service>
+
+        <!-- X: Wishlist entity handler — exports customer_wishlist records with their products
+             The integrator decides whether/how to add this as a property handler on a
+             doc_user_selection DocHandler in their own integration layer. -->
+        <service id="boxalino.di.user_selection.wishlist"
+                 class="Boxalino\DataIntegration\Service\Document\UserSelection\Wishlist"
+                 parent="Boxalino\DataIntegration\Service\Document\UserSelection\ModeIntegratorInterface">
+        </service>
+
+        <!-- Logger defined per Shopware6 pattern - clears out dynamically -->
+        <service id="Boxalino\DataIntegration\Service\UserSelection\Logger" class="Monolog\Logger">
+            <factory service="Shopware\Core\Framework\Log\LoggerFactory" method="createRotating"/>
+            <argument type="string">boxalino-di-user-selection</argument>
+        </service>
+
+    </services>
+
+</container>
