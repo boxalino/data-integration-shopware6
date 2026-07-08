@@ -39,13 +39,13 @@ trait DocAttributeValueTrait
         if(isset($row[DocSchemaInterface::FIELD_IMAGES]))
         {
             // adding media
-            $schema[DocSchemaInterface::FIELD_IMAGES][] = $this->getImage($row);
+            $schema[DocSchemaInterface::FIELD_IMAGES][] = $this->getImage($row)->toArray();
         }
 
         if(isset($row[DocSchemaInterface::FIELD_STATUS]))
         {
             // adding status
-            $schema = $this->addingPropertyToSchema(DocSchemaInterface::FIELD_STATUS, $schema, $row[DocSchemaInterface::FIELD_STATUS]);
+            $schema = $this->addStatusToSchema($schema, $row[DocSchemaInterface::FIELD_STATUS]);
         }
 
         if(isset($row[DocSchemaInterface::FIELD_LINK]))
@@ -79,6 +79,32 @@ trait DocAttributeValueTrait
 
         return $schema;
     }
+	
+	/**
+	 * @param array $schema
+	 * @param  int | string| array| null     $source
+	 * @return array
+	 */
+	public function addStatusToSchema(array $schema, $source = null) : array
+	{
+		if(is_null($source))
+		{
+			return $schema;
+		}
+		
+		foreach($this->getSystemConfiguration()->getLanguages() as $language)
+		{
+			$content = $source;
+			if(is_array($source) && isset($source[$language])){ $content = $source[$language]; }
+			if(is_null($content)){  continue; }
+			
+			$localized = new Localized();
+			$localized->setValue((int)$content)->setLanguage($language);
+			$schema[DocSchemaInterface::FIELD_STATUS][] = $localized->toArray();
+		}
+		
+		return $schema;
+	}
 
     /**
      * @param array $item
@@ -147,4 +173,5 @@ trait DocAttributeValueTrait
         return $this->localizedPropertyValues->offsetGet($propertyName);
     }
 
+	
 }
