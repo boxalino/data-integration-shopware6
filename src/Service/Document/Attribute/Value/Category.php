@@ -63,15 +63,23 @@ class Category extends ModeIntegrator
      */
     public function getValues() : array
     {
-        $content = [];
-        $content[DocSchemaInterface::FIELD_CATEGORIES] = [];
-        foreach($this->getData(DocSchemaInterface::FIELD_CATEGORIES) as $item)
+	    $content = [];
+	    $content[DocSchemaInterface::FIELD_CATEGORIES] = [];
+	    $rows = $this->getData(DocSchemaInterface::FIELD_CATEGORIES);
+	    $rootCategoryId = $this->getSystemConfiguration()->getNavigationCategoryId();
+	    $categoryLookup = $this->_navigationLookup($rows);
+	    $navigationStatusMemo = [];
+		
+        foreach($rows as $item)
         {
-            $schema = $this->initializeSchemaForRow($item);
-            foreach(array_filter(explode("|", $item[DocSchemaInterface::FIELD_PARENT_VALUE_IDS] ?? "")) as $parentId)
-            {
-                $schema[DocSchemaInterface::FIELD_PARENT_VALUE_IDS][] = $parentId;
-            }
+	        // adding status
+	        $item[DocSchemaInterface::FIELD_STATUS] = (int)$this->isUsedInNavigation($item[$this->getDiIdField()], $categoryLookup, $rootCategoryId, $navigationStatusMemo);
+	        $schema = $this->initializeSchemaForRow($item);
+	        
+	        if($item[DocSchemaInterface::FIELD_PARENT_VALUE_IDS])
+	        {
+		        $schema[DocSchemaInterface::FIELD_PARENT_VALUE_IDS][] = $item[DocSchemaInterface::FIELD_PARENT_VALUE_IDS];
+	        }
 
             // adding  name
             $name = $this->getLocalizedPropertyById($item[$this->getDiIdField()], "name");
@@ -88,6 +96,7 @@ class Category extends ModeIntegrator
 	        // adding numeric attributes for level, visible
 	        $schema[DocSchemaInterface::FIELD_NUMERIC][] = $this->getNumericAttributeSchema([$item['visible']] , "visible", null)->toArray();
 	        $schema[DocSchemaInterface::FIELD_NUMERIC][] = $this->getNumericAttributeSchema([$item['level']] , "level", null)->toArray();
+	        $schema[DocSchemaInterface::FIELD_NUMERIC][] = $this->getNumericAttributeSchema([$item['active']] , "active", null)->toArray();
 
 	        // adding string attribute for page
 	        $schema[DocSchemaInterface::FIELD_STRING][] = $this->getStringAttributeSchema([$item['type']] , "type")->toArray();
@@ -125,7 +134,7 @@ class Category extends ModeIntegrator
         return [
             "LOWER(HEX(category.id)) AS " . $this->getDiIdField(),
             "LOWER(HEX(category.parent_id)) AS " . DocSchemaInterface::FIELD_PARENT_VALUE_IDS,
-            "category.active AS " . DocSchemaInterface::FIELD_STATUS,
+            "category.active AS active",
             "LOWER(HEX(category.media_id)) AS " . DocSchemaInterface::FIELD_IMAGES,
 	        "category.level AS level",
 	        "category.visible AS visible",
@@ -214,6 +223,65 @@ class Category extends ModeIntegrator
             ["category_translation.category_version_id = :live"]
         );
     }
+	
+	/**
+	 * @param array $rows
+	 * @return array
+	 */
+	protected function _navigationLookup(array $rows) : array
+	{
+		$categoryLookup = [];
+		foreach($rows as $row)
+		{
+			$categoryLookup[$row[$this->getDiIdField()]] = [
+				"active" => (bool) $row["active"],
+				"visible" => (bool) $row['visible'],
+				"parentId" => $row[DocSchemaInterface::FIELD_PARENT_VALUE_IDS] ?: null,
+			];
+		}
+		
+		return $categoryLookup;
+	}
+	
+	/**
+	 * A category only shows up in the storefront navigation menu (Shopware\Core\Content\Category\Service\NavigationLoader)
+	 * if it - and every one of its ancestors up to the sales channel's navigation root - is active and visible.
+	 * A single inactive/hidden parent hides the whole branch below it, even if a descendant is itself active+visible.
+	 *
+	 * @param array<string, array{active: bool, visible: bool, parentId: ?string}> $categoryLookup
+	 * @param array<string, bool> $memo
+	 */
+	protected function isUsedInNavigation(string $categoryId, array $categoryLookup, string $rootCategoryId, array &$memo) : bool
+	{
+		if($categoryId === $rootCategoryId)
+		{
+			return false;
+		}
+		
+		if(isset($memo[$categoryId]))
+		{
+			return $memo[$categoryId];
+		}
+		
+		if(!isset($categoryLookup[$categoryId]))
+		{
+			return $memo[$categoryId] = false;
+		}
+		
+		$category = $categoryLookup[$categoryId];
+		if(!$category['active'] || !$category['visible'])
+		{
+			return $memo[$categoryId] = false;
+		}
+		
+		$parentId = $category['parentId'];
+		if(is_null($parentId) || $parentId === $rootCategoryId)
+		{
+			return $memo[$categoryId] = true;
+		}
+		
+		return $memo[$categoryId] = $this->isUsedInNavigation($parentId, $categoryLookup, $rootCategoryId, $memo);
+	}
 
 
 }
