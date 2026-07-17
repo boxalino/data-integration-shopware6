@@ -93,7 +93,6 @@ class Category extends ModeIntegrator
 	        // adding numeric attributes for level, visible
 	        $schema[DocSchemaInterface::FIELD_NUMERIC][] = $this->getNumericAttributeSchema([$item['visible']] , "visible", null)->toArray();
 	        $schema[DocSchemaInterface::FIELD_NUMERIC][] = $this->getNumericAttributeSchema([$item['level']] , "level", null)->toArray();
-	        $schema[DocSchemaInterface::FIELD_NUMERIC][] = $this->getNumericAttributeSchema([$item['active']] , "active", null)->toArray();
 
 	        // adding numeric attribute for whether the category is actually reachable in the storefront navigation menu
 	        $isUsedInNavigation = (int) $this->isUsedInNavigation($item[$this->getDiIdField()], $categoryLookup, $rootCategoryId, $navigationStatusMemo);
