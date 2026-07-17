@@ -72,10 +72,7 @@ class Category extends ModeIntegrator
 		
         foreach($rows as $item)
         {
-	        // adding status
-	        $item[DocSchemaInterface::FIELD_STATUS] = (int)$this->isUsedInNavigation($item[$this->getDiIdField()], $categoryLookup, $rootCategoryId, $navigationStatusMemo);
 	        $schema = $this->initializeSchemaForRow($item);
-	        
 	        if($item[DocSchemaInterface::FIELD_PARENT_VALUE_IDS])
 	        {
 		        $schema[DocSchemaInterface::FIELD_PARENT_VALUE_IDS][] = $item[DocSchemaInterface::FIELD_PARENT_VALUE_IDS];
@@ -97,6 +94,10 @@ class Category extends ModeIntegrator
 	        $schema[DocSchemaInterface::FIELD_NUMERIC][] = $this->getNumericAttributeSchema([$item['visible']] , "visible", null)->toArray();
 	        $schema[DocSchemaInterface::FIELD_NUMERIC][] = $this->getNumericAttributeSchema([$item['level']] , "level", null)->toArray();
 	        $schema[DocSchemaInterface::FIELD_NUMERIC][] = $this->getNumericAttributeSchema([$item['active']] , "active", null)->toArray();
+
+	        // adding numeric attribute for whether the category is actually reachable in the storefront navigation menu
+	        $isUsedInNavigation = (int) $this->isUsedInNavigation($item[$this->getDiIdField()], $categoryLookup, $rootCategoryId, $navigationStatusMemo);
+	        $schema[DocSchemaInterface::FIELD_NUMERIC][] = $this->getNumericAttributeSchema([$isUsedInNavigation] , "use_in_navigation", null)->toArray();
 
 	        // adding string attribute for page
 	        $schema[DocSchemaInterface::FIELD_STRING][] = $this->getStringAttributeSchema([$item['type']] , "type")->toArray();
@@ -134,7 +135,8 @@ class Category extends ModeIntegrator
         return [
             "LOWER(HEX(category.id)) AS " . $this->getDiIdField(),
             "LOWER(HEX(category.parent_id)) AS " . DocSchemaInterface::FIELD_PARENT_VALUE_IDS,
-            "category.active AS active",
+            "category.active AS " . DocSchemaInterface::FIELD_STATUS,
+	        "category.active AS active",
             "LOWER(HEX(category.media_id)) AS " . DocSchemaInterface::FIELD_IMAGES,
 	        "category.level AS level",
 	        "category.visible AS visible",
