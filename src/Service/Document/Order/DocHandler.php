@@ -3,6 +3,7 @@ namespace Boxalino\DataIntegration\Service\Document\Order;
 
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Doc\Order;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocOrderHandlerInterface;
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerTrait;
@@ -38,6 +39,15 @@ class DocHandler extends DocOrder
 
             foreach($this->getDocData() as $id=>$content)
             {
+	            if(!isset($content[DocSchemaInterface::FIELD_INTERNAL_ID], $content[DocSchemaInterface::FIELD_CREATION]))
+	            {
+		            $this->logger->warning(
+			            "Boxalino DI: skipped incomplete {$this->getDocType()} document $id (properties: "
+			            . implode(",", array_keys($content)) . ")"
+		            );
+		            continue;
+	            }
+				
                 /** @var Order | DocHandlerInterface $doc */
                 $doc = $this->getDocSchemaGenerator($content);
                 $doc->setCreationTm(date("Y-m-d H:i:s"));
