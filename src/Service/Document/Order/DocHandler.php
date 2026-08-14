@@ -2,6 +2,7 @@
 namespace Boxalino\DataIntegration\Service\Document\Order;
 
 use Boxalino\DataIntegration\Service\Document\IntegrationDocHandlerInterface;
+use Boxalino\DataIntegrationDoc\Doc\DocSchemaInterface;
 use Boxalino\DataIntegrationDoc\Doc\Order;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocHandlerInterface;
 use Boxalino\DataIntegrationDoc\Service\Integration\Doc\DocOrderHandlerInterface;
@@ -20,37 +21,46 @@ use Boxalino\DataIntegrationDoc\Service\Integration\Doc\Mode\DocInstantIntegrati
  * @package Boxalino\DataIntegration\Service\Document\Order
  */
 class DocHandler extends DocOrder
-    implements DocOrderHandlerInterface, IntegrationDocHandlerInterface, DocDeltaIntegrationInterface, DocInstantIntegrationInterface
+	implements DocOrderHandlerInterface, IntegrationDocHandlerInterface, DocDeltaIntegrationInterface, DocInstantIntegrationInterface
 {
-
-    use IntegrationDocHandlerTrait;
-    use DocDeltaIntegrationTrait;
-    use DocInstantIntegrationTrait;
-
-    /**
-     * @return $this
-     */
-    protected function createDocLines() : self
-    {
-        try {
-            $this->addSystemConfigurationOnHandlers();
-            $this->generateDocData();
-
-            foreach($this->getDocData() as $id=>$content)
-            {
-                /** @var Order | DocHandlerInterface $doc */
-                $doc = $this->getDocSchemaGenerator($content);
-                $doc->setCreationTm(date("Y-m-d H:i:s"));
-
-                $this->addDocLine($doc);
-            }
-        } catch (\Throwable $exception)
-        {
-            $this->logger->info($exception->getMessage());
-        }
-
-        return $this;
-    }
-
-
+	
+	use IntegrationDocHandlerTrait;
+	use DocDeltaIntegrationTrait;
+	use DocInstantIntegrationTrait;
+	
+	/**
+	 * @return $this
+	 */
+	protected function createDocLines() : self
+	{
+		try {
+			$this->addSystemConfigurationOnHandlers();
+			$this->generateDocData();
+			
+			foreach($this->getDocData() as $id=>$content)
+			{
+				if(!isset($content[DocSchemaInterface::FIELD_INTERNAL_ID], $content[DocSchemaInterface::FIELD_CREATION]))
+				{
+					$this->logger->warning(
+						"Boxalino DI: skipped incomplete {$this->getDocType()} document $id (properties: "
+						. implode(",", array_keys($content)) . ")"
+					);
+					continue;
+				}
+				
+				/** @var Order | DocHandlerInterface $doc */
+				$doc = $this->getDocSchemaGenerator($content);
+				$doc->setCreationTm(date("Y-m-d H:i:s"));
+				
+				$this->addDocLine($doc);
+			}
+		} catch (\Throwable $exception)
+		{
+			$this->logger->info($exception->getMessage());
+		}
+		
+		return $this;
+	}
+	
+	
 }

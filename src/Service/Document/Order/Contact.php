@@ -88,7 +88,7 @@ abstract class Contact extends ModeIntegrator
             )
             ->andWhere("o.sales_channel_id=:channelId")
             ->andWhere("o.version_id = :live")
-            ->addOrderBy("o.order_date_time", 'DESC')
+	        ->addOrderBy("o.auto_increment", 'ASC')
             ->groupBy("o.id")
             ->setParameter('channelId', Uuid::fromHexToBytes($this->getSystemConfiguration()->getSalesChannelId()), ParameterType::BINARY)
             ->setParameter('stateMachineId', $stateMachineId, ParameterType::BINARY)
